@@ -1,13 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, Menu } from "lucide-react";
-import { UserAvatar } from "./UserAvatar";
+import { Search, Menu, X } from "lucide-react";
+import { UserAvatar } from "@/pages/common/components/UserAvatar";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import NavigationBar from "./NavigationBar";
 
 export const Header = () => {
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const handleLogo = () => {
     navigate("/");
+  };
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
   return (
     <header className="border-b">
@@ -19,16 +24,17 @@ export const Header = () => {
           <Button variant="ghost" size="icon" className="md:hidden">
             <Search className="h-5 w-5" />
           </Button>
-          <Input
-            className="w-64 hidden md:block"
-            placeholder="Search exhibitions, artists, or topics"
-          />
           <UserAvatar />
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Menu className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={toggleMenu}>
+            {isMenuOpen ? (
+              <X className="h-5 w-5" /> // 메뉴 열렸을 때 X 버튼으로 변경
+            ) : (
+              <Menu className="h-5 w-5" /> // 메뉴 닫혔을 때 메뉴 아이콘
+            )}
           </Button>
         </div>
       </div>
+      {isMenuOpen && <NavigationBar toggleMenu={toggleMenu} />}
     </header>
   );
 };

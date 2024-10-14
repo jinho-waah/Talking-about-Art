@@ -8,24 +8,33 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Check } from "lucide-react";
 import { TabsContent } from "@/components/ui/tabs";
-import ViewMore from "@/pages/common/components/ViewMore";
-import { TAB_TITLES } from "@/constants";
-import { pageRoutes } from "@/apiRoutes"; // 경로 사용
+import ViewMore from "@/pages/common/components/NavigateToList";
+import { pageRoutes } from "@/apiRoutes";
+import { useNavigate } from "react-router-dom";
 
 export const UpCommingExhibition = () => {
+  const navigate = useNavigate();
+  const handleJoinClick = (id: number) => {
+    navigate(`${pageRoutes.upCommingList}/${id}`);
+  };
+
   const upCommingExhibitions = [
     {
+      id: 1,
       title: "Modern Art Showcase",
       location: "New York City",
       date: "June 15, 2023",
     },
     {
+      id: 2,
       title: "Abstract Expressions",
       location: "Los Angeles",
       date: "July 22, 2023",
     },
     {
+      id: 3,
       title: "Digital Art Revolution",
       location: "San Francisco",
       date: "August 10, 2023",
@@ -37,7 +46,7 @@ export const UpCommingExhibition = () => {
       <Card>
         <CardHeader>
           <CardTitle>전시 예정</CardTitle>
-          <CardDescription>다가올 전시를 구경하세요!</CardDescription>
+          <CardDescription>다가오는 전시회를 미리 만나보세요</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-4">
@@ -49,17 +58,19 @@ export const UpCommingExhibition = () => {
                     {event.location} • {event.date}
                   </p>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleJoinClick(event.id)}
+                >
+                  <Check className="w-4 h-4 mr-2" />
                   Join
                 </Button>
               </li>
             ))}
           </ul>
         </CardContent>
-        <ViewMore
-          title={TAB_TITLES.UPCOMING_EXHIBITION}
-          path={pageRoutes.upCommingList}
-        />
+        <ViewMore path={pageRoutes.upCommingList} />
       </Card>
     </TabsContent>
   );

@@ -10,42 +10,48 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
-import { TAB_TITLES } from "@/constants";
-import ViewMore from "@/pages/common/components/ViewMore";
+import ViewMore from "@/pages/common/components/NavigateToList";
 import { Star, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-// 리뷰 데이터 분리
-const reviewsData = [
-  {
-    title: "Impressionist Masterpieces",
-    reviewer: "John D.",
-  },
-  {
-    title: "Contemporary Sculpture Garden",
-    reviewer: "John D.",
-  },
-  {
-    title: "Photography Through Time",
-    reviewer: "John D.",
-  },
-];
+const Curators = () => {
+  const navigate = useNavigate();
+  const handleReadClick = (id: number) => {
+    navigate(`${pageRoutes.curatorList}/${id}`);
+  };
+  const reviewsData = [
+    {
+      id: 1,
+      title: "Impressionist Masterpieces",
+      reviewer: "John D.",
+    },
+    {
+      id: 2,
+      title: "Contemporary Sculpture Garden",
+      reviewer: "John D.",
+    },
 
-const Reviews = () => {
+    {
+      id: 3,
+      title: "Photography Through Time",
+      reviewer: "John D.",
+    },
+  ];
   return (
     <TabsContent value="reviews">
       <Card>
         <CardHeader>
-          <CardTitle>리뷰</CardTitle>
+          <CardTitle>큐레이터</CardTitle>
           <CardDescription>
-            See what the community thinks about recent exhibitions
+            최근 전시회에 대한 전문가의 심층 리뷰와 의견을 확인하세요
           </CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-4">
-            {reviewsData.map((review, index) => (
+            {reviewsData.map((event, index) => (
               <li key={index} className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold">{review.title}</h3>
+                  <h3 className="font-semibold">{event.title}</h3>
                   <div className="flex items-center">
                     {[...Array(5)].map((_, i) => (
                       <Star
@@ -54,11 +60,15 @@ const Reviews = () => {
                       />
                     ))}
                     <span className="ml-2 text-sm text-muted-foreground">
-                      by {review.reviewer}
+                      by {event.reviewer}
                     </span>
                   </div>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleReadClick(event.id)}
+                >
                   <BookOpen className="w-4 h-4 mr-2" />
                   Read
                 </Button>
@@ -66,10 +76,10 @@ const Reviews = () => {
             ))}
           </ul>
         </CardContent>
-        <ViewMore title={TAB_TITLES.REVIEW} path={pageRoutes.reviewList} />
+        <ViewMore path={pageRoutes.curatorList} />
       </Card>
     </TabsContent>
   );
 };
 
-export default Reviews;
+export default Curators;

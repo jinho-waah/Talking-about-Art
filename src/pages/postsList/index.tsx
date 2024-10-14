@@ -6,14 +6,13 @@ import { Heart, MessageSquare, Share2, BookmarkPlus } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Layout } from "../common/components/Layout";
 
-// Props 인터페이스 정의
 interface PostsListProps {
   title: string;
 }
 
 export default function PostsList({ title }: PostsListProps) {
   const location = useLocation();
-  const titleFromState = location.state?.title || title; // state에서 title 값 가져오기
+  const titleFromState = location.state?.title ?? title;
 
   const tmpData = [
     {
@@ -52,7 +51,6 @@ export default function PostsList({ title }: PostsListProps) {
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
-          {/* state에서 받은 title 사용 */}
           <h1 className="text-3xl font-bold mb-6">{titleFromState}</h1>
 
           <div className="mb-6">
