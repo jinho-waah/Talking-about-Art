@@ -14,7 +14,7 @@ import ViewMore from "@/pages/common/components/NavigateToList";
 import { pageRoutes } from "@/apiRoutes";
 import { useNavigate } from "react-router-dom";
 
-export const UpCommingExhibition = () => {
+const UpCommingExhibition = () => {
   const navigate = useNavigate();
   const handleJoinClick = (id: number) => {
     navigate(`${pageRoutes.upCommingList}/${id}`);
@@ -75,3 +75,5 @@ export const UpCommingExhibition = () => {
     </TabsContent>
   );
 };
+
+export default UpCommingExhibition;

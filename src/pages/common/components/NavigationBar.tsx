@@ -3,23 +3,26 @@ import { X, LogOut } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useNavigate } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
+import useAuthStore from "@/store/useAuthStore";
 
 interface NavigationBarProps {
   toggleMenu: () => void;
 }
 
 const NavigationBar: React.FC<NavigationBarProps> = ({ toggleMenu }) => {
+  const { isLogin } = useAuthStore();
+
   const navigate = useNavigate();
   const handleToHome = () => {
-    navigate("/");
+    navigate(pageRoutes.main);
     toggleMenu();
   };
   const handleToUpCommingList = () => {
-    navigate("/upcomminglist");
+    navigate(pageRoutes.upCommingList);
     toggleMenu();
   };
   const handleToIntroduceList = () => {
-    navigate("/introducelist");
+    navigate(pageRoutes.introduceList);
     toggleMenu();
   };
   const handleToCuratorList = () => {
@@ -30,8 +33,12 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ toggleMenu }) => {
     navigate(pageRoutes.postList);
     toggleMenu();
   };
+  const handleToLogin = () => {
+    navigate(pageRoutes.login);
+  };
+
   return (
-    <nav className="fixed top-0 right-0 h-full w-2/5 bg-white shadow-md z-50">
+    <nav className="fixed top-0 right-0 h-full min-w-[300px] md:w-2/5 bg-white shadow-md z-50">
       <Button
         variant="ghost"
         size="icon"
@@ -85,14 +92,25 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ toggleMenu }) => {
           </li>
           <Separator className="my-4" />
           <li>
-            <Button
-              onClick={toggleMenu}
-              variant="ghost"
-              className="justify-start text-red-500 hover:text-red-600 hover:bg-red-100 text-lg"
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Log Out
-            </Button>
+            {!isLogin ? (
+              <Button
+                onClick={handleToLogin}
+                variant="ghost"
+                className="justify-start text-red-600 hover:text-red-700 hover:bg-red-50 text-lg"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Log In
+              </Button>
+            ) : (
+              <Button
+                onClick={handleToLogin}
+                variant="ghost"
+                className="justify-start text-red-500 hover:text-red-600 hover:bg-red-100 text-lg"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Log Out
+              </Button>
+            )}
           </li>
         </ul>
       </div>

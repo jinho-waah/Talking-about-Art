@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Search, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { UserAvatar } from "@/pages/common/components/UserAvatar";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -17,13 +17,13 @@ export const Header = () => {
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <h1 onClick={handleLogo} className="text-xl md:text-2xl font-bold">
+        <h1
+          onClick={handleLogo}
+          className="text-xl md:text-2xl font-bold cursor-pointer"
+        >
           Talking about Art
         </h1>
         <div className="flex items-center space-x-2 md:space-x-4">
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Search className="h-5 w-5" />
-          </Button>
           <UserAvatar />
           <Button variant="ghost" size="icon" onClick={toggleMenu}>
             {isMenuOpen ? (

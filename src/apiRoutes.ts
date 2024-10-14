@@ -1,7 +1,7 @@
 export const pageRoutes = {
   main: "/",
-  register: "/register",
   login: "/login",
+  register: "/register",
   upCommingList: "/upcomminglist",
   upCommingPost: "/upcomminglist/:id",
   introduceList: "/introducelist",
@@ -10,4 +10,7 @@ export const pageRoutes = {
   curatorPost: "/curatorlist/:id",
   postList: "/postlist",
   postPost: "/postlist/:id",
+  uploadExhibition: "/uploadexhibition",
+  uploadCurator: "/uploadcurator",
+  uploadPost: "/uploadpost",
 };

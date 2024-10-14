@@ -6,6 +6,11 @@ import ExhibitionPost from "./pages/post/ExhibitionPost";
 import { TAB_TITLES } from "./constants";
 import CuratorPost from "./pages/post/CuratorPost";
 import OrdinaryPost from "./pages/post/OrdinaryPost";
+import LoginPage from "./pages/login/LoginPage";
+import RegisterPage from "./pages/register/RegisterPage";
+import UploadExhibitionPage from "./pages/upload/UploadExhibitionPage";
+import UploadPost from "./pages/upload/UploadPost";
+import UploadCurator from "./pages/upload/UploadCurator";
 
 const CommonLayout = () => <Outlet />;
 
@@ -14,6 +19,8 @@ const router = createBrowserRouter([
     element: <CommonLayout />,
     children: [
       { path: pageRoutes.main, element: <Home /> },
+      { path: pageRoutes.login, element: <LoginPage /> },
+      { path: pageRoutes.register, element: <RegisterPage /> },
       {
         path: pageRoutes.upCommingList,
         element: <PostsList title={TAB_TITLES.UPCOMING_EXHIBITION} />,
@@ -45,6 +52,18 @@ const router = createBrowserRouter([
       {
         path: pageRoutes.postPost,
         element: <OrdinaryPost />,
+      },
+      {
+        path: pageRoutes.uploadExhibition,
+        element: <UploadExhibitionPage />,
+      },
+      {
+        path: pageRoutes.uploadPost,
+        element: <UploadPost />,
+      },
+      {
+        path: pageRoutes.uploadCurator,
+        element: <UploadCurator />,
       },
     ],
   },

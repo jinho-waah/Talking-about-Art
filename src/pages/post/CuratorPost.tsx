@@ -6,7 +6,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Star, ThumbsUp, MessageSquare, Share2, Flag } from "lucide-react";
+import { ThumbsUp, MessageSquare, Share2, Flag } from "lucide-react";
 import { Layout } from "../common/components/Layout";
 
 export default function CuratorPost() {
@@ -14,22 +14,9 @@ export default function CuratorPost() {
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">
+          <h1 className="text-3xl font-bold mb-5 ml-1">
             Impressionist Masterpieces
           </h1>
-          <div className="flex items-center space-x-2 mb-6">
-            <div className="flex">
-              {[1, 2, 3, 4].map((star) => (
-                <Star
-                  key={star}
-                  className="w-5 h-5 fill-primary text-primary"
-                />
-              ))}
-              <Star className="w-5 h-5 fill-muted text-primary" />
-            </div>
-            <span className="text-xl font-semibold">4.5</span>
-            <span className="text-muted-foreground">(42 reviews)</span>
-          </div>
 
           <Card className="mb-8">
             <CardHeader>
@@ -46,15 +33,6 @@ export default function CuratorPost() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex mb-4">
-                {[1, 2, 3, 4].map((star) => (
-                  <Star
-                    key={star}
-                    className="w-5 h-5 fill-primary text-primary"
-                  />
-                ))}
-                <Star className="w-5 h-5 fill-muted text-primary" />
-              </div>
               <h2 className="text-xl font-semibold mb-2">
                 A Journey Through Time and Color
               </h2>

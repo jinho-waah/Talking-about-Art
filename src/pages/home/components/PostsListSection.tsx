@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import MoreView from "@/pages/common/components/NavigateToList";
-import { Heart } from "lucide-react";
+import { ThumbsUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export const PostList = () => {
@@ -52,7 +52,7 @@ export const PostList = () => {
           {Posts.map((post, index) => (
             <li
               key={index}
-              className="flex items-center justify-between"
+              className="flex items-center justify-between cursor-pointer"
               onClick={() => handlePostClick(post.id)}
             >
               <div>
@@ -62,7 +62,7 @@ export const PostList = () => {
                 </p>
               </div>
               <div className="flex items-center">
-                <Heart className="w-4 h-4 mr-1 text-muted-foreground" />
+                <ThumbsUp className="mr-2 h-4 w-4" />
                 <span className="text-sm text-muted-foreground">
                   {post.likes}
                 </span>

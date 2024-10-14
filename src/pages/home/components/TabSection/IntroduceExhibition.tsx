@@ -43,7 +43,7 @@ const IntroduceExhibition = () => {
     },
   ];
   return (
-    <TabsContent value="discussions">
+    <TabsContent value="introduction">
       <Card>
         <CardHeader>
           <CardTitle>전시 소개</CardTitle>

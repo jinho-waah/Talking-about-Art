@@ -1,6 +1,6 @@
 import { Layout } from "@/pages/common/components/Layout"; // Layout 컴포넌트 사용
 import { PostList } from "@/pages/home/components/PostsListSection";
-import { TabSection } from "@/pages/home/components/TabSection";
+import TabSection from "@/pages/home/components/TabSection";
 import { EventSection } from "@/pages/home/components/EventSection";
 import { RecommendSection } from "@/pages/home/components/RecommendSection";
 import { HashTagsSection } from "@/pages/home/components/HashTagsSection";
