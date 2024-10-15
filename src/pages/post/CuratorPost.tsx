@@ -6,10 +6,14 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ThumbsUp, MessageSquare, Share2, Flag } from "lucide-react";
+import { ThumbsUp, MessageSquare, Share2 } from "lucide-react";
 import { Layout } from "../common/components/Layout";
+import { useEffect } from "react";
 
 export default function CuratorPost() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
@@ -59,22 +63,18 @@ export default function CuratorPost() {
               </p>
             </CardContent>
             <CardFooter>
-              <div className="flex space-x-4">
-                <Button variant="ghost" size="sm">
+              <div className="w-full flex justify-between">
+                <Button variant="ghost" size="sm" className="w-1/3">
                   <ThumbsUp className="mr-2 h-4 w-4" />
-                  Helpful (23)
+                  25 Like
                 </Button>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="w-1/3">
                   <MessageSquare className="mr-2 h-4 w-4" />
                   Comment
                 </Button>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="w-1/3">
                   <Share2 className="mr-2 h-4 w-4" />
                   Share
-                </Button>
-                <Button variant="ghost" size="sm">
-                  <Flag className="mr-2 h-4 w-4" />
-                  Report
                 </Button>
               </div>
             </CardFooter>

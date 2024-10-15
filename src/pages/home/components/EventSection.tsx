@@ -1,3 +1,4 @@
+import { pageRoutes } from "@/apiRoutes";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,21 +7,35 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CalendarDays } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export const EventSection = () => {
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const navigate = useNavigate();
+  const handleToEventPage = () => {
+    navigate(pageRoutes.eventPage);
+  };
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle>Event Calendar</CardTitle>
+        <CardTitle>이벤트</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-center h-48 bg-muted rounded-md">
-          <CalendarDays className="w-12 h-12 text-muted-foreground" />
-        </div>
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          className="rounded-md border"
+        />
       </CardContent>
       <CardFooter>
-        <Button variant="outline" className="w-full">
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={handleToEventPage}
+        >
           View Full Calendar
         </Button>
       </CardFooter>

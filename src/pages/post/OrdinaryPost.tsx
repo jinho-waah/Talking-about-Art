@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,25 +14,32 @@ import { Layout } from "../common/components/Layout";
 
 export default function OrdinaryPost() {
   const [replyText, setReplyText] = useState("");
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const tmpData = [
     {
       id: 1,
       author: "Alex Johnson",
       content:
-        "I believe AI-generated art will play a huge role in the future of digital art. It's already making waves and challenging our perceptions of creativity.",
+        "저는 AI가 만든 예술이 디지털 아트의 미래에서 큰 역할을 할 거라고 생각합니다. 이미 많은 파장을 일으키고 있으며 창의성에 대한 우리의 인식을 바꾸고 있습니다.",
     },
     {
       id: 2,
       author: "Sarah Lee",
       content:
-        "Virtual and augmented reality will revolutionize how we experience digital art. Imagine walking through a virtual gallery or having art integrated into our daily environments!",
+        "가상 현실과 증강 현실이 디지털 아트를 경험하는 방식을 완전히 혁신할 것입니다. 가상 갤러리를 걷거나 일상 속에 예술이 통합된 모습을 상상해보세요!",
     },
   ];
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">The future of digital art</h1>
+          <h1 className="text-3xl font-bold mb-6">디지털 아트의 미래</h1>
+
           <Card className="mb-8">
             <CardHeader>
               <div className="flex items-center space-x-4">
@@ -41,29 +48,26 @@ export default function OrdinaryPost() {
                 </Avatar>
                 <div>
                   <p className="font-medium">Emily Chen</p>
-                  <p className="text-sm text-muted-foreground">
-                    Posted 2 days ago
-                  </p>
+                  <p className="text-sm text-muted-foreground">2일 전 작성</p>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                As we dive deeper into the digital age, the art world is
-                experiencing a revolutionary transformation. Digital art is no
-                longer just a niche; it's becoming a dominant force in the
-                creative landscape. What do you think the future holds for
-                digital art? How will it change the way we create, consume, and
-                value art?
+                디지털 시대에 접어들면서 예술계는 혁신적인 변화를 겪고 있습니다.
+                디지털 아트는 더 이상 소수만의 영역이 아닙니다. 이제 창작
+                세계에서 주요한 힘으로 자리잡고 있습니다. 여러분은 디지털 아트의
+                미래가 어떻게 될 것이라고 생각하시나요? 우리가 예술을 창작하고,
+                소비하며, 평가하는 방식이 어떻게 변화할까요?
               </p>
-              <div className="flex space-x-4">
+              <div className="w-full flex justify-between">
                 <Button variant="ghost" size="sm">
                   <ThumbsUp className="mr-2 h-4 w-4" />
-                  45 Likes
+                  Like 45
                 </Button>
                 <Button variant="ghost" size="sm">
                   <MessageSquare className="mr-2 h-4 w-4" />
-                  23 Replies
+                  comment 23
                 </Button>
                 <Button variant="ghost" size="sm">
                   <Share2 className="mr-2 h-4 w-4" />
@@ -73,7 +77,7 @@ export default function OrdinaryPost() {
             </CardContent>
           </Card>
 
-          <h2 className="text-2xl font-semibold mb-4">Replies</h2>
+          <h2 className="text-2xl font-semibold mb-4">댓글</h2>
           {tmpData.map((reply, index) => (
             <Card key={index} className="mb-4">
               <CardHeader>
@@ -88,7 +92,7 @@ export default function OrdinaryPost() {
                   </Avatar>
                   <div>
                     <p className="font-medium">{reply.author}</p>
-                    <p className="text-sm text-muted-foreground">1 day ago</p>
+                    <p className="text-sm text-muted-foreground">1일 전</p>
                   </div>
                 </div>
               </CardHeader>
@@ -96,18 +100,18 @@ export default function OrdinaryPost() {
                 <p className="text-muted-foreground">{reply.content}</p>
               </CardContent>
               <CardFooter>
-                <div className="flex space-x-4">
+                <div className="w-full flex justify-between">
                   <Button variant="ghost" size="sm">
                     <ThumbsUp className="mr-2 h-4 w-4" />
                     Like
                   </Button>
                   <Button variant="ghost" size="sm">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    Reply
-                  </Button>
-                  <Button variant="ghost" size="sm">
                     <Flag className="mr-2 h-4 w-4" />
                     Report
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="mr-2 h-4 w-4" />
+                    Share
                   </Button>
                 </div>
               </CardFooter>
@@ -116,17 +120,17 @@ export default function OrdinaryPost() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Add a reply</CardTitle>
+              <CardTitle>댓글 작성</CardTitle>
             </CardHeader>
             <CardContent>
               <Textarea
-                placeholder="Type your reply here."
+                placeholder="댓글을 입력하세요."
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
               />
             </CardContent>
             <CardFooter>
-              <Button>Post Reply</Button>
+              <Button>댓글 등록</Button>
             </CardFooter>
           </Card>
         </div>

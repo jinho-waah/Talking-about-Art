@@ -6,6 +6,7 @@ import { ThumbsUp, MessageSquare, Share2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Layout } from "../common/components/Layout";
 import { pageRoutes } from "@/apiRoutes";
+import { useEffect } from "react";
 
 interface PostsListProps {
   title: string;
@@ -14,6 +15,10 @@ interface PostsListProps {
 export default function PostsList({ title }: PostsListProps) {
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const titleFromState = location.state?.title ?? title;
 

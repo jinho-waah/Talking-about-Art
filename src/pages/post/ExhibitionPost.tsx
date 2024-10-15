@@ -10,9 +10,13 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, MapPin, Clock, Users, Share2 } from "lucide-react";
-import { Layout } from "../common/components/Layout";
+import { Layout } from "@/pages/common/components/Layout";
+import { useEffect } from "react";
 
 export default function ExhibitionPost() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
