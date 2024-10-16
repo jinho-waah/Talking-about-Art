@@ -25,7 +25,7 @@ export default function EventPage() {
                 mode="single"
                 selected={date}
                 onSelect={setDate}
-                className="rounded-md border shadow"
+                className="border shadow"
               />
             </CardContent>
           </Card>

@@ -17,17 +17,18 @@ export const EventSection = () => {
   const handleToEventPage = () => {
     navigate(pageRoutes.eventPage);
   };
+
   return (
     <Card className="mb-6">
       <CardHeader>
         <CardTitle>이벤트</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex justify-center w-auto">
         <Calendar
           mode="single"
           selected={date}
           onSelect={setDate}
-          className="rounded-md border"
+          className="border shadow w-auto"
         />
       </CardContent>
       <CardFooter>

@@ -11,7 +11,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, Clock, CalendarDays } from "lucide-react";
 import { EVENT_TAB_TITLES } from "@/constants";
 
-// Event 타입 정의
 interface Event {
   id: number;
   title: string;
@@ -22,7 +21,6 @@ interface Event {
   organizer: string;
 }
 
-// EventBone 컴포넌트 수정
 interface EventBoneProps {
   events: Event[];
   status: string;
