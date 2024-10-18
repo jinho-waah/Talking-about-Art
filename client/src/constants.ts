@@ -2,7 +2,7 @@ export const TAB_TITLES = {
   UPCOMING_EXHIBITION: "전시 예정",
   INTRODUCTION: "전시 소개",
   CURATOR: "큐레이터",
-  POSTS: "게시물",
+  POSTS: "게시글",
 };
 
 export const EVENT_TAB_TITLES = {
@@ -11,5 +11,5 @@ export const EVENT_TAB_TITLES = {
   MY_EVENT: "내 이벤트",
 };
 
-export const domain = "http://localhost:5100/"
-// export const domain = "http://localhost:5100/";
+export const DOMAIN = "http://localhost:5100/"
+// export const DOMAIN = "http://localhost:5100/";

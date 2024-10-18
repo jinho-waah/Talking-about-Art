@@ -3,7 +3,7 @@ import { pageRoutes } from "@/apiRoutes";
 import { Home } from "@/pages/home";
 import PostsList from "@/pages/postsList";
 import { TAB_TITLES } from "@/constants";
-import ExhibitionPost from "@/pages/post/ExhibitionPost";
+import ExhibitionPost from "@/pages/exhibition/ExhibitionPost";
 import CuratorPost from "@/pages/post/CuratorPost";
 import OrdinaryPost from "@/pages/post/OrdinaryPost";
 import LoginPage from "@/pages/login/LoginPage";
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
       { path: pageRoutes.main, element: <Home /> },
       { path: pageRoutes.login, element: <LoginPage /> },
       { path: pageRoutes.register, element: <RegisterPage /> },
-      { path: pageRoutes.myPage, element: <MyPage /> },
+      { path: pageRoutes.myPageId, element: <MyPage /> },
       { path: pageRoutes.editMyPage, element: <EditMyPage /> },
       { path: pageRoutes.eventPage, element: <EventPage /> },
       {
@@ -36,11 +36,11 @@ const router = createBrowserRouter([
         element: <ExhibitionPost />,
       },
       {
-        path: pageRoutes.introduceList,
+        path: pageRoutes.currentList,
         element: <PostsList title={TAB_TITLES.INTRODUCTION} />,
       },
       {
-        path: pageRoutes.introducePost,
+        path: pageRoutes.currentPost,
         element: <ExhibitionPost />,
       },
       {

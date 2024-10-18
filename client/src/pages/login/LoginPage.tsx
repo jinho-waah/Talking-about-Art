@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { Layout } from "../common/components/Layout";
 import { pageRoutes } from "@/apiRoutes";
-import { domain } from "@/constants";
+import { DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 
 // 유저 타입 정의
@@ -68,7 +68,7 @@ export default function LoginPage() {
 
     try {
       // 로그인 API 요청
-      const response = await fetch(`${domain}api/login`, {
+      const response = await fetch(`${DOMAIN}api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

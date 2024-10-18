@@ -3,23 +3,63 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Layout } from "../common/components/Layout";
+import { useEffect, useState } from "react";
+import { DOMAIN } from "@/constants";
+import authStore from "@/store/authStore";
+import { Instagram, Twitter, AtSign } from "lucide-react";
+
+type ProfileData = {
+  avatarSrc: string;
+  nickname: string;
+  introduction: string;
+  website: string;
+  x: string;
+  instagram: string;
+  thread: string;
+};
 
 export default function ViewProfile() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const pageId = id ? parseInt(id, 10) : null;
 
-  const profileData = {
-    avatarSrc: "",
-    name: "홍길동",
-    bio: "저는 큐레이터로서 현대 미술에 대한 깊은 애정을 가지고 있습니다. 다양한 전시회를 기획하고 있으며, 최신 트렌드를 반영한 전시회를 큐레이팅합니다.",
-    website: "https://www.yourcuratorwebsite.com",
-    socialMedia: "@your_curator_handle",
-  };
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const { userId } = authStore();
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await fetch(`${DOMAIN}api/mypage/${pageId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setProfileData({
+            avatarSrc: data.profile_image,
+            nickname: data.nickname,
+            introduction: data.introduction,
+            website: data.website,
+            x: data.x,
+            instagram: data.instagram,
+            thread: data.thread,
+          });
+        } else {
+          console.error("프로필 데이터를 불러오는데 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("프로필 데이터를 불러오는 중 오류 발생:", error);
+      }
+    };
+
+    if (pageId) {
+      fetchProfileData();
+    }
+  }, [pageId]);
 
   const handleEditClick = () => {
     navigate("/editmypage");
@@ -30,50 +70,98 @@ export default function ViewProfile() {
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-2xl mx-auto">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">프로필 보기</CardTitle>
+            <CardTitle className="text-2xl font-bold">프로필</CardTitle>
             <CardDescription>프로필을 확인하세요</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex items-center space-x-4">
-              <Avatar className="w-24 h-24">
-                <AvatarImage src={profileData.avatarSrc} alt="프로필 이미지" />
-                <AvatarFallback>홍</AvatarFallback>
-              </Avatar>
-              <div>
-                <h2 className="text-xl font-semibold">{profileData.name}</h2>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold">자기소개</h3>
-              <p>{profileData.bio}</p>
-            </div>
-            <div className="space-y-2">
-              {profileData.website && (
-                <div>
-                  <h3 className="font-semibold">웹사이트</h3>
-                  <a
-                    href={profileData.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {profileData.website}
-                  </a>
+            {profileData ? (
+              <>
+                <div className="flex items-center space-x-4">
+                  <Avatar className="w-24 h-24">
+                    <AvatarImage
+                      src={profileData.avatarSrc}
+                      alt="프로필 이미지"
+                    />
+                    <AvatarFallback>{profileData.nickname[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h2 className="text-xl font-semibold">
+                      {profileData.nickname}
+                    </h2>
+                  </div>
                 </div>
-              )}
-            </div>
-            <div className="space-y-2">
-              {profileData.socialMedia && (
-                <div>
+                <div className="space-y-2">
+                  <h3 className="font-semibold">자기소개</h3>
+                  <p className="bg-muted rounded-lg p-4">
+                    {profileData.introduction}
+                  </p>
+                </div>
+                {profileData.website && (
+                  <div className="space-y-2">
+                    <h3 className="font-semibold">웹사이트</h3>
+                    <a
+                      href={profileData.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-gray-700"
+                    >
+                      {profileData.website}
+                    </a>
+                  </div>
+                )}
+                <div className="space-y-2">
                   <h3 className="font-semibold">소셜 미디어</h3>
-                  <p>{profileData.socialMedia}</p>
+                  <ul>
+                    {profileData.x && (
+                      <li className="flex items-center space-x-2">
+                        <Twitter className="w-5 h-5" />
+                        <a
+                          href={`https://x.com/${profileData.x}`}
+                          target="_blank"
+                          className="underline hover:no-underline"
+                        >
+                          @{profileData.x}
+                        </a>
+                      </li>
+                    )}
+                    {profileData.instagram && (
+                      <li className="flex items-center space-x-2">
+                        <Instagram className="w-5 h-5" />
+                        <a
+                          href={`https://www.instagram.com/${profileData.instagram}`}
+                          target="_blank"
+                          className="underline hover:no-underline"
+                        >
+                          {profileData.instagram}
+                        </a>
+                      </li>
+                    )}
+                    {profileData.thread && (
+                      <li className="flex items-center space-x-2">
+                        <AtSign className="w-5 h-5" />
+                        <a
+                          href={`https://www.threads.net/@${profileData.thread}`}
+                          target="_blank"
+                          className="underline hover:no-underline"
+                        >
+                          {profileData.thread}
+                        </a>
+                      </li>
+                    )}
+                  </ul>
                 </div>
-              )}
-            </div>
+              </>
+            ) : (
+              <p>프로필 정보를 불러오는 중입니다...</p>
+            )}
           </CardContent>
-          <div className="flex justify-end px-6 py-4">
-            <Button onClick={handleEditClick}>프로필 편집</Button>{" "}
-          </div>
+          {userId === pageId && (
+            <CardFooter>
+              <Button className="w-full" onClick={handleEditClick}>
+                프로필 편집
+              </Button>
+            </CardFooter>
+          )}
         </Card>
       </div>
     </Layout>

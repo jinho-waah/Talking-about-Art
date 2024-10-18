@@ -138,6 +138,7 @@ app.post("/api/logout", (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
+    path: "/",
   });
   res.status(200).json({ message: "로그아웃 성공" });
 });
@@ -149,6 +150,35 @@ app.get("/api/auth/status", authenticateToken, (req, res) => {
     role: req.user.role,
   });
 });
+
+// 유저 정보 갖고오기
+app.get("/api/mypage/:id", (req, res) => {
+  const userId = req.params.id;
+
+  const query = `
+    SELECT role, nickname, profile_image, created_at, introduction, 
+           website, x, instagram, thread 
+    FROM artlove1_art_lover.users 
+    WHERE id = ?`;
+
+  connection.query(query, [userId], (err, result) => {
+    if (err) {
+      console.error("Error fetching user data:", err);
+      return res.status(500).json({
+        message: "서버 에러로 인해 사용자 정보를 불러올 수 없습니다.",
+      });
+    }
+
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "해당 사용자를 찾을 수 없습니다." });
+    }
+
+    res.status(200).json(result[0]);
+  });
+});
+
 
 app.use(express.static(path.join(__dirname, "../client")));
 

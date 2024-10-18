@@ -14,12 +14,10 @@ import ViewMore from "@/pages/common/components/NavigateToList";
 import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-// 토론 주제 데이터 분리
-
-const IntroduceExhibition = () => {
+const CurrentExhibition = () => {
   const navigate = useNavigate();
   const handleJoinClick = (id: number) => {
-    navigate(`${pageRoutes.introduceList}/${id}`);
+    navigate(`${pageRoutes.currentList}/${id}`);
   };
 
   const discussionTopics = [
@@ -43,7 +41,7 @@ const IntroduceExhibition = () => {
     },
   ];
   return (
-    <TabsContent value="introduction">
+    <TabsContent value="current">
       <Card>
         <CardHeader>
           <CardTitle>전시 소개</CardTitle>
@@ -73,10 +71,10 @@ const IntroduceExhibition = () => {
             ))}
           </ul>
         </CardContent>
-        <ViewMore path={pageRoutes.introduceList} />
+        <ViewMore path={pageRoutes.currentList} />
       </Card>
     </TabsContent>
   );
 };
 
-export default IntroduceExhibition;
+export default CurrentExhibition;

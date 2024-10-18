@@ -10,16 +10,17 @@ interface NavigationBarProps {
 }
 
 const NavigationBar: React.FC<NavigationBarProps> = ({ toggleMenu }) => {
-  const { isLogin } = authStore();
+  const { isLogin, userId } = authStore();
   const { setLogout } = authStore().actions;
 
   const navigate = useNavigate();
+
   const handleToHome = () => {
     navigate(pageRoutes.main);
     toggleMenu();
   };
   const handleToMyPage = () => {
-    navigate(pageRoutes.myPage);
+    navigate(`${pageRoutes.myPage}/${userId}`);
     toggleMenu();
   };
   const handleToUpCommingList = () => {
@@ -27,7 +28,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ toggleMenu }) => {
     toggleMenu();
   };
   const handleToIntroduceList = () => {
-    navigate(pageRoutes.introduceList);
+    navigate(pageRoutes.currentList);
     toggleMenu();
   };
   const handleToCuratorList = () => {
@@ -42,6 +43,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ toggleMenu }) => {
     navigate(pageRoutes.login);
   };
   const handleLogout = () => {
+    toggleMenu();
     setLogout();
   };
 
@@ -73,20 +75,20 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ toggleMenu }) => {
           </li>
           <li>
             <Button
-              onClick={handleToUpCommingList}
-              variant="ghost"
-              className="text-xl"
-            >
-              전시 예정
-            </Button>
-          </li>
-          <li>
-            <Button
               onClick={handleToIntroduceList}
               variant="ghost"
               className="text-xl"
             >
               전시 소개
+            </Button>
+          </li>
+          <li>
+            <Button
+              onClick={handleToUpCommingList}
+              variant="ghost"
+              className="text-xl"
+            >
+              전시 예정
             </Button>
           </li>
           <li>

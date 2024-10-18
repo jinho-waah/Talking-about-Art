@@ -25,9 +25,9 @@ export default function PostsList({ title }: PostsListProps) {
   const typeOfPost = (() => {
     switch (titleFromState) {
       case "전시 예정":
-        return "upcoming";
+        return "upcomingExhibition";
       case "전시 소개":
-        return "introduction";
+        return "currentExhibition";
       case "큐레이터":
         return "curator";
       case "게시글":
@@ -39,17 +39,40 @@ export default function PostsList({ title }: PostsListProps) {
 
   const handlePostClick = (id: number) => {
     switch (typeOfPost) {
-      case "upcoming":
+      case "upcomingExhibition":
         navigate(`${pageRoutes.upCommingPost.replace(":id", String(id))}`);
         break;
-      case "introduction":
-        navigate(`${pageRoutes.introducePost.replace(":id", String(id))}`);
+      case "currentExhibition":
+        navigate(`${pageRoutes.currentPost.replace(":id", String(id))}`);
         break;
       case "curator":
         navigate(`${pageRoutes.curatorPost.replace(":id", String(id))}`);
         break;
-      default:
+      case "ordinary":
         navigate(`${pageRoutes.postPost.replace(":id", String(id))}`);
+        break;
+      default:
+        console.log("error");
+        break;
+    }
+  };
+
+  const handleAddPost = () => {
+    switch (typeOfPost) {
+      case "upcomingExhibition":
+        navigate(`${pageRoutes.upCommingPost}`);
+        break;
+      case "currentExhibition":
+        navigate(`${pageRoutes.upCommingPost}`);
+        break;
+      case "curator":
+        navigate(`${pageRoutes.upCommingPost}`);
+        break;
+      case "ordinary":
+        navigate(`${pageRoutes.upCommingPost}`);
+        break;
+      default:
+        console.log("error");
         break;
     }
   };
@@ -94,7 +117,16 @@ export default function PostsList({ title }: PostsListProps) {
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">{titleFromState}</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">{titleFromState}</h1>
+            <Button onClick={handleAddPost}>
+              {(typeOfPost === "upcomingExhibition" ||
+                typeOfPost === "currentExhibition") &&
+                "전시 추가"}
+              {typeOfPost === "curator" && "글 추가"}
+              {typeOfPost === "ordinary" && "게시글 추가"}
+            </Button>
+          </div>
 
           <div className="mb-6">
             <Input placeholder="Search posts..." />

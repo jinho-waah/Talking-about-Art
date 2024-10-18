@@ -31,7 +31,6 @@ export default function EditMyPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 큐레이터 프로필 생성 로직
   };
 
   return (
@@ -86,17 +85,25 @@ export default function EditMyPage() {
                 <Input
                   id="website"
                   type="url"
-                  placeholder="https://www.yourcuratorwebsite.com"
+                  placeholder="https://www.yourwebsite.com"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="social-media">소셜 미디어 (선택사항)</Label>
-                <Input id="social-media" placeholder="@your_curator_handle" />
+                <Label htmlFor="social-media">X (선택사항)</Label>
+                <Input id="social-media" placeholder="@your_x_id" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="social-media">Instagram (선택사항)</Label>
+                <Input id="social-media" placeholder="@your_instagram_id" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="social-media">Thread (선택사항)</Label>
+                <Input id="social-media" placeholder="@your_thread_id" />
               </div>
             </CardContent>
             <CardFooter>
               <Button type="submit" className="w-full">
-                큐레이터 프로필 생성
+                수정 완료
               </Button>
             </CardFooter>
           </form>
