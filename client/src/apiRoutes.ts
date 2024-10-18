@@ -14,7 +14,7 @@ export const pageRoutes = {
   curatorPost: "/curatorlist/:id",
   postList: "/postlist",
   postPost: "/postlist/:id",
-  uploadExhibition: "/uploadexhibition",
-  uploadCurator: "/uploadcurator",
-  uploadPost: "/uploadpost",
+  addExhibition: "/addexhibition",
+  addCurator: "/addcurator",
+  addPost: "/addpost",
 };

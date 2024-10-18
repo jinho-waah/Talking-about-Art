@@ -4,16 +4,16 @@ import { Home } from "@/pages/home";
 import PostsList from "@/pages/postsList";
 import { TAB_TITLES } from "@/constants";
 import ExhibitionPost from "@/pages/exhibition/ExhibitionPost";
-import CuratorPost from "@/pages/post/CuratorPost";
-import OrdinaryPost from "@/pages/post/OrdinaryPost";
+import CuratorPost from "@/pages/curator/CuratorPost";
+import OrdinaryPost from "@/pages/ordinary/OrdinaryPost";
 import LoginPage from "@/pages/login/LoginPage";
 import RegisterPage from "@/pages/register/RegisterPage";
-import UploadExhibitionPage from "@/pages/upload/UploadExhibitionPage";
-import UploadPost from "@/pages/upload/UploadPost";
-import UploadCurator from "@/pages/upload/UploadCurator";
 import MyPage from "@/pages/ myPage";
 import EditMyPage from "@/pages/ myPage/EditMyPage";
 import EventPage from "@/pages/event";
+import AddExhibitionPost from "./pages/exhibition/AddExhibitionPost";
+import AddCuratorPost from "./pages/curator/AddCuratorPost";
+import AddOrdinaryPost from "./pages/ordinary/AddOrdinaryPost";
 
 const CommonLayout = () => <Outlet />;
 
@@ -60,16 +60,16 @@ const router = createBrowserRouter([
         element: <OrdinaryPost />,
       },
       {
-        path: pageRoutes.uploadExhibition,
-        element: <UploadExhibitionPage />,
+        path: pageRoutes.addExhibition,
+        element: <AddExhibitionPost />,
       },
       {
-        path: pageRoutes.uploadPost,
-        element: <UploadPost />,
+        path: pageRoutes.addCurator,
+        element: <AddCuratorPost />,
       },
       {
-        path: pageRoutes.uploadCurator,
-        element: <UploadCurator />,
+        path: pageRoutes.addPost,
+        element: <AddOrdinaryPost />,
       },
     ],
   },

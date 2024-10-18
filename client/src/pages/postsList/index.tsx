@@ -60,16 +60,16 @@ export default function PostsList({ title }: PostsListProps) {
   const handleAddPost = () => {
     switch (typeOfPost) {
       case "upcomingExhibition":
-        navigate(`${pageRoutes.upCommingPost}`);
+        navigate(`${pageRoutes.addExhibition}`);
         break;
       case "currentExhibition":
-        navigate(`${pageRoutes.upCommingPost}`);
+        navigate(`${pageRoutes.addExhibition}`);
         break;
       case "curator":
-        navigate(`${pageRoutes.upCommingPost}`);
+        navigate(`${pageRoutes.addCurator}`);
         break;
       case "ordinary":
-        navigate(`${pageRoutes.upCommingPost}`);
+        navigate(`${pageRoutes.addPost}`);
         break;
       default:
         console.log("error");
