@@ -6,13 +6,20 @@ import { DOMAIN } from "@/constants";
 type AuthStoreState = {
   isLogin: boolean;
   userId: number | null;
+  userName: string | null;
   role: "admin" | "exhibition" | "curator" | "general" | null;
   isToken: boolean; // Token 상태 추가
+  imgUrl: string | null;
 };
 
 type AuthStoreActions = {
   actions: {
-    setLogin: (userId: number, role: AuthStoreState["role"]) => void;
+    setLogin: (
+      userId: number,
+      role: AuthStoreState["role"],
+      userName: string,
+      imgUrl: string
+    ) => void;
     setLogout: () => void;
   };
 };
@@ -40,24 +47,35 @@ const authStore = create<AuthStore>()(
     (set) => ({
       isLogin: false,
       userId: null,
+      userName: null,
       role: null,
       isToken: false, // 초기값 false
+      imgUrl: null,
 
       actions: {
-        setLogin: (userId: number, role: AuthStoreState["role"]) =>
+        setLogin: (
+          userId: number,
+          role: AuthStoreState["role"],
+          userName: string,
+          imgUrl: string
+        ) =>
           set(() => ({
             isLogin: true,
             userId,
+            userName,
             role,
             isToken: true, // 로그인 성공 시 토큰 존재로 설정
+            imgUrl,
           })),
         setLogout: () => {
           deleteCookie();
           set(() => ({
             isLogin: false,
             userId: null,
+            userName: null,
             role: null,
             isToken: false, // 로그아웃 시 토큰 상태 제거
+            imgUrl: null,
           }));
         },
       },

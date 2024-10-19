@@ -12,8 +12,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Layout } from "../common/components/Layout";
 import { useEffect, useState } from "react";
 import { DOMAIN } from "@/constants";
-import authStore from "@/store/authStore";
 import { Instagram, Twitter, AtSign } from "lucide-react";
+import authStore from "@/store/authStore";
 
 type ProfileData = {
   avatarSrc: string;
@@ -34,6 +34,12 @@ export default function ViewProfile() {
   const { userId } = authStore();
 
   useEffect(() => {
+    if (!userId) {
+      alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+      navigate("/login"); // 로그인 페이지로 리다이렉트
+      return;
+    }
+
     const fetchProfileData = async () => {
       try {
         const response = await fetch(`${DOMAIN}api/mypage/${pageId}`);
@@ -59,7 +65,7 @@ export default function ViewProfile() {
     if (pageId) {
       fetchProfileData();
     }
-  }, [pageId]);
+  }, [pageId, userId, navigate]);
 
   const handleEditClick = () => {
     navigate("/editmypage");
@@ -67,7 +73,7 @@ export default function ViewProfile() {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-1 py-8">
         <Card className="max-w-2xl mx-auto">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">프로필</CardTitle>
@@ -100,7 +106,11 @@ export default function ViewProfile() {
                   <div className="space-y-2">
                     <h3 className="font-semibold">웹사이트</h3>
                     <a
-                      href={profileData.website}
+                      href={
+                        /^https?:\/\//.test(profileData.website)
+                          ? profileData.website
+                          : `http://${profileData.website}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline hover:text-gray-700"

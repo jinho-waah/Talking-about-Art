@@ -9,6 +9,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const mysql = require("mysql");
+const multer = require("multer");
 
 const corsOptions = {
   origin: "http://localhost:5173",
@@ -33,7 +34,6 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
-// JWT 인증 미들웨어
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.authToken;
   if (!token) {
@@ -45,14 +45,33 @@ const authenticateToken = (req, res, next) => {
       return res.status(403).json({ message: "유효하지 않은 토큰입니다." });
     }
 
-    req.user = user;
-    next();
+    // DB에서 유저 정보 가져오기
+    const query = `SELECT profile_image FROM artlove1_art_lover.users WHERE id = ?`;
+    connection.query(query, [user.id], (err, results) => {
+      if (err) {
+        console.error("Error fetching user data:", err);
+        return res.status(500).json({
+          message: "서버 에러로 인해 사용자 정보를 불러올 수 없습니다.",
+        });
+      }
+
+      // 유저 정보가 없을 경우 에러 처리
+      if (results.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "해당 사용자를 찾을 수 없습니다." });
+      }
+
+      // 토큰에 있던 유저 정보와 함께 프로필 이미지 URL을 추가
+      req.user = {
+        ...user,
+        imgUrl: results[0].profile_image,
+      };
+
+      next();
+    });
   });
 };
-
-app.get("/", (req, res) => {
-  res.send("Hello, Express!");
-});
 
 // 회원가입
 app.post("/api/register", async (req, res) => {
@@ -107,7 +126,12 @@ app.post("/api/login", (req, res) => {
       }
 
       const token = jwt.sign(
-        { id: user.id, role: user.role },
+        {
+          id: user.id,
+          role: user.role,
+          userName: user.nickname,
+          imgUrl: user.profile_image,
+        },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
@@ -115,14 +139,17 @@ app.post("/api/login", (req, res) => {
       res.cookie("authToken", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "None",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
-
       res.header("Access-Control-Allow-Credentials", "true");
-      return res
-        .status(200)
-        .json({ message: "로그인 성공", userId: user.id, role: user.role });
+      return res.status(200).json({
+        message: "로그인 성공",
+        userId: user.id,
+        role: user.role,
+        userName: user.nickname,
+        imgUrl: user.profile_image,
+      });
     } catch (error) {
       console.error("비밀번호 비교 중 오류 발생:", error);
       return res
@@ -137,7 +164,7 @@ app.post("/api/logout", (req, res) => {
   res.clearCookie("authToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "None",
     path: "/",
   });
   res.status(200).json({ message: "로그아웃 성공" });
@@ -148,6 +175,8 @@ app.get("/api/auth/status", authenticateToken, (req, res) => {
   res.status(200).json({
     id: req.user.id,
     role: req.user.role,
+    userName: req.user.userName,
+    imgUrl: req.user.imgUrl,
   });
 });
 
@@ -178,6 +207,95 @@ app.get("/api/mypage/:id", (req, res) => {
     res.status(200).json(result[0]);
   });
 });
+
+// 유저 정보 업데이트 (마이페이지 수정)
+app.put("/api/mypage/:id", authenticateToken, (req, res) => {
+  const userId = req.params.id;
+  const {
+    nickname,
+    introduction,
+    website,
+    x,
+    instagram,
+    thread,
+    profile_image,
+  } = req.body;
+
+  // 사용자 인증된 ID와 요청 ID가 다른 경우 권한 없음 응답
+  if (req.user.id !== parseInt(userId)) {
+    return res.status(403).json({ message: "권한이 없습니다." });
+  }
+
+  const query = `
+    UPDATE artlove1_art_lover.users
+    SET nickname = ?, introduction = ?, website = ?, x = ?, instagram = ?, thread = ?, profile_image = ?
+    WHERE id = ?`;
+
+  connection.query(
+    query,
+    [
+      nickname,
+      introduction,
+      website,
+      x,
+      instagram,
+      thread,
+      profile_image,
+      userId,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating user data:", err);
+        return res.status(500).json({
+          message: "서버 에러로 인해 사용자 정보를 업데이트할 수 없습니다.",
+        });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+      }
+
+      res
+        .status(200)
+        .json({ message: "프로필이 성공적으로 업데이트되었습니다." });
+    }
+  );
+});
+
+// multer 설정
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../client/public/profileImg"));
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${req.user.id}-${Date.now()}${ext}`);
+  },
+});
+
+const upload = multer({ storage });
+
+// 프로필 이미지 업로드
+app.post(
+  "/api/upload/avatar/:id",
+  authenticateToken,
+  upload.single("avatar"),
+  (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "이미지 업로드 실패" });
+    }
+    const filePath = `/profileImg/${req.file.filename}`;
+    console.log(filePath);
+    res.status(200).json({ success: true, filePath });
+  }
+);
+
+// Express에 정적 파일 제공 추가
+app.use(
+  "/profileImg",
+  express.static(path.join(__dirname, "../client/public/profileImg"))
+);
+
 
 
 app.use(express.static(path.join(__dirname, "../client")));

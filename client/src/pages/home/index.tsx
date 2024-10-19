@@ -8,7 +8,7 @@ import { HashTagsSection } from "@/pages/home/components/HashTagsSection";
 export const Home = () => {
   return (
     <Layout>
-      <div className="flex-1 container mx-auto px-4 py-6 md:py-8 flex flex-col md:flex-row">
+      <div className="flex-1 container mx-auto px-1 py-6 md:py-8 flex flex-col md:flex-row">
         <div className="flex-1 md:mr-8 mb-6 md:mb-0">
           <TabSection />
           <PostList />

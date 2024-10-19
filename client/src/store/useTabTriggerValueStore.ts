@@ -9,7 +9,7 @@ interface TabStore {
 const useTabTriggerValueStore = create<TabStore>()(
   persist(
     (set) => ({
-      tabTriggerValue: "introduction",
+      tabTriggerValue: "current",
       setTabTriggerValue: (value: string) =>
         set(() => ({ tabTriggerValue: value })),
     }),

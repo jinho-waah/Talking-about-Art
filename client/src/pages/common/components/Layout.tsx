@@ -23,10 +23,9 @@ export const Layout: React.FC<LayoutProps> = ({
         method: "GET",
         credentials: "include", // 쿠키 포함
       });
-
       if (response.ok) {
         const data = await response.json();
-        setLogin(data.id, data.role); // 로그인 상태 유지
+        setLogin(data.id, data.role, data.userName, data.imgUrl); // 로그인 상태 유지
       } else if (response.status === 401) {
         setLogout(); // 로그아웃 처리
       } else if (response.status === 403) {

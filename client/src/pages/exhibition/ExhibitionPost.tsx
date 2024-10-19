@@ -19,7 +19,7 @@ export default function ExhibitionPost() {
   }, []);
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-1 py-8">
         <div className="grid gap-6 md:grid-cols-3">
           <div className="md:col-span-2">
             <h1 className="text-3xl font-bold mb-4">Modern Art Showcase</h1>

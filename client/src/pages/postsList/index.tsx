@@ -115,7 +115,7 @@ export default function PostsList({ title }: PostsListProps) {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-1 py-8">
         <div className="max-w-3xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold">{titleFromState}</h1>

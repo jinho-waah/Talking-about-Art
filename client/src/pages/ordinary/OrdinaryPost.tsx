@@ -36,7 +36,7 @@ export default function OrdinaryPost() {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-1 py-8">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-6">디지털 아트의 미래</h1>
 
@@ -63,15 +63,15 @@ export default function OrdinaryPost() {
               <div className="w-full flex justify-between">
                 <Button variant="ghost" size="sm">
                   <ThumbsUp className="mr-2 h-4 w-4" />
-                  Like 45
+                  좋아요 45
                 </Button>
                 <Button variant="ghost" size="sm">
                   <MessageSquare className="mr-2 h-4 w-4" />
-                  comment 23
+                  댓글 23
                 </Button>
                 <Button variant="ghost" size="sm">
                   <Share2 className="mr-2 h-4 w-4" />
-                  Share
+                  공유
                 </Button>
               </div>
             </CardContent>
@@ -103,15 +103,15 @@ export default function OrdinaryPost() {
                 <div className="w-full flex justify-between">
                   <Button variant="ghost" size="sm">
                     <ThumbsUp className="mr-2 h-4 w-4" />
-                    Like
+                    좋아요 32
                   </Button>
                   <Button variant="ghost" size="sm">
                     <Flag className="mr-2 h-4 w-4" />
-                    Report
+                    신고
                   </Button>
                   <Button variant="ghost" size="sm">
                     <Share2 className="mr-2 h-4 w-4" />
-                    Share
+                    공유
                   </Button>
                 </div>
               </CardFooter>
