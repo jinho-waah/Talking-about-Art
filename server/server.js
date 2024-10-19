@@ -185,7 +185,7 @@ app.get("/api/mypage/:id", (req, res) => {
   const userId = req.params.id;
 
   const query = `
-    SELECT role, nickname, profile_image, created_at, introduction, 
+    SELECT role, nickname, profile_image, created_at, bio, 
            website, x, instagram, thread 
     FROM artlove1_art_lover.users 
     WHERE id = ?`;
@@ -211,15 +211,8 @@ app.get("/api/mypage/:id", (req, res) => {
 // 유저 정보 업데이트 (마이페이지 수정)
 app.put("/api/mypage/:id", authenticateToken, (req, res) => {
   const userId = req.params.id;
-  const {
-    nickname,
-    introduction,
-    website,
-    x,
-    instagram,
-    thread,
-    profile_image,
-  } = req.body;
+  const { nickname, bio, website, x, instagram, thread, profile_image } =
+    req.body;
 
   // 사용자 인증된 ID와 요청 ID가 다른 경우 권한 없음 응답
   if (req.user.id !== parseInt(userId)) {
@@ -228,21 +221,12 @@ app.put("/api/mypage/:id", authenticateToken, (req, res) => {
 
   const query = `
     UPDATE artlove1_art_lover.users
-    SET nickname = ?, introduction = ?, website = ?, x = ?, instagram = ?, thread = ?, profile_image = ?
+    SET nickname = ?, bio = ?, website = ?, x = ?, instagram = ?, thread = ?, profile_image = ?
     WHERE id = ?`;
 
   connection.query(
     query,
-    [
-      nickname,
-      introduction,
-      website,
-      x,
-      instagram,
-      thread,
-      profile_image,
-      userId,
-    ],
+    [nickname, bio, website, x, instagram, thread, profile_image, userId],
     (err, result) => {
       if (err) {
         console.error("Error updating user data:", err);
@@ -285,7 +269,6 @@ app.post(
       return res.status(400).json({ message: "이미지 업로드 실패" });
     }
     const filePath = `/profileImg/${req.file.filename}`;
-    console.log(filePath);
     res.status(200).json({ success: true, filePath });
   }
 );
@@ -295,7 +278,6 @@ app.use(
   "/profileImg",
   express.static(path.join(__dirname, "../client/public/profileImg"))
 );
-
 
 
 app.use(express.static(path.join(__dirname, "../client")));

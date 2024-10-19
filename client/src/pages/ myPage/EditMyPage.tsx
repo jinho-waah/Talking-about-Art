@@ -52,7 +52,7 @@ export default function EditMyPage() {
           setProfileData({
             avatarSrc: data.profile_image || "",
             name: data.nickname || "",
-            bio: data.introduction || "",
+            bio: data.bio || "",
             website: data.website || "",
             x: data.x || "",
             instagram: data.instagram || "",
@@ -107,9 +107,7 @@ export default function EditMyPage() {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log("Image uploaded successfully");
-        console.log(data.filePath);
-        return data.filePath; // 이미지 파일 경로 반환
+        return data.filePath;
       } else {
         console.error("Image upload failed");
         return null;
@@ -143,7 +141,7 @@ export default function EditMyPage() {
         credentials: "include",
         body: JSON.stringify({
           nickname: profileData.name,
-          introduction: profileData.bio,
+          bio: profileData.bio,
           website: profileData.website,
           x: profileData.x,
           instagram: profileData.instagram,

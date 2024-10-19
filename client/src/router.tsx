@@ -14,6 +14,7 @@ import EventPage from "@/pages/event";
 import AddExhibitionPost from "./pages/exhibition/AddExhibitionPost";
 import AddCuratorPost from "./pages/curator/AddCuratorPost";
 import AddOrdinaryPost from "./pages/ordinary/AddOrdinaryPost";
+import PrivateRoute from "./pages/common/components/PrivateRoute";
 
 const CommonLayout = () => <Outlet />;
 
@@ -61,15 +62,29 @@ const router = createBrowserRouter([
       },
       {
         path: pageRoutes.addExhibition,
-        element: <AddExhibitionPost />,
+        element: (
+          <PrivateRoute allowedRoles={["admin", "exhibition"]}>
+            <AddExhibitionPost />
+          </PrivateRoute>
+        ),
       },
       {
         path: pageRoutes.addCurator,
-        element: <AddCuratorPost />,
+        element: (
+          <PrivateRoute allowedRoles={["admin", "curator"]}>
+            <AddCuratorPost />
+          </PrivateRoute>
+        ),
       },
       {
         path: pageRoutes.addPost,
-        element: <AddOrdinaryPost />,
+        element: (
+          <PrivateRoute
+            allowedRoles={["admin", "exhibition", "curator", "ordinary"]}
+          >
+            <AddOrdinaryPost />
+          </PrivateRoute>
+        ),
       },
     ],
   },

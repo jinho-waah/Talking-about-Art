@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Layout } from "../common/components/Layout";
 import { pageRoutes } from "@/apiRoutes";
 import { useEffect } from "react";
+import authStore from "@/store/authStore";
 
 interface PostsListProps {
   title: string;
@@ -15,6 +16,7 @@ interface PostsListProps {
 export default function PostsList({ title }: PostsListProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { role } = authStore();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -119,13 +121,18 @@ export default function PostsList({ title }: PostsListProps) {
         <div className="max-w-3xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold">{titleFromState}</h1>
-            <Button onClick={handleAddPost}>
-              {(typeOfPost === "upcomingExhibition" ||
-                typeOfPost === "currentExhibition") &&
-                "전시 추가"}
-              {typeOfPost === "curator" && "글 추가"}
-              {typeOfPost === "ordinary" && "게시글 추가"}
-            </Button>
+
+            {(typeOfPost === "upcomingExhibition" ||
+              typeOfPost === "currentExhibition") &&
+              role === "exhibition" && (
+                <Button onClick={handleAddPost}>전시 추가 </Button>
+              )}
+            {typeOfPost === "curator" && role === "curator" && (
+              <Button onClick={handleAddPost}>글 추가 </Button>
+            )}
+            {typeOfPost === "ordinary" && (
+              <Button onClick={handleAddPost}> 게시글 추가 </Button>
+            )}
           </div>
 
           <div className="mb-6">

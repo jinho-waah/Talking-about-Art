@@ -18,7 +18,7 @@ import authStore from "@/store/authStore";
 type ProfileData = {
   avatarSrc: string;
   nickname: string;
-  introduction: string;
+  bio: string;
   website: string;
   x: string;
   instagram: string;
@@ -48,7 +48,7 @@ export default function ViewProfile() {
           setProfileData({
             avatarSrc: data.profile_image,
             nickname: data.nickname,
-            introduction: data.introduction,
+            bio: data.bio,
             website: data.website,
             x: data.x,
             instagram: data.instagram,
@@ -98,9 +98,7 @@ export default function ViewProfile() {
                 </div>
                 <div className="space-y-2">
                   <h3 className="font-semibold">자기소개</h3>
-                  <p className="bg-muted rounded-lg p-4">
-                    {profileData.introduction}
-                  </p>
+                  <p className="bg-muted rounded-lg p-4">{profileData.bio}</p>
                 </div>
                 {profileData.website && (
                   <div className="space-y-2">
