@@ -10,6 +10,8 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const mysql = require("mysql");
 const multer = require("multer");
+const fs = require("fs");
+const sharp = require("sharp");
 
 const corsOptions = {
   origin: "http://localhost:5173",
@@ -264,12 +266,73 @@ app.post(
   "/api/upload/avatar/:id",
   authenticateToken,
   upload.single("avatar"),
-  (req, res) => {
+  async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "이미지 업로드 실패" });
     }
-    const filePath = `/profileImg/${req.file.filename}`;
-    res.status(200).json({ success: true, filePath });
+
+    const userId = req.params.id;
+
+    // 이전 프로필 이미지 파일 삭제
+    const query = `SELECT profile_image FROM users WHERE id = ?`;
+    connection.query(query, [userId], async (err, results) => {
+      if (err) {
+        console.error("Error fetching user profile image:", err);
+        return res
+          .status(500)
+          .json({ message: "서버 에러로 인해 이미지 삭제에 실패했습니다." });
+      }
+
+      if (results.length > 0) {
+        const oldImagePath = results[0].profile_image;
+        if (oldImagePath) {
+          const fullPath = path.join(
+            __dirname,
+            "../client/public",
+            oldImagePath
+          );
+          fs.unlink(fullPath, (err) => {
+            if (err) {
+              console.error("이전 이미지 삭제 중 오류 발생:", err);
+            }
+          });
+        }
+      }
+
+      // 새로운 이미지 압축 및 저장 경로
+      const filePath = `/profileImg/${req.user.id}-${Date.now()}.jpeg`; // 압축된 파일은 JPEG로 저장
+
+      try {
+        // Sharp를 사용하여 이미지 압축 및 최적화
+        await sharp(req.file.path)
+          .resize(500, 500, {
+            fit: sharp.fit.cover,
+          }) // 500x500으로 리사이즈
+          .jpeg({ quality: 70 }) // JPEG로 변환하고 품질 70%로 설정
+          .toFile(path.join(__dirname, "../client/public", filePath)); // 압축된 파일 저장
+
+        // 원래 파일 삭제
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error("원본 파일 삭제 중 오류:", err);
+        });
+
+        // 데이터베이스에 새로운 파일 경로 저장
+        const updateQuery = `UPDATE users SET profile_image = ? WHERE id = ?`;
+        connection.query(updateQuery, [filePath, userId], (updateErr) => {
+          if (updateErr) {
+            console.error("Error updating profile image:", updateErr);
+            return res
+              .status(500)
+              .json({ message: "이미지 저장에 실패했습니다." });
+          }
+
+          res.status(200).json({ success: true, filePath });
+        });
+      } catch (compressionError) {
+        console.error("이미지 압축 중 오류 발생:", compressionError);
+        return res.status(500).json({ message: "이미지 압축 실패" });
+      }
+    });
   }
 );
 
@@ -278,7 +341,6 @@ app.use(
   "/profileImg",
   express.static(path.join(__dirname, "../client/public/profileImg"))
 );
-
 
 app.use(express.static(path.join(__dirname, "../client")));
 

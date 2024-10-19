@@ -15,8 +15,13 @@ import AddExhibitionPost from "./pages/exhibition/AddExhibitionPost";
 import AddCuratorPost from "./pages/curator/AddCuratorPost";
 import AddOrdinaryPost from "./pages/ordinary/AddOrdinaryPost";
 import PrivateRoute from "./pages/common/components/PrivateRoute";
+import { Layout } from "./pages/common/components/Layout";
 
-const CommonLayout = () => <Outlet />;
+const CommonLayout = () => (
+  <Layout>
+    <Outlet />
+  </Layout>
+);
 
 const router = createBrowserRouter([
   {

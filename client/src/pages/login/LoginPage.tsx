@@ -12,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { Layout } from "../common/components/Layout";
 import { pageRoutes } from "@/apiRoutes";
 import { DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
@@ -93,80 +92,78 @@ export default function LoginPage() {
   };
 
   return (
-    <Layout>
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">로그인</CardTitle>
-            <CardDescription>
-              이메일과 비밀번호를 입력하여 로그인하세요.
-            </CardDescription>
-          </CardHeader>
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">이메일</Label>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold">로그인</CardTitle>
+          <CardDescription>
+            이메일과 비밀번호를 입력하여 로그인하세요.
+          </CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">이메일</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="example@mail.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">비밀번호</Label>
+              <div className="relative">
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="example@mail.com"
-                  value={formData.email}
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={formData.password}
                   onChange={handleChange}
                   required
                 />
-                {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">비밀번호</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOffIcon className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                      <EyeIcon className="h-4 w-4 text-muted-foreground" />
-                    )}
-                  </Button>
-                </div>
-                {errors.password && (
-                  <p className="text-red-500 text-sm">{errors.password}</p>
-                )}
-              </div>
-            </CardContent>
-
-            <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full">
-                로그인
-              </Button>
-              <div className="text-sm text-center text-muted-foreground">
-                계정이 없으신가요?{" "}
-                <span
-                  onClick={() => navigate(pageRoutes.register)}
-                  className="text-primary hover:underline cursor-pointer"
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
                 >
-                  회원가입
-                </span>
+                  {showPassword ? (
+                    <EyeOffIcon className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <EyeIcon className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
               </div>
-            </CardFooter>
-          </form>
-        </Card>
-      </div>
-    </Layout>
+              {errors.password && (
+                <p className="text-red-500 text-sm">{errors.password}</p>
+              )}
+            </div>
+          </CardContent>
+
+          <CardFooter className="flex flex-col space-y-4">
+            <Button type="submit" className="w-full">
+              로그인
+            </Button>
+            <div className="text-sm text-center text-muted-foreground">
+              계정이 없으신가요?{" "}
+              <span
+                onClick={() => navigate(pageRoutes.register)}
+                className="text-primary hover:underline cursor-pointer"
+              >
+                회원가입
+              </span>
+            </div>
+          </CardFooter>
+        </form>
+      </Card>
+    </div>
   );
 }

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { pageRoutes } from "@/apiRoutes";
-import { Layout } from "@/pages/common/components/Layout";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -96,147 +95,142 @@ export default function RegisterPage() {
   };
 
   return (
-    <Layout>
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">계정 생성</CardTitle>
-            <CardDescription>
-              계정을 만들기 위해 정보를 입력하세요
-            </CardDescription>
-          </CardHeader>
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">이름</Label>
-                <Input
-                  id="nickname"
-                  placeholder="일반 회원은 닉네임을 사용해도 좋습니다"
-                  value={formData.nickname}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.nickname && (
-                  <p className="text-red-500 text-sm">{errors.nickname}</p>
-                )}
-              </div>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold">계정 생성</CardTitle>
+          <CardDescription>
+            계정을 만들기 위해 정보를 입력하세요
+          </CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">이름</Label>
+              <Input
+                id="nickname"
+                placeholder="일반 회원은 닉네임을 사용해도 좋습니다"
+                value={formData.nickname}
+                onChange={handleChange}
+                required
+              />
+              {errors.nickname && (
+                <p className="text-red-500 text-sm">{errors.nickname}</p>
+              )}
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">이메일</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="mail@example.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email}</p>
-                )}
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">이메일</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="mail@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">비밀번호</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOffIcon className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                      <EyeIcon className="h-4 w-4 text-muted-foreground" />
-                    )}
-                  </Button>
-                </div>
-                {errors.password && (
-                  <p className="text-red-500 text-sm">{errors.password}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">비밀번호 확인</Label>
+            <div className="space-y-2">
+              <Label htmlFor="password">비밀번호</Label>
+              <div className="relative">
                 <Input
-                  id="confirmPassword"
-                  type="password"
+                  id="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  value={formData.confirmPassword}
+                  value={formData.password}
                   onChange={handleChange}
                   required
                 />
-                {errors.confirmPassword && (
-                  <p className="text-red-500 text-sm">
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="birthday">생일</Label>
-                <Input
-                  id="birthday"
-                  type="date"
-                  value={formData.birthday}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.birthday && (
-                  <p className="text-red-500 text-sm">{errors.birthday}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <RadioGroup defaultValue="option-one">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="option-one" id="option-one" />
-                    <Label htmlFor="option-one">일반 회원</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="option-two" id="option-two" />
-                    <Label htmlFor="option-two">
-                      전시장 (추가 인증 후 전시장 전용 계정으로 전환 됩니다.)
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="option-three" id="option-three" />
-                    <Label htmlFor="option-three">
-                      큐레이터 (추가 인증 후 큐레이터 전용 계정으로 전환
-                      됩니다.)
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-            </CardContent>
-
-            <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full">
-                계정 생성
-              </Button>
-              <div className="text-sm text-center text-muted-foreground">
-                이미 계정이 있으신가요?{" "}
-                <span
-                  onClick={() => navigate(pageRoutes.login)}
-                  className="text-primary hover:underline cursor-pointer"
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
                 >
-                  로그인
-                </span>
+                  {showPassword ? (
+                    <EyeOffIcon className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <EyeIcon className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
               </div>
-            </CardFooter>
-          </form>
-        </Card>
-      </div>
-    </Layout>
+              {errors.password && (
+                <p className="text-red-500 text-sm">{errors.password}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">비밀번호 확인</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="birthday">생일</Label>
+              <Input
+                id="birthday"
+                type="date"
+                value={formData.birthday}
+                onChange={handleChange}
+                required
+              />
+              {errors.birthday && (
+                <p className="text-red-500 text-sm">{errors.birthday}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <RadioGroup defaultValue="option-one">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="option-one" id="option-one" />
+                  <Label htmlFor="option-one">일반 회원</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="option-two" id="option-two" />
+                  <Label htmlFor="option-two">
+                    전시장 (추가 인증 후 전시장 전용 계정으로 전환 됩니다.)
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="option-three" id="option-three" />
+                  <Label htmlFor="option-three">
+                    큐레이터 (추가 인증 후 큐레이터 전용 계정으로 전환 됩니다.)
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </CardContent>
+
+          <CardFooter className="flex flex-col space-y-4">
+            <Button type="submit" className="w-full">
+              계정 생성
+            </Button>
+            <div className="text-sm text-center text-muted-foreground">
+              이미 계정이 있으신가요?{" "}
+              <span
+                onClick={() => navigate(pageRoutes.login)}
+                className="text-primary hover:underline cursor-pointer"
+              >
+                로그인
+              </span>
+            </div>
+          </CardFooter>
+        </form>
+      </Card>
+    </div>
   );
 }

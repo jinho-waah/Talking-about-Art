@@ -21,6 +21,7 @@ type AuthStoreActions = {
       imgUrl: string
     ) => void;
     setLogout: () => void;
+    setImgUrl: (imgUrl: string) => void;
   };
 };
 
@@ -76,6 +77,11 @@ const authStore = create<AuthStore>()(
             role: null,
             isToken: false, // 로그아웃 시 토큰 상태 제거
             imgUrl: null,
+          }));
+        },
+        setImgUrl: (imgUrl) => {
+          set(() => ({
+            imgUrl,
           }));
         },
       },

@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ThumbsUp, MessageSquare, Share2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Layout } from "../common/components/Layout";
 import { pageRoutes } from "@/apiRoutes";
 import { useEffect } from "react";
 import authStore from "@/store/authStore";
@@ -116,74 +115,72 @@ export default function PostsList({ title }: PostsListProps) {
   ];
 
   return (
-    <Layout>
-      <div className="container mx-auto px-1 py-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">{titleFromState}</h1>
+    <div className="container mx-auto px-1 py-8">
+      <div className="max-w-3xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">{titleFromState}</h1>
 
-            {(typeOfPost === "upcomingExhibition" ||
-              typeOfPost === "currentExhibition") &&
-              (role === "exhibition" || role === "admin") && (
-                <Button onClick={handleAddPost}>전시 추가 </Button>
-              )}
-            {typeOfPost === "curator" &&
-              (role === "curator" || role === "admin") && (
-                <Button onClick={handleAddPost}>글 추가 </Button>
-              )}
-            {typeOfPost === "ordinary" && isLogin === true && (
-              <Button onClick={handleAddPost}> 게시글 추가 </Button>
+          {(typeOfPost === "upcomingExhibition" ||
+            typeOfPost === "currentExhibition") &&
+            (role === "exhibition" || role === "admin") && (
+              <Button onClick={handleAddPost}>전시 추가 </Button>
             )}
-          </div>
+          {typeOfPost === "curator" &&
+            (role === "curator" || role === "admin") && (
+              <Button onClick={handleAddPost}>글 추가 </Button>
+            )}
+          {typeOfPost === "ordinary" && isLogin === true && (
+            <Button onClick={handleAddPost}> 게시글 추가 </Button>
+          )}
+        </div>
 
-          <div className="mb-6">
-            <Input placeholder="Search posts..." />
-          </div>
+        <div className="mb-6">
+          <Input placeholder="Search posts..." />
+        </div>
 
-          {tmpData.map((post, index) => (
-            <Card key={index} className="mb-6">
-              <CardHeader>
-                <div className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarFallback>{post.avatar}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">{post.author}</p>
-                    <p className="text-sm text-muted-foreground">{post.date}</p>
-                  </div>
+        {tmpData.map((post, index) => (
+          <Card key={index} className="mb-6">
+            <CardHeader>
+              <div className="flex items-center space-x-4">
+                <Avatar>
+                  <AvatarFallback>{post.avatar}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium">{post.author}</p>
+                  <p className="text-sm text-muted-foreground">{post.date}</p>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className="cursor-pointer"
-                  onClick={() => handlePostClick(post.id)}
-                >
-                  <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-                  <p className="text-muted-foreground mb-4">{post.content}</p>
-                </div>
-                <div className="flex space-x-4">
-                  <Button variant="ghost" size="sm">
-                    <ThumbsUp className="mr-2 h-4 w-4" />
-                    {post.likes}
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    {post.comments}
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <Share2 className="mr-2 h-4 w-4" />
-                    Share
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div
+                className="cursor-pointer"
+                onClick={() => handlePostClick(post.id)}
+              >
+                <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
+                <p className="text-muted-foreground mb-4">{post.content}</p>
+              </div>
+              <div className="flex space-x-4">
+                <Button variant="ghost" size="sm">
+                  <ThumbsUp className="mr-2 h-4 w-4" />
+                  {post.likes}
+                </Button>
+                <Button variant="ghost" size="sm">
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  {post.comments}
+                </Button>
+                <Button variant="ghost" size="sm">
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Share
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
 
-          <div className="flex justify-center">
-            <Button>더 보기</Button>
-          </div>
+        <div className="flex justify-center">
+          <Button>더 보기</Button>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }
