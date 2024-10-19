@@ -63,7 +63,7 @@ const router = createBrowserRouter([
       {
         path: pageRoutes.addExhibition,
         element: (
-          <PrivateRoute allowedRoles={["admin", "exhibition"]}>
+          <PrivateRoute allowedRoles={["admin", "gallery"]}>
             <AddExhibitionPost />
           </PrivateRoute>
         ),
@@ -80,7 +80,7 @@ const router = createBrowserRouter([
         path: pageRoutes.addPost,
         element: (
           <PrivateRoute
-            allowedRoles={["admin", "exhibition", "curator", "general"]}
+            allowedRoles={["admin", "gallery", "curator", "general"]}
           >
             <AddOrdinaryPost />
           </PrivateRoute>
