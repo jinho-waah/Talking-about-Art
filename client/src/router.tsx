@@ -80,7 +80,7 @@ const router = createBrowserRouter([
         path: pageRoutes.addPost,
         element: (
           <PrivateRoute
-            allowedRoles={["admin", "exhibition", "curator", "ordinary"]}
+            allowedRoles={["admin", "exhibition", "curator", "general"]}
           >
             <AddOrdinaryPost />
           </PrivateRoute>

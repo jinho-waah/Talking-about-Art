@@ -16,7 +16,7 @@ interface PostsListProps {
 export default function PostsList({ title }: PostsListProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { role } = authStore();
+  const { isLogin, role } = authStore();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -124,13 +124,14 @@ export default function PostsList({ title }: PostsListProps) {
 
             {(typeOfPost === "upcomingExhibition" ||
               typeOfPost === "currentExhibition") &&
-              role === "exhibition" && (
+              (role === "exhibition" || role === "admin") && (
                 <Button onClick={handleAddPost}>전시 추가 </Button>
               )}
-            {typeOfPost === "curator" && role === "curator" && (
-              <Button onClick={handleAddPost}>글 추가 </Button>
-            )}
-            {typeOfPost === "ordinary" && (
+            {typeOfPost === "curator" &&
+              (role === "curator" || role === "admin") && (
+                <Button onClick={handleAddPost}>글 추가 </Button>
+              )}
+            {typeOfPost === "ordinary" && isLogin === true && (
               <Button onClick={handleAddPost}> 게시글 추가 </Button>
             )}
           </div>
@@ -179,7 +180,7 @@ export default function PostsList({ title }: PostsListProps) {
           ))}
 
           <div className="flex justify-center">
-            <Button>Load More Posts</Button>
+            <Button>더 보기</Button>
           </div>
         </div>
       </div>

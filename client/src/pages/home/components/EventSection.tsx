@@ -37,7 +37,7 @@ export const EventSection = () => {
           className="w-full"
           onClick={handleToEventPage}
         >
-          View Full Calendar
+          이벤트 보기
         </Button>
       </CardFooter>
     </Card>
