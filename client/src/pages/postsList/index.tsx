@@ -5,21 +5,50 @@ import { Input } from "@/components/ui/input";
 import { ThumbsUp, MessageSquare, Share2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import authStore from "@/store/authStore";
+import { DOMAIN } from "@/constants";
 
 interface PostsListProps {
   title: string;
 }
 
+interface CuratorPost {
+  id: number;
+  title: string;
+  content: string;
+  curator_name: string;
+  like_count: number;
+  comment_count: number;
+  created_at: string;
+}
 export default function PostsList({ title }: PostsListProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { isLogin, role } = authStore();
 
+  const [curatorPosts, setCuratorPosts] = useState<CuratorPost[]>([]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    if (title === "큐레이터") {
+      fetchCuratorPosts();
+    }
+  }, [title]);
+
+  const fetchCuratorPosts = async () => {
+    try {
+      const response = await fetch(`${DOMAIN}api/curatorPosts/list`);
+      if (response.ok) {
+        const data = await response.json();
+        setCuratorPosts((prevPosts) => [...prevPosts, ...data]);
+      } else {
+        console.error("Failed to fetch curator posts");
+      }
+    } catch (error) {
+      console.error("Error fetching curator posts:", error);
+    }
+  };
 
   const titleFromState = location.state?.title ?? title;
 
@@ -78,9 +107,13 @@ export default function PostsList({ title }: PostsListProps) {
     }
   };
 
+  const handleLoadMore = () => {
+    // setPage((prevPage) => prevPage + 1);
+  };
+
   const tmpData = [
     {
-      id: 1,
+      id: 6,
       title: "New Installation at MoMA",
       author: "Sarah K.",
       avatar: "SK",
@@ -91,7 +124,7 @@ export default function PostsList({ title }: PostsListProps) {
       date: "2 hours ago",
     },
     {
-      id: 2,
+      id: 4,
       title: "Reflections on Abstract Expressionism",
       author: "Michael R.",
       avatar: "MR",
@@ -102,7 +135,7 @@ export default function PostsList({ title }: PostsListProps) {
       date: "5 hours ago",
     },
     {
-      id: 3,
+      id: 5,
       title: "Virtual Reality in Art: A Game Changer?",
       author: "Elena T.",
       avatar: "ET",
@@ -138,47 +171,90 @@ export default function PostsList({ title }: PostsListProps) {
           <Input placeholder="Search posts..." />
         </div>
 
-        {tmpData.map((post, index) => (
-          <Card key={index} className="mb-6">
-            <CardHeader>
-              <div className="flex items-center space-x-4">
-                <Avatar>
-                  <AvatarFallback>{post.avatar}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">{post.author}</p>
-                  <p className="text-sm text-muted-foreground">{post.date}</p>
+        {title === "큐레이터" &&
+          curatorPosts.map((post) => (
+            <Card key={post.id} className="mb-6">
+              <CardHeader>
+                <div className="flex items-center space-x-4">
+                  <Avatar>
+                    <AvatarFallback>{post.curator_name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{post.curator_name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(post.created_at).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div
-                className="cursor-pointer"
-                onClick={() => handlePostClick(post.id)}
-              >
-                <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-                <p className="text-muted-foreground mb-4">{post.content}</p>
-              </div>
-              <div className="flex space-x-4">
-                <Button variant="ghost" size="sm">
-                  <ThumbsUp className="mr-2 h-4 w-4" />
-                  {post.likes}
-                </Button>
-                <Button variant="ghost" size="sm">
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  {post.comments}
-                </Button>
-                <Button variant="ghost" size="sm">
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Share
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardHeader>
+              <CardContent>
+                <div
+                  className="cursor-pointer"
+                  onClick={() => handlePostClick(post.id)}
+                >
+                  <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
+                  <p className="text-muted-foreground mb-4">{post.content}</p>
+                </div>
+                <div className="flex space-x-4">
+                  <Button variant="ghost" size="sm">
+                    <ThumbsUp className="mr-2 h-4 w-4" />
+                    {post.like_count}
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    {post.comment_count}
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="mr-2 h-4 w-4" />
+                    Share
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+
+        {title !== "큐레이터" &&
+          tmpData.map((post, index) => (
+            <Card key={index} className="mb-6">
+              <CardHeader>
+                <div className="flex items-center space-x-4">
+                  <Avatar>
+                    <AvatarFallback>{post.avatar}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{post.author}</p>
+                    <p className="text-sm text-muted-foreground">{post.date}</p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div
+                  className="cursor-pointer"
+                  onClick={() => handlePostClick(post.id)}
+                >
+                  <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
+                  <p className="text-muted-foreground mb-4">{post.content}</p>
+                </div>
+                <div className="flex space-x-4">
+                  <Button variant="ghost" size="sm">
+                    <ThumbsUp className="mr-2 h-4 w-4" />
+                    {post.likes}
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    {post.comments}
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="mr-2 h-4 w-4" />
+                    Share
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
 
         <div className="flex justify-center">
-          <Button>더 보기</Button>
+          <Button onClick={handleLoadMore}>더 보기</Button>
         </div>
       </div>
     </div>

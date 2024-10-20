@@ -210,6 +210,111 @@ app.get("/api/mypage/:id", (req, res) => {
   });
 });
 
+app.get("/api/curatorPosts/list", (req, res) => {
+  const query = `
+    SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at, 
+           cp.like_count, cp.comment_count, u.nickname AS curator_name
+    FROM artlove1_art_lover.curator_posts cp
+    JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
+    ORDER BY cp.created_at DESC
+    LIMIT 3
+  `;
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching recent curator posts:", err);
+      return res
+        .status(500)
+        .json({ message: "서버 에러로 인해 게시물을 불러올 수 없습니다." });
+    }
+
+    res.status(200).json(results);
+  });
+});
+
+// 최신 큐레이터 게시물 3개 가져오기 (큐레이터 이름 포함)
+app.get("/api/curatorPosts/recent", (req, res) => {
+  const query = `
+    SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at, 
+           cp.like_count, cp.comment_count, u.nickname AS curator_name
+    FROM artlove1_art_lover.curator_posts cp
+    JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
+    ORDER BY cp.created_at DESC
+    LIMIT 3
+  `;
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching recent curator posts:", err);
+      return res
+        .status(500)
+        .json({ message: "서버 에러로 인해 게시물을 불러올 수 없습니다." });
+    }
+
+    res.status(200).json(results);
+  });
+});
+
+app.get("/curatorPosts", (req, res) => {
+  const { page = 1, limit = 3 } = req.query;
+
+  const offset = (page - 1) * limit;
+
+  const query = `
+    SELECT cp.id, cp.title, cp.content, cp.like_count, cp.comment_count, cp.created_at, u.nickname AS curator_name 
+    FROM artlove1_art_lover.curator_posts cp 
+    INNER JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
+    ORDER BY cp.created_at DESC
+    LIMIT ? OFFSET ?
+  `;
+
+  connection.query(
+    query,
+    [parseInt(limit), parseInt(offset)],
+    (err, results) => {
+      if (err) {
+        console.error("Error fetching curator posts:", err);
+        return res.status(500).json({
+          message: "서버 에러로 인해 큐레이터 글을 불러오지 못했습니다.",
+        });
+      }
+
+      // Sending back the results as an array of posts
+      res.status(200).json(results);
+    }
+  );
+});
+
+// Get curator post by id
+app.get("/api/curatorPosts/:id", (req, res) => {
+  const postId = req.params.id;
+
+  const query = `
+    SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at, 
+           cp.like_count, cp.comment_count, u.nickname AS curator_name
+    FROM artlove1_art_lover.curator_posts cp
+    JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
+    WHERE cp.id = ?
+  `;
+
+  connection.query(query, [postId], (err, results) => {
+    if (err) {
+      console.error("Error fetching curator post:", err);
+      return res
+        .status(500)
+        .json({ message: "서버 에러로 인해 게시물을 불러올 수 없습니다." });
+    }
+
+    if (results.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "해당 게시물을 찾을 수 없습니다." });
+    }
+
+    res.status(200).json(results[0]);
+  });
+});
+
+
 // 유저 정보 업데이트 (마이페이지 수정)
 app.put("/api/mypage/:id", authenticateToken, (req, res) => {
   const userId = req.params.id;
@@ -336,6 +441,9 @@ app.post(
   }
 );
 
+
+
+
 // Express에 정적 파일 제공 추가
 app.use(
   "/profileImg",
@@ -348,6 +456,8 @@ app.use(express.static(path.join(__dirname, "../client")));
 app.get("/*", function (req, res) {
   res.sendFile(path.join(__dirname, "../client", "index.html"));
 });
+
+
 
 // app.use(express.static(path.join(__dirname, "../public_html")));
 

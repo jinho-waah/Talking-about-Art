@@ -1,6 +1,6 @@
-// Reviews.tsx
-
+import { useEffect, useState } from "react";
 import { pageRoutes } from "@/apiRoutes";
+import { DOMAIN } from "@/constants";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,32 +11,44 @@ import {
 } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
 import ViewMore from "@/pages/common/components/NavigateToList";
-import { Star, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+interface Review {
+  id: number;
+  show_id: number;
+  title: string;
+  content: string;
+  curator_name: string;
+}
+
 const Curators = () => {
+  const [reviewsData, setReviewsData] = useState<Review[]>([]);
   const navigate = useNavigate();
+
+  const fetchRecentCuratorPosts = async () => {
+    try {
+      const response = await fetch(`${DOMAIN}api/curatorPosts/recent`);
+      if (response.ok) {
+        const data = await response.json();
+        setReviewsData(data);
+      } else {
+        console.error("Failed to fetch recent curator posts");
+      }
+    } catch (error) {
+      console.error("Error fetching recent curator posts:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecentCuratorPosts();
+  }, []);
+
   const handleReadClick = (id: number) => {
+    // console.log(id);
     navigate(`${pageRoutes.curatorList}/${id}`);
   };
-  const reviewsData = [
-    {
-      id: 1,
-      title: "Impressionist Masterpieces",
-      reviewer: "John D.",
-    },
-    {
-      id: 2,
-      title: "Contemporary Sculpture Garden",
-      reviewer: "John D.",
-    },
 
-    {
-      id: 3,
-      title: "Photography Through Time",
-      reviewer: "John D.",
-    },
-  ];
   return (
     <TabsContent value="reviews">
       <Card>
@@ -48,19 +60,13 @@ const Curators = () => {
         </CardHeader>
         <CardContent>
           <ul className="space-y-4">
-            {reviewsData.map((event, index) => (
-              <li key={index} className="flex items-center justify-between">
+            {reviewsData.map((event) => (
+              <li key={event.id} className="flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold">{event.title}</h3>
                   <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-4 h-4 fill-primary text-primary"
-                      />
-                    ))}
-                    <span className="ml-2 text-sm text-muted-foreground">
-                      by {event.reviewer}
+                    <span className="text-sm text-muted-foreground">
+                      by {event.curator_name}
                     </span>
                   </div>
                 </div>
