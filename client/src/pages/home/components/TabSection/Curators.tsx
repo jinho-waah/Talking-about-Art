@@ -14,16 +14,21 @@ import ViewMore from "@/pages/common/components/NavigateToList";
 import { BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-interface Review {
+interface CuratorPost {
   id: number;
+  curator_id: number;
   show_id: number;
   title: string;
-  content: string;
   curator_name: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  like_count: number;
+  comment_count: number;
 }
 
 const Curators = () => {
-  const [reviewsData, setReviewsData] = useState<Review[]>([]);
+  const [reviewsData, setReviewsData] = useState<CuratorPost[]>([]);
   const navigate = useNavigate();
 
   const fetchRecentCuratorPosts = async () => {
@@ -45,7 +50,6 @@ const Curators = () => {
   }, []);
 
   const handleReadClick = (id: number) => {
-    // console.log(id);
     navigate(`${pageRoutes.curatorList}/${id}`);
   };
 
