@@ -213,7 +213,7 @@ app.get("/api/mypage/:id", (req, res) => {
 app.get("/api/curatorPosts/list", (req, res) => {
   const query = `
     SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at, 
-           cp.like_count, cp.comment_count, u.nickname AS curator_name
+           cp.like_count, u.nickname AS curator_name
     FROM artlove1_art_lover.curator_posts cp
     JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
     ORDER BY cp.created_at DESC
@@ -235,7 +235,7 @@ app.get("/api/curatorPosts/list", (req, res) => {
 app.get("/api/curatorPosts/recent", (req, res) => {
   const query = `
     SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at, 
-           cp.like_count, cp.comment_count, u.nickname AS curator_name
+           cp.like_count, u.nickname AS curator_name
     FROM artlove1_art_lover.curator_posts cp
     JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
     ORDER BY cp.created_at DESC
@@ -290,9 +290,14 @@ app.get("/api/curatorPosts/:id", (req, res) => {
 
   const query = `
     SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at, 
-           cp.like_count, cp.comment_count, u.nickname AS curator_name
+           cp.like_count, u.nickname AS curator_name,
+           s.show_name, s.show_term_start, s.show_term_end, s.show_place, 
+           s.show_price, s.show_link, s.show_place_detail,
+           g.business_hours
     FROM artlove1_art_lover.curator_posts cp
     JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
+    LEFT JOIN artlove1_art_lover.shows s ON cp.show_id = s.id
+    LEFT JOIN artlove1_art_lover.galleries g ON s.gallery = g.id
     WHERE cp.id = ?
   `;
 

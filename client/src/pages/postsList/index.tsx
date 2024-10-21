@@ -19,7 +19,6 @@ interface CuratorPost {
   content: string;
   curator_name: string;
   like_count: number;
-  comment_count: number;
   created_at: string;
 }
 export default function PostsList({ title }: PostsListProps) {
@@ -201,18 +200,13 @@ export default function PostsList({ title }: PostsListProps) {
                     {post.like_count}
                   </Button>
                   <Button variant="ghost" size="sm">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    {post.comment_count}
-                  </Button>
-                  <Button variant="ghost" size="sm">
                     <Share2 className="mr-2 h-4 w-4" />
-                    Share
+                    공유
                   </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
-
         {title !== "큐레이터" &&
           tmpData.map((post, index) => (
             <Card key={index} className="mb-6">
