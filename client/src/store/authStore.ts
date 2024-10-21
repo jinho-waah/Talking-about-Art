@@ -88,7 +88,14 @@ const authStore = create<AuthStore>()(
     }),
     {
       name: "auth-storage", // localStorage에 저장될 key 이름
-      partialize: (state) => ({ isToken: state.isToken }), // 토큰 상태만 저장
+      partialize: (state) => ({
+        isLogin: state.isLogin,
+        userId: state.userId,
+        userName: state.userName,
+        role: state.role,
+        isToken: state.isToken,
+        imgUrl: state.imgUrl,
+      }), // 필요한 모든 상태 저장
     }
   )
 );

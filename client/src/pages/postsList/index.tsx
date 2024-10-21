@@ -21,6 +21,7 @@ interface CuratorPost {
   like_count: number;
   created_at: string;
 }
+
 export default function PostsList({ title }: PostsListProps) {
   const location = useLocation();
   const navigate = useNavigate();

@@ -447,6 +447,62 @@ app.post(
 );
 
 
+// 쇼 이름으로 ID 검색 API
+app.get("/api/searchShowId", (req, res) => {
+  const { query } = req.query;
+  if (!query) {
+    return res.status(400).json({ message: "검색어를 입력해주세요." });
+  }
+  const searchQuery = `
+    SELECT id, show_name, show_place
+    FROM artlove1_art_lover.shows
+    WHERE show_search LIKE ?
+  `;
+
+  connection.query(searchQuery, [`%${query}%`], (err, results) => {
+    if (err) {
+      console.error("Error fetching shows:", err);
+      return res
+        .status(500)
+        .json({ message: "서버 에러로 인해 전시 정보를 불러올 수 없습니다." });
+    }
+
+    res.status(200).json(results);
+  });
+});
+
+
+// Express 서버 예시 코드
+app.post("/api/uploadCuratorPosts", (req, res) => {
+  const {
+    curator_id,
+    show_id,
+    title,
+    content,
+    created_at,
+    updated_at,
+    like_count,
+  } = req.body;
+
+  const query = `
+    INSERT INTO artlove1_art_lover.curator_posts 
+    (curator_id, show_id, title, content, created_at, updated_at, like_count)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  connection.query(
+    query,
+    [curator_id, show_id, title, content, created_at, updated_at, like_count],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting post:", err);
+        return res.status(500).json({ message: "게시물 등록 실패" });
+      }
+      res.status(201).json({ message: "게시물이 성공적으로 등록되었습니다." });
+    }
+  );
+});
+
 
 
 // Express에 정적 파일 제공 추가

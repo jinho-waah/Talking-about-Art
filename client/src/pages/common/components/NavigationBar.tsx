@@ -41,6 +41,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ toggleMenu }) => {
   };
   const handleToLogin = () => {
     navigate(pageRoutes.login);
+    toggleMenu();
   };
   const handleLogout = () => {
     toggleMenu();
