@@ -12,128 +12,185 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Upload, X } from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"; // 모달 UI 컴포넌트
+import { DOMAIN } from "@/constants";
+import authStore from "@/store/authStore";
+import { useNavigate } from "react-router-dom";
+import { pageRoutes } from "@/apiRoutes";
+
+interface Show {
+  id: number;
+  show_name: string;
+  show_place: string;
+}
 
 export default function AddCuratorPost() {
-  const [images, setImages] = useState<string[]>([]);
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
+  const [showId, setShowId] = useState<number | undefined>(undefined);
+  const [showName, setShowName] = useState<string | undefined>(undefined);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<Show[]>([]);
+  const navigate = useNavigate();
+  const { userId } = authStore();
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      const newImages = Array.from(files).map((file) =>
-        URL.createObjectURL(file)
-      );
-      setImages((prevImages) => [...prevImages, ...newImages]);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!showId) return;
+
+    const newPost = {
+      curator_id: userId,
+      show_id: showId,
+      title: title.trim(),
+      content: content.trim(),
+      created_at: new Date().toISOString().slice(0, 19).replace("T", " "), // "YYYY-MM-DD HH:MM:SS" 형식으로 변경
+      updated_at: new Date().toISOString().slice(0, 19).replace("T", " "),
+      like_count: 0,
+    };
+
+    try {
+      const response = await fetch(`${DOMAIN}api/uploadCuratorPosts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newPost),
+      });
+
+      if (response.ok) {
+        alert("글이 성공적으로 업로드되었습니다!");
+        setTitle("");
+        setContent("");
+        setShowId(undefined);
+        navigate(pageRoutes.curatorList);
+      } else {
+        alert("글 업로드에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error submitting post:", error);
+      alert("글 업로드 중 오류가 발생했습니다.");
     }
   };
 
-  const removeImage = (index: number) => {
-    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle post creation logic here
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
+
+  const handleSearch = async () => {
+    try {
+      const response = await fetch(
+        `${DOMAIN}api/searchShowId?query=${encodeURIComponent(searchQuery)}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch search results");
+      }
+      const data: Show[] = await response.json();
+      setSearchResults(data); // 검색 결과 업데이트
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };
+
+  const handleSelectShow = (id: number, name: string) => {
+    setShowId(id);
+    setShowName(name);
+    handleCloseModal();
+  };
+
+  const isFormValid =
+    title.trim() !== "" && content.trim() !== "" && showId !== undefined;
 
   return (
     <div className="container mx-auto px-1 py-8">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">
-            Create a New Post
-          </CardTitle>
+          <CardTitle className="text-2xl font-bold">큐레이터 글 작성</CardTitle>
           <CardDescription>
-            Share your thoughts, artworks, or exhibition updates with the
-            community
+            커뮤니티에 여러분의 생각을 공유하세요
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="title">Post Title</Label>
-              <Input id="title" placeholder="Enter your post title" required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="content">Post Content</Label>
-              <Textarea
-                id="content"
-                placeholder="Write your post content here"
-                rows={6}
-                required
+              <Label htmlFor="title">제목</Label>
+              <Input
+                id="title"
+                placeholder="제목을 입력하세요"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="artwork">Artwork Showcase</SelectItem>
-                  <SelectItem value="exhibition">Exhibition Update</SelectItem>
-                  <SelectItem value="review">Art Review</SelectItem>
-                  <SelectItem value="discussion">Open Discussion</SelectItem>
-                  <SelectItem value="event">Event Announcement</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="content">내용</Label>
+              <Textarea
+                id="content"
+                placeholder="여기에 내용을 작성하세요"
+                rows={6}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="image-upload">Upload Images</Label>
-              <div className="flex items-center space-x-2">
-                <Label htmlFor="image-upload" className="cursor-pointer">
-                  <div className="flex items-center space-x-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 rounded-md">
-                    <Upload className="w-4 h-4" />
-                    <span>Add Images</span>
-                  </div>
-                </Label>
-                <Input
-                  id="image-upload"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={handleImageUpload}
-                />
-              </div>
-              <div className="grid grid-cols-3 gap-4 mt-4">
-                {images.map((src, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={src}
-                      alt={`Uploaded ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-md"
-                    />
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-1 right-1 h-6 w-6"
-                      onClick={() => removeImage(index)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="comments" />
-              <Label htmlFor="comments">Allow comments on this post</Label>
+              <Button variant="outline" onClick={handleOpenModal}>
+                {showName ? `선택한 전시:  ${showName}` : "전시 검색"}
+              </Button>
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
-              Create Post
+            <Button type="submit" className="w-full" disabled={!isFormValid}>
+              업로드
             </Button>
           </CardFooter>
         </form>
+
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>전시 검색</DialogTitle>
+              <DialogDescription>
+                검색어를 입력하고 원하는 전시를 선택하세요.
+              </DialogDescription>
+            </DialogHeader>
+            <div>
+              <div className="flex">
+                <Input
+                  placeholder="검색어를 입력하세요..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <Button onClick={handleSearch}>검색</Button>
+              </div>
+              <div className="mt-4">
+                {searchResults.length > 0 ? (
+                  searchResults.map((result) => (
+                    <Button
+                      key={result.id}
+                      variant="outline"
+                      onClick={() =>
+                        handleSelectShow(result.id, result.show_name)
+                      }
+                      className="block w-full text-left mt-1"
+                    >
+                      {result.show_name} - {result.show_place}
+                    </Button>
+                  ))
+                ) : (
+                  <p>검색 결과가 없습니다.</p>
+                )}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </Card>
     </div>
   );

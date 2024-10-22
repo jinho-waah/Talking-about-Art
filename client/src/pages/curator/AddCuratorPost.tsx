@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/dialog"; // 모달 UI 컴포넌트
 import { DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
+import { useNavigate } from "react-router-dom";
+import { pageRoutes } from "@/apiRoutes";
 
 interface Show {
   id: number;
@@ -28,14 +30,29 @@ interface Show {
 }
 
 export default function AddCuratorPost() {
-  const [title, setTitle] = useState<string>("");
-  const [content, setContent] = useState<string>("");
+  const [title, setTitle] = useState<string>(
+    localStorage.getItem("title") || ""
+  );
+  const [content, setContent] = useState<string>(
+    localStorage.getItem("content") || ""
+  );
   const [showId, setShowId] = useState<number | undefined>(undefined);
   const [showName, setShowName] = useState<string | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Show[]>([]);
+  const navigate = useNavigate();
   const { userId } = authStore();
+
+  useEffect(() => {
+    // 제목이 변경될 때 localStorage에 저장
+    localStorage.setItem("title", title);
+  }, [title]);
+
+  useEffect(() => {
+    // 내용이 변경될 때 localStorage에 저장
+    localStorage.setItem("content", content);
+  }, [content]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,6 +82,9 @@ export default function AddCuratorPost() {
         setTitle("");
         setContent("");
         setShowId(undefined);
+        localStorage.removeItem("title"); // 업로드 후 제목 삭제
+        localStorage.removeItem("content"); // 업로드 후 내용 삭제
+        navigate(pageRoutes.curatorList);
       } else {
         alert("글 업로드에 실패했습니다.");
       }

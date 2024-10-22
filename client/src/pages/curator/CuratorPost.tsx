@@ -8,9 +8,10 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
+import { pageRoutes } from "@/apiRoutes";
 
 interface CuratorPostData {
   id: number;
@@ -35,6 +36,7 @@ export default function CuratorPost() {
   const { id } = useParams<{ id: string }>();
   const [post, setPost] = useState<CuratorPostData | null>(null);
   const { userId, role } = authStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -66,13 +68,35 @@ export default function CuratorPost() {
     }
   };
 
+  const handleDelete = async () => {
+    if (window.confirm("정말로 이 게시물을 삭제하시겠습니까?")) {
+      try {
+        const response = await fetch(`${DOMAIN}api/curatorPosts/${id}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          alert("게시물이 성공적으로 삭제되었습니다.");
+          navigate(pageRoutes.curatorList); // 게시물 목록 페이지로 이동
+        } else {
+          alert("게시물 삭제에 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("Error deleting curator post:", error);
+        alert("삭제 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
   if (!post) {
     return <div>Loading...</div>;
   }
+
   const handleToSite = () => {
     window.open(post.show_link, "_blank");
   };
   const businessHours = JSON.parse(post.business_hours);
+
   return (
     <div className="container mx-auto px-1 py-8">
       <div className="max-w-3xl mx-auto">
@@ -92,7 +116,12 @@ export default function CuratorPost() {
                 </div>
               </div>
               {(userId == post.curator_id || role === "admin") && (
-                <Button>수정하기</Button>
+                <div className="space-x-3">
+                  <Button variant="outline">수정하기</Button>
+                  <Button variant="outline" onClick={handleDelete}>
+                    삭제하기
+                  </Button>
+                </div>
               )}
             </div>
           </CardHeader>

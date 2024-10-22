@@ -284,7 +284,7 @@ app.get("/curatorPosts", (req, res) => {
   );
 });
 
-// Get curator post by id
+// curator post id로 내용 불러오기
 app.get("/api/curatorPosts/:id", (req, res) => {
   const postId = req.params.id;
 
@@ -316,6 +316,28 @@ app.get("/api/curatorPosts/:id", (req, res) => {
     }
 
     res.status(200).json(results[0]);
+  });
+});
+
+// 큐레이터 아이디로 게시물 삭제하기
+app.delete("/api/curatorPosts/:id", (req, res) => {
+  const postId = req.params.id;
+
+  const query = `
+    DELETE FROM artlove1_art_lover.curator_posts WHERE id = ?
+  `;
+
+  connection.query(query, [postId], (err, result) => {
+    if (err) {
+      console.error("Error deleting post:", err);
+      return res.status(500).json({ message: "게시물 삭제 실패" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "게시물을 찾을 수 없습니다." });
+    }
+
+    res.status(200).json({ message: "게시물이 성공적으로 삭제되었습니다." });
   });
 });
 
