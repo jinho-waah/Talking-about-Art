@@ -38,7 +38,7 @@ export default function PostsList({ title }: PostsListProps) {
 
   const fetchCuratorPosts = async () => {
     try {
-      const response = await fetch(`${DOMAIN}api/curatorPosts/list`);
+      const response = await fetch(`${DOMAIN}api/curatorPosts`);
       if (response.ok) {
         const data = await response.json();
         setCuratorPosts((prevPosts) => [...prevPosts, ...data]);

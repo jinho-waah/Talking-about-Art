@@ -36,7 +36,7 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
-const authenticateToken = (req, res, next) => {
+const verifyAuthToken = (req, res, next) => {
   const token = req.cookies.authToken;
   if (!token) {
     return res.status(401).json({ message: "로그인이 필요합니다." });
@@ -173,7 +173,7 @@ app.post("/api/logout", (req, res) => {
 });
 
 // 로그인 상태 확인
-app.get("/api/auth/status", authenticateToken, (req, res) => {
+app.get("/api/auth/status", verifyAuthToken, (req, res) => {
   res.status(200).json({
     id: req.user.id,
     role: req.user.role,
@@ -187,9 +187,9 @@ app.get("/api/mypage/:id", (req, res) => {
   const userId = req.params.id;
 
   const query = `
-    SELECT role, nickname, profile_image, created_at, bio, 
-           website, x, instagram, thread 
-    FROM artlove1_art_lover.users 
+    SELECT role, nickname, profile_image, created_at, bio,
+           website, x, instagram, thread
+    FROM artlove1_art_lover.users
     WHERE id = ?`;
 
   connection.query(query, [userId], (err, result) => {
@@ -211,9 +211,9 @@ app.get("/api/mypage/:id", (req, res) => {
 });
 
 // GET curator post list
-app.get("/api/curatorPosts/list", (req, res) => {
+app.get("/api/curatorPosts", (req, res) => {
   const query = `
-    SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at, 
+    SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at,
            cp.like_count, u.nickname AS curator_name
     FROM artlove1_art_lover.curator_posts cp
     JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
@@ -233,9 +233,9 @@ app.get("/api/curatorPosts/list", (req, res) => {
 });
 
 // GET recent 3 curator post
-app.get("/api/curatorPosts/recent", (req, res) => {
+app.get("/api/curatorPosts/latest", (req, res) => {
   const query = `
-    SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at, 
+    SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at,
            cp.like_count, u.nickname AS curator_name
     FROM artlove1_art_lover.curator_posts cp
     JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
@@ -255,44 +255,14 @@ app.get("/api/curatorPosts/recent", (req, res) => {
   });
 });
 
-app.get("/curatorPosts", (req, res) => {
-  const { page = 1, limit = 3 } = req.query;
-
-  const offset = (page - 1) * limit;
-
-  const query = `
-    SELECT cp.id, cp.title, cp.content, cp.like_count, cp.comment_count, cp.created_at, u.nickname AS curator_name 
-    FROM artlove1_art_lover.curator_posts cp 
-    INNER JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
-    ORDER BY cp.created_at DESC
-    LIMIT ? OFFSET ?
-  `;
-
-  connection.query(
-    query,
-    [parseInt(limit), parseInt(offset)],
-    (err, results) => {
-      if (err) {
-        console.error("Error fetching curator posts:", err);
-        return res.status(500).json({
-          message: "서버 에러로 인해 큐레이터 글을 불러오지 못했습니다.",
-        });
-      }
-
-      // Sending back the results as an array of posts
-      res.status(200).json(results);
-    }
-  );
-});
-
 //  GET curator post id로 내용 불러오기
 app.get("/api/curatorPosts/:id", (req, res) => {
   const postId = req.params.id;
 
   const query = `
-    SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at, 
+    SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at,
            cp.like_count, u.nickname AS curator_name,
-           s.show_name, s.show_term_start, s.show_term_end, s.show_place, 
+           s.show_name, s.show_term_start, s.show_term_end, s.show_place,
            s.show_price, s.show_link, s.show_place_detail,
            g.business_hours
     FROM artlove1_art_lover.curator_posts cp
@@ -326,12 +296,12 @@ app.put("/api/curatorPosts/:id", (req, res) => {
   const { curator_id, show_id, title, content, updated_at } = req.body;
 
   const query = `
-    UPDATE artlove1_art_lover.curator_posts 
-    SET 
-      curator_id = ?, 
-      show_id = ?, 
-      title = ?, 
-      content = ?, 
+    UPDATE artlove1_art_lover.curator_posts
+    SET
+      curator_id = ?,
+      show_id = ?,
+      title = ?,
+      content = ?,
       updated_at = ?
     WHERE id = ?`;
 
@@ -347,7 +317,9 @@ app.put("/api/curatorPosts/:id", (req, res) => {
       }
 
       if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "해당 게시물을 찾을 수 없습니다." });
+        return res
+          .status(404)
+          .json({ message: "해당 게시물을 찾을 수 없습니다." });
       }
 
       res.status(200).json({ message: "게시물이 성공적으로 수정되었습니다." });
@@ -377,9 +349,8 @@ app.delete("/api/curatorPosts/:id", (req, res) => {
   });
 });
 
-
 // 유저 정보 업데이트 (마이페이지 수정)
-app.put("/api/mypage/:id", authenticateToken, (req, res) => {
+app.put("/api/mypage/:id", verifyAuthToken, (req, res) => {
   const userId = req.params.id;
   const { nickname, bio, website, x, instagram, thread, profile_image } =
     req.body;
@@ -432,7 +403,7 @@ const upload = multer({ storage });
 // 프로필 이미지 업로드
 app.post(
   "/api/upload/avatar/:id",
-  authenticateToken,
+  verifyAuthToken,
   upload.single("avatar"),
   async (req, res) => {
     if (!req.file) {
@@ -504,7 +475,6 @@ app.post(
   }
 );
 
-
 // 쇼 이름으로 ID 검색 API
 app.get("/api/searchShowId", (req, res) => {
   const { query } = req.query;
@@ -529,8 +499,7 @@ app.get("/api/searchShowId", (req, res) => {
   });
 });
 
-
-// POST curator post 
+// POST curator post
 app.post("/api/curatorPosts", (req, res) => {
   const {
     curator_id,
@@ -543,7 +512,7 @@ app.post("/api/curatorPosts", (req, res) => {
   } = req.body;
 
   const query = `
-    INSERT INTO artlove1_art_lover.curator_posts 
+    INSERT INTO artlove1_art_lover.curator_posts
     (curator_id, show_id, title, content, created_at, updated_at, like_count)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
@@ -561,22 +530,15 @@ app.post("/api/curatorPosts", (req, res) => {
   );
 });
 
-
-
 // Express에 정적 파일 제공 추가
 app.use(
   "/profileImg",
   express.static(path.join(__dirname, "../client/public/profileImg"))
 );
-
 app.use(express.static(path.join(__dirname, "../client")));
-
-// 모든 요청을 public_html 폴더의 index.html로 리다이렉트
 app.get("/*", function (req, res) {
   res.sendFile(path.join(__dirname, "../client", "index.html"));
 });
-
-
 
 // app.use(express.static(path.join(__dirname, "../public_html")));
 

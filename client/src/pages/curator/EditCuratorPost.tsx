@@ -67,8 +67,7 @@ export default function EditCuratorPost() {
     fetchCuratorPost();
   }, [id, userId, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!showId) return;
 
     const updatedPost = {
@@ -140,39 +139,41 @@ export default function EditCuratorPost() {
             기존의 글을 수정하여 업데이트하세요.
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="title">제목</Label>
-              <Input
-                id="title"
-                placeholder="제목을 입력하세요"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="content">내용</Label>
-              <Textarea
-                id="content"
-                placeholder="여기에 내용을 작성하세요"
-                rows={6}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Button variant="outline" onClick={handleOpenModal}>
-                {showName ? `선택한 전시:  ${showName}` : "전시 검색"}
-              </Button>
-            </div>
-          </CardContent>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="title">제목</Label>
+            <Input
+              id="title"
+              placeholder="제목을 입력하세요"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="content">내용</Label>
+            <Textarea
+              id="content"
+              placeholder="여기에 내용을 작성하세요"
+              rows={6}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Button variant="outline" onClick={handleOpenModal} type="button">
+              {showName ? `선택한 전시:  ${showName}` : "전시 검색"}
+            </Button>
+          </div>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={!isFormValid}>
+            <Button
+              onClick={handleSubmit}
+              className="w-full"
+              disabled={!isFormValid}
+            >
               수정 완료
             </Button>
           </CardFooter>
-        </form>
+        </CardContent>
 
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent>

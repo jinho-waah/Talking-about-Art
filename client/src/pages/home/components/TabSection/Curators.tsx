@@ -32,7 +32,7 @@ const Curators = () => {
 
   const fetchRecentCuratorPosts = async () => {
     try {
-      const response = await fetch(`${DOMAIN}api/curatorPosts/recent`);
+      const response = await fetch(`${DOMAIN}api/curatorPosts/latest`);
       if (response.ok) {
         const data = await response.json();
         setReviewsData(data);
