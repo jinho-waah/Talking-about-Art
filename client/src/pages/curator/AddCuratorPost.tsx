@@ -69,7 +69,7 @@ export default function AddCuratorPost() {
     };
 
     try {
-      const response = await fetch(`${DOMAIN}api/uploadCuratorPosts`, {
+      const response = await fetch(`${DOMAIN}api/curatorPosts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

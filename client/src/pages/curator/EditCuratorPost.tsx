@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog"; // 모달 UI 컴포넌트
 import { DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
 
 interface Show {
@@ -29,7 +29,8 @@ interface Show {
   show_place: string;
 }
 
-export default function AddCuratorPost() {
+export default function EditCuratorPost() {
+  const { id } = useParams<{ id: string }>(); // 현재 포스트 ID 가져오기
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [showId, setShowId] = useState<number | undefined>(undefined);
@@ -40,41 +41,61 @@ export default function AddCuratorPost() {
   const navigate = useNavigate();
   const { userId } = authStore();
 
+  useEffect(() => {
+    // 기존 포스트 내용 불러오기
+    const fetchCuratorPost = async () => {
+      try {
+        const response = await fetch(`${DOMAIN}api/curatorPosts/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setTitle(data.title);
+          setContent(data.content);
+          setShowId(data.show_id);
+          setShowName(data.show_name);
+          if (data.curator_id !== userId) {
+            alert("접근 권한이 없습니다.");
+            navigate(pageRoutes.main);
+          }
+        } else {
+          console.error("Failed to fetch curator post");
+        }
+      } catch (error) {
+        console.error("Error fetching curator post:", error);
+      }
+    };
+
+    fetchCuratorPost();
+  }, [id, userId, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!showId) return;
 
-    const newPost = {
+    const updatedPost = {
       curator_id: userId,
       show_id: showId,
       title: title.trim(),
       content: content.trim(),
-      created_at: new Date().toISOString().slice(0, 19).replace("T", " "), // "YYYY-MM-DD HH:MM:SS" 형식으로 변경
       updated_at: new Date().toISOString().slice(0, 19).replace("T", " "),
-      like_count: 0,
     };
 
     try {
-      const response = await fetch(`${DOMAIN}api/uploadCuratorPosts`, {
-        method: "POST",
+      const response = await fetch(`${DOMAIN}api/curatorPosts/${id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newPost),
+        body: JSON.stringify(updatedPost),
       });
-
       if (response.ok) {
-        alert("글이 성공적으로 업로드되었습니다!");
-        setTitle("");
-        setContent("");
-        setShowId(undefined);
-        navigate(pageRoutes.curatorList);
+        alert("글이 성공적으로 수정되었습니다!");
+        navigate(pageRoutes.curatorPost.replace(":id", id!));
       } else {
-        alert("글 업로드에 실패했습니다.");
+        alert("글 수정에 실패했습니다.");
       }
     } catch (error) {
       console.error("Error submitting post:", error);
-      alert("글 업로드 중 오류가 발생했습니다.");
+      alert("글 수정 중 오류가 발생했습니다.");
     }
   };
 
@@ -114,9 +135,9 @@ export default function AddCuratorPost() {
     <div className="container mx-auto px-1 py-8">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">큐레이터 글 작성</CardTitle>
+          <CardTitle className="text-2xl font-bold">큐레이터 글 수정</CardTitle>
           <CardDescription>
-            커뮤니티에 여러분의 생각을 공유하세요
+            기존의 글을 수정하여 업데이트하세요.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -148,7 +169,7 @@ export default function AddCuratorPost() {
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full" disabled={!isFormValid}>
-              업로드
+              수정 완료
             </Button>
           </CardFooter>
         </form>

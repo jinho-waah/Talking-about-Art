@@ -12,6 +12,7 @@ export const pageRoutes = {
   currentPost: "/currentlist/:id",
   curatorList: "/curatorlist",
   curatorPost: "/curatorlist/:id",
+  editCuratorPost: "/editcuratorpost/:id",
   postList: "/postlist",
   postPost: "/postlist/:id",
   addExhibition: "/addexhibition",

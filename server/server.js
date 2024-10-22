@@ -210,6 +210,7 @@ app.get("/api/mypage/:id", (req, res) => {
   });
 });
 
+// GET curator post list
 app.get("/api/curatorPosts/list", (req, res) => {
   const query = `
     SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at, 
@@ -231,7 +232,7 @@ app.get("/api/curatorPosts/list", (req, res) => {
   });
 });
 
-// 최신 큐레이터 게시물 3개 가져오기 (큐레이터 이름 포함)
+// GET recent 3 curator post
 app.get("/api/curatorPosts/recent", (req, res) => {
   const query = `
     SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at, 
@@ -284,7 +285,7 @@ app.get("/curatorPosts", (req, res) => {
   );
 });
 
-// curator post id로 내용 불러오기
+//  GET curator post id로 내용 불러오기
 app.get("/api/curatorPosts/:id", (req, res) => {
   const postId = req.params.id;
 
@@ -319,7 +320,42 @@ app.get("/api/curatorPosts/:id", (req, res) => {
   });
 });
 
-// 큐레이터 아이디로 게시물 삭제하기
+// PUT 큐레이터 포스트 업데이트 API
+app.put("/api/curatorPosts/:id", (req, res) => {
+  const postId = req.params.id;
+  const { curator_id, show_id, title, content, updated_at } = req.body;
+
+  const query = `
+    UPDATE artlove1_art_lover.curator_posts 
+    SET 
+      curator_id = ?, 
+      show_id = ?, 
+      title = ?, 
+      content = ?, 
+      updated_at = ?
+    WHERE id = ?`;
+
+  connection.query(
+    query,
+    [curator_id, show_id, title, content, updated_at, postId],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating curator post:", err);
+        return res
+          .status(500)
+          .json({ message: "서버 에러로 인해 게시물 수정에 실패했습니다." });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "해당 게시물을 찾을 수 없습니다." });
+      }
+
+      res.status(200).json({ message: "게시물이 성공적으로 수정되었습니다." });
+    }
+  );
+});
+
+// DEL 큐레이터 아이디로 삭제
 app.delete("/api/curatorPosts/:id", (req, res) => {
   const postId = req.params.id;
 
@@ -494,8 +530,8 @@ app.get("/api/searchShowId", (req, res) => {
 });
 
 
-// Express 서버 예시 코드
-app.post("/api/uploadCuratorPosts", (req, res) => {
+// POST curator post 
+app.post("/api/curatorPosts", (req, res) => {
   const {
     curator_id,
     show_id,
