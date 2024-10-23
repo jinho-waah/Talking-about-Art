@@ -8,7 +8,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"; // 모달 컴포넌트 추가
+  DialogDescription, // 추가된 설명 컴포넌트
+} from "@/components/ui/dialog";
 import { useNavigate, useParams } from "react-router-dom";
 import { DOMAIN } from "@/constants";
 import Comments from "./comment";
@@ -66,13 +67,13 @@ export default function OrdinaryPost() {
   const handleDelete = async () => {
     if (window.confirm("정말로 이 게시물을 삭제하시겠습니까?")) {
       try {
-        const response = await fetch(`${DOMAIN}api/curatorP/${id}`, {
+        const response = await fetch(`${DOMAIN}api/ordinaryPosts/${id}`, {
           method: "DELETE",
         });
 
         if (response.ok) {
           alert("게시물이 성공적으로 삭제되었습니다.");
-          navigate(pageRoutes.curatorList);
+          navigate(pageRoutes.ordinaryList);
         } else {
           alert("게시물 삭제에 실패했습니다.");
         }
@@ -144,6 +145,9 @@ export default function OrdinaryPost() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>게시물 옵션</DialogTitle>
+              <DialogDescription>
+                게시물을 수정하거나 삭제할 수 있습니다.
+              </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col space-y-2">
               <Button variant="outline" onClick={handleEdit}>

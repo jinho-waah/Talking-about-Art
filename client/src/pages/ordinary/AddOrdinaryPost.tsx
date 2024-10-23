@@ -15,8 +15,11 @@ import { Upload, X } from "lucide-react";
 import { DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { getKstTimeString } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { pageRoutes } from "@/apiRoutes";
 
 export default function AddOrdinaryPost() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState<string>(
     localStorage.getItem("ordinaryPostTitle") || ""
   );
@@ -108,6 +111,7 @@ export default function AddOrdinaryPost() {
       setImages([]);
       localStorage.removeItem("ordinaryPostTitle");
       localStorage.removeItem("ordinaryPostContent");
+      navigate(pageRoutes.ordinaryList);
     } catch (error) {
       console.error(error);
       alert("게시물 생성 중 오류가 발생했습니다.");

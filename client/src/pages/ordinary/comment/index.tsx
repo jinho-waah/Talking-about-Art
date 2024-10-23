@@ -52,7 +52,7 @@ export default function Comments() {
             <p className="text-muted-foreground">{reply.content}</p>
           </CardContent>
           <CardFooter>
-            <div className="w-full flex justify-between">
+            <div className="flex space-x-4">
               <Button variant="ghost" size="sm">
                 <ThumbsUp className="mr-2 h-4 w-4" />
                 좋아요 32
