@@ -25,6 +25,7 @@ interface RegisterFormData {
   password: string;
   confirmPassword: string;
   birthday: string;
+  role: string; // 추가된 필드
 }
 
 // 유효성 검사를 위한 에러 메시지 타입 정의
@@ -34,6 +35,7 @@ interface FormErrors {
   password?: string;
   confirmPassword?: string;
   birthday?: string;
+  role?: string;
 }
 
 export default function RegisterPage() {
@@ -43,6 +45,7 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
     birthday: "",
+    role: "general", // 기본값 설정
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
@@ -65,6 +68,10 @@ export default function RegisterPage() {
     setFormData({ ...formData, [id]: value });
   };
 
+  const handleRoleChange = (value: string) => {
+    setFormData({ ...formData, role: value });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validationErrors = validate();
@@ -72,7 +79,7 @@ export default function RegisterPage() {
       setErrors(validationErrors);
       return;
     }
-    console.log(formData);
+
     // 서버로 회원가입 데이터 전송
     try {
       const response = await fetch(`${DOMAIN}api/register`, {
@@ -106,7 +113,7 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">이름</Label>
+              <Label htmlFor="nickname">이름</Label>
               <Input
                 id="nickname"
                 placeholder="일반 회원은 닉네임을 사용해도 좋습니다"
@@ -194,19 +201,22 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <RadioGroup defaultValue="option-one">
+              <RadioGroup
+                value={formData.role}
+                onValueChange={handleRoleChange}
+              >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="option-one" id="option-one" />
+                  <RadioGroupItem value="general" id="option-one" />
                   <Label htmlFor="option-one">일반 회원</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="option-two" id="option-two" />
+                  <RadioGroupItem value="gallery" id="option-two" />
                   <Label htmlFor="option-two">
                     전시장 (추가 인증 후 전시장 전용 계정으로 전환 됩니다.)
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="option-three" id="option-three" />
+                  <RadioGroupItem value="curator" id="option-three" />
                   <Label htmlFor="option-three">
                     큐레이터 (추가 인증 후 큐레이터 전용 계정으로 전환 됩니다.)
                   </Label>

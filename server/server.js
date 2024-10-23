@@ -80,19 +80,39 @@ app.post("/api/register", async (req, res) => {
   const { role, email, nickname, password, birthday, profile_image } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const query = `
+
+    // 1. 사용자 정보 저장
+    const userQuery = `
       INSERT INTO artlove1_art_lover.users (nickname, email, password, birthday, profile_image, role)
-      VALUES (?, ?, ?, ?, "", "general")
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
+
     connection.query(
-      query,
-      [nickname, email, hashedPassword, birthday, profile_image, role],
-      (err, result) => {
+      userQuery,
+      [nickname, email, hashedPassword, birthday, profile_image, "general"],
+      (err, userResult) => {
         if (err) {
-          console.error("Error inserting data:", err);
+          console.error("Error inserting user data:", err);
           return res.status(500).send("Error registering user");
         }
-        res.status(201).send("User registered successfully");
+
+        // 2. 등록된 사용자 ID 가져오기
+        const userId = userResult.insertId;
+
+        // 3. 기본 권한 설정 (사용자 등록 시 기본 권한 추가)
+        const permissionsQuery = `
+          INSERT INTO artlove1_art_lover.permissions (user_id, request, flag)
+          VALUES (?, ?, ?)
+        `;
+
+        // 기본 role을 "general"로 설정하고 flag는 false
+        connection.query(permissionsQuery, [userId, role, false], (permErr) => {
+          if (permErr) {
+            console.error("Error setting permissions:", permErr);
+            return res.status(500).send("Error registering user permissions");
+          }
+          res.status(201).send("User registered successfully with permissions");
+        });
       }
     );
   } catch (error) {
@@ -209,16 +229,54 @@ app.get("/api/mypage/:id", (req, res) => {
     res.status(200).json(result[0]);
   });
 });
+// ============================== curator ================================
+// POST curator post
+app.post("/api/curatorPosts", (req, res) => {
+  const {
+    curator_id,
+    show_id,
+    title,
+    content,
+    created_at,
+    updated_at,
+    like_count,
+  } = req.body;
+
+  const query = `
+    INSERT INTO artlove1_art_lover.curator_posts
+    (curator_id, show_id, title, content, created_at, updated_at, like_count)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  connection.query(
+    query,
+    [curator_id, show_id, title, content, created_at, updated_at, like_count],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting post:", err);
+        return res.status(500).json({ message: "게시물 등록 실패" });
+      }
+      res.status(201).json({ message: "게시물이 성공적으로 등록되었습니다." });
+    }
+  );
+});
 
 // GET curator post list
 app.get("/api/curatorPosts", (req, res) => {
+  // const query = `
+  //   SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at,
+  //          cp.like_count, u.nickname AS curator_name
+  //   FROM artlove1_art_lover.curator_posts cp
+  //   JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
+  //   ORDER BY cp.created_at DESC
+  //   LIMIT 3
+  // `;
   const query = `
     SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at,
            cp.like_count, u.nickname AS curator_name
     FROM artlove1_art_lover.curator_posts cp
     JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
     ORDER BY cp.created_at DESC
-    LIMIT 3
   `;
   connection.query(query, (err, results) => {
     if (err) {
@@ -293,12 +351,11 @@ app.get("/api/curatorPosts/:id", (req, res) => {
 // PUT 큐레이터 포스트 업데이트 API
 app.put("/api/curatorPosts/:id", (req, res) => {
   const postId = req.params.id;
-  const { curator_id, show_id, title, content, updated_at } = req.body;
+  const { show_id, title, content, updated_at } = req.body;
 
   const query = `
     UPDATE artlove1_art_lover.curator_posts
     SET
-      curator_id = ?,
       show_id = ?,
       title = ?,
       content = ?,
@@ -307,7 +364,7 @@ app.put("/api/curatorPosts/:id", (req, res) => {
 
   connection.query(
     query,
-    [curator_id, show_id, title, content, updated_at, postId],
+    [show_id, title, content, updated_at, postId],
     (err, result) => {
       if (err) {
         console.error("Error updating curator post:", err);
@@ -349,6 +406,170 @@ app.delete("/api/curatorPosts/:id", (req, res) => {
   });
 });
 
+//================================ ordinary post ===============================
+
+// 이미지 저장을 위한 multer 설정
+const postStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../client/public/img/profileImg")); // 절대 경로 사용 권장
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const uploadPost = multer({ storage: postStorage });
+
+// POST ordinary post (이미지 포함)
+app.post("/api/ordinaryPosts", uploadPost.single("image"), (req, res) => {
+  const {
+    author_id,
+    title,
+    content,
+    created_at,
+    updated_at,
+    like_count = 0,
+    comment_count = 0,
+  } = req.body;
+
+  // 업로드된 이미지의 클라이언트 접근 경로 생성
+  const imageUrl = req.file ? `/img/profileImg/${req.file.filename}` : null; // 이미지가 없으면 null
+
+  const query = `
+    INSERT INTO artlove1_art_lover.posts
+    (author_id, title, content, created_at, updated_at, like_count, comment_count, image_url)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  connection.query(
+    query,
+    [
+      author_id,
+      title,
+      content,
+      created_at, // 클라이언트에서 받은 created_at
+      updated_at, // 클라이언트에서 받은 updated_at
+      like_count,
+      comment_count,
+      imageUrl, // 단일 이미지 URL
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting ordinary post:", err);
+        return res.status(500).json({ message: "게시물 등록 실패" });
+      }
+      res.status(201).json({ message: "게시물이 성공적으로 등록되었습니다." });
+    }
+  );
+});
+
+// GET ordinary post list
+app.get("/api/ordinaryPosts", (req, res) => {
+  const query = `
+    SELECT p.id, p.author_id, p.title, p.content, p.created_at,
+           p.like_count, p.comment_count, u.nickname AS author_name
+    FROM artlove1_art_lover.posts p
+    JOIN artlove1_art_lover.users u ON p.author_id = u.id
+    ORDER BY p.created_at DESC
+  `;
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching ordinary posts:", err);
+      return res
+        .status(500)
+        .json({ message: "서버 에러로 인해 게시물을 불러올 수 없습니다." });
+    }
+
+    res.status(200).json(results);
+  });
+});
+
+// GET ordinary post by ID
+app.get("/api/ordinaryPosts/:id", (req, res) => {
+  const postId = req.params.id;
+
+  const query = `
+    SELECT p.id, p.author_id, p.title, p.content, p.created_at,
+           p.like_count, p.comment_count, u.nickname AS author_name
+    FROM artlove1_art_lover.posts p
+    JOIN artlove1_art_lover.users u ON p.author_id = u.id
+    WHERE p.id = ?
+  `;
+
+  connection.query(query, [postId], (err, results) => {
+    if (err) {
+      console.error("Error fetching ordinary post:", err);
+      return res
+        .status(500)
+        .json({ message: "서버 에러로 인해 게시물을 불러올 수 없습니다." });
+    }
+
+    if (results.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "해당 게시물을 찾을 수 없습니다." });
+    }
+
+    res.status(200).json(results[0]);
+  });
+});
+
+// PUT ordinary post by ID
+app.put("/api/ordinaryPosts/:id", (req, res) => {
+  const postId = req.params.id;
+  const { title, content, updated_at } = req.body;
+
+  const query = `
+    UPDATE artlove1_art_lover.posts
+    SET title = ?, content = ?, updated_at = ?
+    WHERE id = ?`;
+
+  connection.query(
+    query,
+    [title, content, updated_at, postId],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating ordinary post:", err);
+        return res
+          .status(500)
+          .json({ message: "서버 에러로 인해 게시물 수정에 실패했습니다." });
+      }
+
+      if (result.affectedRows === 0) {
+        return res
+          .status(404)
+          .json({ message: "해당 게시물을 찾을 수 없습니다." });
+      }
+
+      res.status(200).json({ message: "게시물이 성공적으로 수정되었습니다." });
+    }
+  );
+});
+
+// DELETE ordinary post by ID
+app.delete("/api/ordinaryPosts/:id", (req, res) => {
+  const postId = req.params.id;
+
+  const query = `
+    DELETE FROM artlove1_art_lover.posts WHERE id = ?
+  `;
+
+  connection.query(query, [postId], (err, result) => {
+    if (err) {
+      console.error("Error deleting ordinary post:", err);
+      return res.status(500).json({ message: "게시물 삭제 실패" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "게시물을 찾을 수 없습니다." });
+    }
+
+    res.status(200).json({ message: "게시물이 성공적으로 삭제되었습니다." });
+  });
+});
+
+// ================================== mypage ======================================
+
 // 유저 정보 업데이트 (마이페이지 수정)
 app.put("/api/mypage/:id", verifyAuthToken, (req, res) => {
   const userId = req.params.id;
@@ -388,9 +609,9 @@ app.put("/api/mypage/:id", verifyAuthToken, (req, res) => {
 });
 
 // multer 설정
-const storage = multer.diskStorage({
+const profileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../client/public/profileImg"));
+    cb(null, path.join(__dirname, "../client/public/img/profileImg"));
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
@@ -398,13 +619,13 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const uploadProfile = multer({ profileStorage });
 
 // 프로필 이미지 업로드
 app.post(
   "/api/upload/avatar/:id",
   verifyAuthToken,
-  upload.single("avatar"),
+  uploadProfile.single("avatar"),
   async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "이미지 업로드 실패" });
@@ -439,15 +660,14 @@ app.post(
       }
 
       // 새로운 이미지 압축 및 저장 경로
-      const filePath = `/profileImg/${req.user.id}-${Date.now()}.jpeg`; // 압축된 파일은 JPEG로 저장
+      const filePath = `/profileImg/${req.user.id}-${Date.now()}.webp`; // 압축된 파일은 JPEG로 저장
 
       try {
-        // Sharp를 사용하여 이미지 압축 및 최적화
         await sharp(req.file.path)
           .resize(500, 500, {
             fit: sharp.fit.cover,
           }) // 500x500으로 리사이즈
-          .jpeg({ quality: 70 }) // JPEG로 변환하고 품질 70%로 설정
+          .webp({ quality: 70 }) // JPEG로 변환하고 품질 70%로 설정
           .toFile(path.join(__dirname, "../client/public", filePath)); // 압축된 파일 저장
 
         // 원래 파일 삭제
@@ -499,41 +719,14 @@ app.get("/api/searchShowId", (req, res) => {
   });
 });
 
-// POST curator post
-app.post("/api/curatorPosts", (req, res) => {
-  const {
-    curator_id,
-    show_id,
-    title,
-    content,
-    created_at,
-    updated_at,
-    like_count,
-  } = req.body;
-
-  const query = `
-    INSERT INTO artlove1_art_lover.curator_posts
-    (curator_id, show_id, title, content, created_at, updated_at, like_count)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  connection.query(
-    query,
-    [curator_id, show_id, title, content, created_at, updated_at, like_count],
-    (err, result) => {
-      if (err) {
-        console.error("Error inserting post:", err);
-        return res.status(500).json({ message: "게시물 등록 실패" });
-      }
-      res.status(201).json({ message: "게시물이 성공적으로 등록되었습니다." });
-    }
-  );
-});
-
 // Express에 정적 파일 제공 추가
 app.use(
   "/profileImg",
-  express.static(path.join(__dirname, "../client/public/profileImg"))
+  express.static(path.join(__dirname, "../client/public/img/profileImg"))
+);
+app.use(
+  "/postImg",
+  express.static(path.join(__dirname, "../client/public/img/postImg"))
 );
 app.use(express.static(path.join(__dirname, "../client")));
 app.get("/*", function (req, res) {

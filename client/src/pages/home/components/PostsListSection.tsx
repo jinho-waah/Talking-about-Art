@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 export const PostList = () => {
   const navigate = useNavigate();
   const handlePostClick = (id: number) => {
-    navigate(`${pageRoutes.postList}/${id}`);
+    navigate(`${pageRoutes.ordinaryList}/${id}`);
   };
   const Posts = [
     {
@@ -71,7 +71,7 @@ export const PostList = () => {
           ))}
         </ul>
       </CardContent>
-      <MoreView path={pageRoutes.postList} />
+      <MoreView path={pageRoutes.ordinaryList} />
     </Card>
   );
 };

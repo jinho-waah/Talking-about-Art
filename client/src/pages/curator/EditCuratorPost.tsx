@@ -39,7 +39,7 @@ export default function EditCuratorPost() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Show[]>([]);
   const navigate = useNavigate();
-  const { userId } = authStore();
+  const { userId, role } = authStore();
 
   useEffect(() => {
     // 기존 포스트 내용 불러오기
@@ -52,7 +52,7 @@ export default function EditCuratorPost() {
           setContent(data.content);
           setShowId(data.show_id);
           setShowName(data.show_name);
-          if (data.curator_id !== userId) {
+          if (data.curator_id !== userId && role !== "admin") {
             alert("접근 권한이 없습니다.");
             navigate(pageRoutes.main);
           }
@@ -65,13 +65,12 @@ export default function EditCuratorPost() {
     };
 
     fetchCuratorPost();
-  }, [id, userId, navigate]);
+  }, []);
 
   const handleSubmit = async () => {
     if (!showId) return;
 
     const updatedPost = {
-      curator_id: userId,
       show_id: showId,
       title: title.trim(),
       content: content.trim(),

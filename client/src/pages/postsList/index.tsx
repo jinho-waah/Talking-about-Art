@@ -22,17 +22,31 @@ interface CuratorPost {
   created_at: string;
 }
 
+interface OrdinaryPost {
+  id: number;
+  author_id: number;
+  title: string;
+  content: string;
+  author_name: string;
+  like_count: number;
+  comment_count: number;
+  created_at: string;
+}
+
 export default function PostsList({ title }: PostsListProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { isLogin, role } = authStore();
 
   const [curatorPosts, setCuratorPosts] = useState<CuratorPost[]>([]);
+  const [ordinaryPosts, setOrdinaryosts] = useState<OrdinaryPost[]>([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     if (title === "큐레이터") {
       fetchCuratorPosts();
+    } else if (title === "게시글") {
+      fetchOrdinaryPosts();
     }
   }, [title]);
 
@@ -42,6 +56,20 @@ export default function PostsList({ title }: PostsListProps) {
       if (response.ok) {
         const data = await response.json();
         setCuratorPosts((prevPosts) => [...prevPosts, ...data]);
+      } else {
+        console.error("Failed to fetch curator posts");
+      }
+    } catch (error) {
+      console.error("Error fetching curator posts:", error);
+    }
+  };
+
+  const fetchOrdinaryPosts = async () => {
+    try {
+      const response = await fetch(`${DOMAIN}api/ordinaryPosts`);
+      if (response.ok) {
+        const data = await response.json();
+        setOrdinaryosts((prevPosts) => [...prevPosts, ...data]);
       } else {
         console.error("Failed to fetch curator posts");
       }
@@ -79,7 +107,7 @@ export default function PostsList({ title }: PostsListProps) {
         navigate(`${pageRoutes.curatorPost.replace(":id", String(id))}`);
         break;
       case "ordinary":
-        navigate(`${pageRoutes.postPost.replace(":id", String(id))}`);
+        navigate(`${pageRoutes.ordinaryPost.replace(":id", String(id))}`);
         break;
       default:
         console.log("error");
@@ -110,42 +138,6 @@ export default function PostsList({ title }: PostsListProps) {
   const handleLoadMore = () => {
     // setPage((prevPage) => prevPage + 1);
   };
-
-  const tmpData = [
-    {
-      id: 6,
-      title: "New Installation at MoMA",
-      author: "Sarah K.",
-      avatar: "SK",
-      content:
-        "Just visited the new installation at MoMA and I'm blown away. The use of light and space is truly innovative...",
-      likes: 42,
-      comments: 8,
-      date: "2 hours ago",
-    },
-    {
-      id: 4,
-      title: "Reflections on Abstract Expressionism",
-      author: "Michael R.",
-      avatar: "MR",
-      content:
-        "After spending a week immersed in the works of Pollock and de Kooning, I've come to appreciate the raw emotion...",
-      likes: 38,
-      comments: 5,
-      date: "5 hours ago",
-    },
-    {
-      id: 5,
-      title: "Virtual Reality in Art: A Game Changer?",
-      author: "Elena T.",
-      avatar: "ET",
-      content:
-        "I recently experienced a VR art exhibition and it's got me thinking about the future of art consumption...",
-      likes: 56,
-      comments: 12,
-      date: "1 day ago",
-    },
-  ];
 
   return (
     <div className="container mx-auto px-1 py-8">
@@ -208,17 +200,20 @@ export default function PostsList({ title }: PostsListProps) {
               </CardContent>
             </Card>
           ))}
-        {title !== "큐레이터" &&
-          tmpData.map((post, index) => (
+
+        {title === "게시글" &&
+          ordinaryPosts.map((post, index) => (
             <Card key={index} className="mb-6">
               <CardHeader>
                 <div className="flex items-center space-x-4">
                   <Avatar>
-                    <AvatarFallback>{post.avatar}</AvatarFallback>
+                    <AvatarFallback>{post.author_name[0]}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-medium">{post.author}</p>
-                    <p className="text-sm text-muted-foreground">{post.date}</p>
+                    <p className="font-medium">{post.author_name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(post.created_at).toLocaleString()}
+                    </p>
                   </div>
                 </div>
               </CardHeader>
@@ -233,11 +228,53 @@ export default function PostsList({ title }: PostsListProps) {
                 <div className="flex space-x-4">
                   <Button variant="ghost" size="sm">
                     <ThumbsUp className="mr-2 h-4 w-4" />
-                    {post.likes}
+                    {post.like_count}
                   </Button>
                   <Button variant="ghost" size="sm">
                     <MessageSquare className="mr-2 h-4 w-4" />
-                    {post.comments}
+                    {post.comment_count}
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="mr-2 h-4 w-4" />
+                    Share
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+
+        {title === "전시소개" &&
+          ordinaryPosts.map((post, index) => (
+            <Card key={index} className="mb-6">
+              <CardHeader>
+                <div className="flex items-center space-x-4">
+                  <Avatar>
+                    <AvatarFallback>{post.author_name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{post.author_name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(post.created_at).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div
+                  className="cursor-pointer"
+                  onClick={() => handlePostClick(post.id)}
+                >
+                  <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
+                  <p className="text-muted-foreground mb-4">{post.content}</p>
+                </div>
+                <div className="flex space-x-4">
+                  <Button variant="ghost" size="sm">
+                    <ThumbsUp className="mr-2 h-4 w-4" />
+                    {post.like_count}
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    {post.comment_count}
                   </Button>
                   <Button variant="ghost" size="sm">
                     <Share2 className="mr-2 h-4 w-4" />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,19 +11,33 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Upload, X } from "lucide-react";
+import { DOMAIN } from "@/constants";
+import authStore from "@/store/authStore";
+import { getKstTimeString } from "@/lib/utils";
 
 export default function AddOrdinaryPost() {
-  const [images, setImages] = useState<string[]>([]);
+  const [title, setTitle] = useState<string>(
+    localStorage.getItem("ordinaryPostTitle") || ""
+  );
+  const [content, setContent] = useState<string>(
+    localStorage.getItem("ordinaryPostContent") || ""
+  );
+  const [images, setImages] = useState<File[]>([]);
+  const { userId } = authStore();
+
+  useEffect(() => {
+    localStorage.setItem("ordinaryPostTitle", title);
+  }, [title]);
+
+  useEffect(() => {
+    localStorage.setItem("ordinaryPostContent", content);
+  }, [content]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      const newImages = Array.from(files).map((file) =>
-        URL.createObjectURL(file)
-      );
-      setImages((prevImages) => [...prevImages, ...newImages]);
+      setImages((prevImages) => [...prevImages, ...Array.from(files)]);
     }
   };
 
@@ -31,9 +45,73 @@ export default function AddOrdinaryPost() {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const uploadImages = async (): Promise<string[]> => {
+    const imageUrls: string[] = [];
+
+    for (const image of images) {
+      const formData = new FormData();
+      formData.append("image", image);
+
+      try {
+        const response = await fetch(`${DOMAIN}api/upload/image`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("이미지 업로드에 실패했습니다.");
+        }
+
+        const data = await response.json();
+        imageUrls.push(data.imageUrl); // 서버에서 반환한 이미지 경로
+      } catch (error) {
+        console.error("Error uploading images:", error);
+        alert("이미지 업로드 중 오류가 발생했습니다.");
+      }
+    }
+
+    return imageUrls;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 게시물 생성 로직 처리
+
+    const imageUrls = await uploadImages();
+
+    const newPost = {
+      author_id: userId,
+      title: title.trim(),
+      content: content.trim(),
+      created_at: getKstTimeString(), // 한국 시간 사용
+      updated_at: getKstTimeString(), // 한국 시간 사용
+      like_count: 0,
+      comment_count: 0,
+      image_url: JSON.stringify(imageUrls), // 업로드된 이미지 URL 사용
+    };
+
+    try {
+      const response = await fetch(`${DOMAIN}api/ordinaryPosts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newPost),
+      });
+
+      if (!response.ok) {
+        throw new Error("게시물 생성에 실패했습니다.");
+      }
+
+      alert("게시물이 성공적으로 생성되었습니다.");
+      setTitle("");
+      setContent("");
+      setImages([]);
+      localStorage.removeItem("ordinaryPostTitle");
+      localStorage.removeItem("ordinaryPostContent");
+    } catch (error) {
+      console.error(error);
+      alert("게시물 생성 중 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -52,6 +130,8 @@ export default function AddOrdinaryPost() {
               <Input
                 id="title"
                 placeholder="게시물 제목을 입력하세요"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 required
               />
             </div>
@@ -61,6 +141,8 @@ export default function AddOrdinaryPost() {
                 id="content"
                 placeholder="여기에 게시물 내용을 작성하세요"
                 rows={6}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
                 required
               />
             </div>
@@ -83,10 +165,10 @@ export default function AddOrdinaryPost() {
                 />
               </div>
               <div className="grid grid-cols-3 gap-4 mt-4">
-                {images.map((src, index) => (
+                {images.map((file, index) => (
                   <div key={index} className="relative">
                     <img
-                      src={src}
+                      src={URL.createObjectURL(file)}
                       alt={`업로드된 이미지 ${index + 1}`}
                       className="w-full h-32 object-cover rounded-md"
                     />
@@ -101,10 +183,6 @@ export default function AddOrdinaryPost() {
                   </div>
                 ))}
               </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="comments" />
-              <Label htmlFor="comments">댓글 허용</Label>
             </div>
           </CardContent>
           <CardFooter>

@@ -17,6 +17,7 @@ import AddOrdinaryPost from "./pages/ordinary/AddOrdinaryPost";
 import PrivateRoute from "./pages/common/components/PrivateRoute";
 import { Layout } from "./pages/common/components/Layout";
 import EditCuratorPost from "./pages/curator/EditCuratorPost";
+import EditOrdinaryPost from "./pages/ordinary/EditOrdinaryPost";
 
 const CommonLayout = () => (
   <Layout>
@@ -59,11 +60,11 @@ const router = createBrowserRouter([
         element: <CuratorPost />,
       },
       {
-        path: pageRoutes.postList,
+        path: pageRoutes.ordinaryList,
         element: <PostsList title={TAB_TITLES.POSTS} />,
       },
       {
-        path: pageRoutes.postPost,
+        path: pageRoutes.ordinaryPost,
         element: <OrdinaryPost />,
       },
       {
@@ -92,11 +93,22 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+
       {
         path: pageRoutes.editCuratorPost, // 수정 페이지 추가
         element: (
           <PrivateRoute allowedRoles={["admin", "curator"]}>
             <EditCuratorPost />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: pageRoutes.editOrdinaryPost, // 수정 페이지 추가
+        element: (
+          <PrivateRoute
+            allowedRoles={["admin", "gallery", "curator", "general"]}
+          >
+            <EditOrdinaryPost />
           </PrivateRoute>
         ),
       },

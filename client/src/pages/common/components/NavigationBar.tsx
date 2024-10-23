@@ -36,7 +36,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ toggleMenu }) => {
     toggleMenu();
   };
   const handleToPostList = () => {
-    navigate(pageRoutes.postList);
+    navigate(pageRoutes.ordinaryList);
     toggleMenu();
   };
   const handleToLogin = () => {

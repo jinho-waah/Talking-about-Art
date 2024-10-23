@@ -22,6 +22,7 @@ import { DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
+import { getKstTimeString } from "@/lib/utils";
 
 interface Show {
   id: number;
@@ -63,8 +64,8 @@ export default function AddCuratorPost() {
       show_id: showId,
       title: title.trim(),
       content: content.trim(),
-      created_at: new Date().toISOString().slice(0, 19).replace("T", " "), // "YYYY-MM-DD HH:MM:SS" 형식으로 변경
-      updated_at: new Date().toISOString().slice(0, 19).replace("T", " "),
+      created_at: getKstTimeString(), // 한국 시간 사용
+      updated_at: getKstTimeString(), // 한국 시간 사용
       like_count: 0,
     };
 

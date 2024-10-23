@@ -58,7 +58,7 @@ const Curators = () => {
         <CardHeader>
           <CardTitle>큐레이터</CardTitle>
           <CardDescription>
-            최근 전시회에 대한 전문가의 심층 리뷰와 의견을 확인하세요
+            최근 전시에 대한 전문가의 심층 리뷰를 확인하세요
           </CardDescription>
         </CardHeader>
         <CardContent>
