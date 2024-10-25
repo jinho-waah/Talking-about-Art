@@ -36,6 +36,7 @@ import {
 import TagsCheckBox from "./ui/TagCheckBox";
 import authStore from "@/store/authStore";
 import { DOMAIN } from "@/constants";
+import { useNavigate } from "react-router-dom";
 
 type Combobox =
   | "Seoul"
@@ -130,6 +131,7 @@ const frameworks = [
 
 export default function AddExhibitionPost() {
   const { galleryId } = authStore();
+  const navigate = useNavigate();
   const [title, setTitle] = useState(() => localStorage.getItem("title") || "");
   const [galleryName, setGalleryName] = useState<string>("");
   const [description, setDescription] = useState(
@@ -282,15 +284,11 @@ export default function AddExhibitionPost() {
       if (!response.ok) {
         throw new Error("갤러리 이름을 가져오는 데 실패했습니다.");
       }
-
       const data = await response.json();
       setGalleryName(data.gallery_name); // 받아온 갤러리 이름
-
-      console.log("갤러리 이름:", galleryName);
     } catch (error) {
       console.error("에러 발생:", error);
     }
-    console.log(galleryName);
 
     // 기본 데이터 추가
     formData.append("show_name", title);
@@ -329,9 +327,20 @@ export default function AddExhibitionPost() {
       if (!response.ok) {
         throw new Error("전시 정보 등록에 실패했습니다.");
       }
-
       const result = await response.json();
       console.log("전시 정보가 성공적으로 등록되었습니다:", result);
+
+      localStorage.removeItem("title");
+      localStorage.removeItem("description");
+      localStorage.removeItem("startDate");
+      localStorage.removeItem("endDate");
+      localStorage.removeItem("detailLocation");
+      localStorage.removeItem("price");
+      localStorage.removeItem("artists");
+      localStorage.removeItem("siteLink");
+      localStorage.removeItem("instagramSearch");
+
+      navigate("/currentlist");
     } catch (error) {
       console.error("에러 발생:", error);
     }
@@ -419,7 +428,10 @@ export default function AddExhibitionPost() {
                       id="start-date"
                       type="date"
                       value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
+                      onChange={(e) => {
+                        const formattedDate = e.target.value.replace(/-/g, "."); // 날짜 형식을 변환
+                        setStartDate(formattedDate);
+                      }}
                       className="pl-10"
                       required
                     />
@@ -433,7 +445,10 @@ export default function AddExhibitionPost() {
                       id="end-date"
                       type="date"
                       value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
+                      onChange={(e) => {
+                        const formattedDate = e.target.value.replace(/-/g, "."); // 날짜 형식을 변환
+                        setEndDate(formattedDate);
+                      }}
                       className="pl-10"
                       required
                     />
@@ -474,7 +489,10 @@ export default function AddExhibitionPost() {
               </div>
 
               <div className="space-y-2">
-                <Label>태그</Label>
+                <Label>
+                  태그 (추가를 원하시는 태그가 있으시다면 문의 주시면
+                  감사하겠습니다.)
+                </Label>
                 <div className="pb-2">
                   <Card>
                     <CardHeader>
@@ -573,6 +591,7 @@ export default function AddExhibitionPost() {
 
               <div className="space-y-2">
                 <Label htmlFor="image">커버 이미지 업로드</Label>
+
                 <div className="flex items-center justify-center w-full">
                   <label
                     htmlFor="image"
@@ -583,6 +602,10 @@ export default function AddExhibitionPost() {
                       <p className="mb-2 text-sm text-muted-foreground">
                         <span className="font-semibold">클릭하여 업로드</span>{" "}
                         또는 드래그 앤 드롭
+                        <br />
+                        <span className="font-semibold">
+                          이미지는 순서대로 업로드 됩니다
+                        </span>
                       </p>
                       <p className="text-xs text-muted-foreground">
                         SVG, PNG, JPG

@@ -1073,6 +1073,31 @@ app.get("/api/searchShowId", (req, res) => {
   });
 });
 
+// ================================== comments ======================================
+
+app.get("/api/post/comment/:id", (req, res) => {
+  const postId = req.params.id;
+
+  // 댓글 및 작성자 정보를 가져오는 쿼리
+  const query = `
+    SELECT pc.id, pc.post_id, pc.user_id, pc.content, pc.like_count, pc.created_at, 
+           u.nickname, u.profile_image
+    FROM post_comments pc
+    JOIN users u ON pc.user_id = u.id
+    WHERE pc.post_id = ?;
+  `;
+
+  connection.query(query, [postId], (err, results) => {
+    if (err) {
+      console.error("Error fetching post comments:", err);
+      return res.status(500).json({ message: "서버 오류" });
+    }
+
+    res.status(200).json(results);
+  });
+});
+
+
 // Express에 정적 파일 제공 추가
 app.use(
   "/profileImg",
