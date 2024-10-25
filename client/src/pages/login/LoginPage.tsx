@@ -81,9 +81,8 @@ export default function LoginPage() {
       }
 
       const data = await response.json();
-      const { userId, role, userName, imgUrl } = data;
-
-      setLogin(userId, role, userName, imgUrl);
+      const { userId, galleryId, role, userName, imgUrl } = data;
+      setLogin(userId, galleryId, role, userName, imgUrl);
 
       navigate(pageRoutes.main);
     } catch (error) {

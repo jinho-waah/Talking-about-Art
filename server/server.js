@@ -150,6 +150,7 @@ app.post("/api/login", (req, res) => {
       const token = jwt.sign(
         {
           id: user.id,
+          galleryId: user.gallery_id,
           role: user.role,
           userName: user.nickname,
           imgUrl: user.profile_image,
@@ -168,6 +169,7 @@ app.post("/api/login", (req, res) => {
       return res.status(200).json({
         message: "로그인 성공",
         userId: user.id,
+        galleryId: user.gallery_id,
         role: user.role,
         userName: user.nickname,
         imgUrl: user.profile_image,
@@ -196,6 +198,7 @@ app.post("/api/logout", (req, res) => {
 app.get("/api/auth/status", verifyAuthToken, (req, res) => {
   res.status(200).json({
     id: req.user.id,
+    galleryId: req.user.galleryId,
     role: req.user.role,
     userName: req.user.userName,
     imgUrl: req.user.imgUrl,
@@ -229,6 +232,25 @@ app.get("/api/mypage/:id", (req, res) => {
     res.status(200).json(result[0]);
   });
 });
+
+app.get("/api/galleryname/:galleryId", (req, res) => {
+  const { galleryId } = req.params;
+
+  const query = `SELECT gallery_name FROM artlove1_art_lover.galleries WHERE id = ?`;
+  connection.query(query, [galleryId], (err, results) => {
+    if (err) {
+      console.error("Error fetching gallery name:", err);
+      return res.status(500).json({ message: "갤러리 이름 가져오기 실패" });
+    }
+
+    if (results.length > 0) {
+      res.status(200).json({ gallery_name: results[0].gallery_name });
+    } else {
+      res.status(404).json({ message: "갤러리 이름을 찾을 수 없습니다." });
+    }
+  });
+});
+
 // ============================== curator ================================
 // POST curator post
 app.post("/api/curatorPosts", (req, res) => {
@@ -411,7 +433,7 @@ app.delete("/api/curatorPosts/:id", (req, res) => {
 // 이미지 저장을 위한 multer 설정
 const postStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../client/public/img/profileImg")); // 절대 경로 사용 권장
+    cb(null, path.join(__dirname, "../client/public/img/postImg")); // 절대 경로 사용 권장
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -447,11 +469,11 @@ app.post("/api/ordinaryPosts", uploadPost.single("image"), (req, res) => {
       author_id,
       title,
       content,
-      created_at, // 클라이언트에서 받은 created_at
-      updated_at, // 클라이언트에서 받은 updated_at
+      created_at,
+      updated_at,
       like_count,
       comment_count,
-      imageUrl, // 단일 이미지 URL
+      imageUrl,
     ],
     (err, result) => {
       if (err) {
@@ -463,7 +485,7 @@ app.post("/api/ordinaryPosts", uploadPost.single("image"), (req, res) => {
   );
 });
 
-// GET ordinary post list
+// GET ordinary post section
 app.get("/api/ordinaryPosts", (req, res) => {
   const query = `
     SELECT p.id, p.author_id, p.title, p.content, p.created_at,
@@ -471,6 +493,28 @@ app.get("/api/ordinaryPosts", (req, res) => {
     FROM artlove1_art_lover.posts p
     JOIN artlove1_art_lover.users u ON p.author_id = u.id
     ORDER BY p.created_at DESC
+  `;
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching ordinary posts:", err);
+      return res
+        .status(500)
+        .json({ message: "서버 에러로 인해 게시물을 불러올 수 없습니다." });
+    }
+
+    res.status(200).json(results);
+  });
+});
+
+// GET ordinary post list
+app.get("/api/ordinaryPosts/latest", (req, res) => {
+  const query = `
+    SELECT p.id, p.author_id, p.title, 
+           p.like_count, p.comment_count, u.nickname AS author_name
+    FROM artlove1_art_lover.posts p
+    JOIN artlove1_art_lover.users u ON p.author_id = u.id
+    ORDER BY p.created_at DESC
+    Limit 4
   `;
   connection.query(query, (err, results) => {
     if (err) {
@@ -548,6 +592,316 @@ app.put("/api/ordinaryPosts/:id", (req, res) => {
 
 // DELETE ordinary post by ID
 app.delete("/api/ordinaryPosts/:id", (req, res) => {
+  const postId = req.params.id;
+
+  const query = `
+    DELETE FROM artlove1_art_lover.posts WHERE id = ?
+  `;
+
+  connection.query(query, [postId], (err, result) => {
+    if (err) {
+      console.error("Error deleting ordinary post:", err);
+      return res.status(500).json({ message: "게시물 삭제 실패" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "게시물을 찾을 수 없습니다." });
+    }
+
+    res.status(200).json({ message: "게시물이 성공적으로 삭제되었습니다." });
+  });
+});
+// ================================== show ======================================
+
+// POST exhibition post (이미지 포함)
+const exhibitionStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../client/public/img/exhibitionImg")); // 저장 경로 설정
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${Date.now()}-${file.originalname.replace(ext, ".webp")}`); // 파일명 설정
+  },
+});
+
+const uploadExhibition = multer({ storage: exhibitionStorage });
+
+app.post(
+  "/api/exhibitionPosts",
+  uploadExhibition.array("images", 10),
+  async (req, res) => {
+    const {
+      show_name,
+      show_artist,
+      show_term_start,
+      show_term_end,
+      show_city,
+      gallery,
+      show_place,
+      show_search,
+      show_price,
+      show_link,
+      show_imgs,
+      show_brief,
+      instagram_search,
+      on_display,
+      show_place_detail,
+      selectedTags,
+    } = req.body;
+
+    try {
+      // 이미지 처리
+      const imageUrls = [];
+      if (req.files) {
+        for (let file of req.files) {
+          const outputFile = `${Date.now()}-${file.originalname}.webp`;
+          const outputPath = path.join(
+            __dirname,
+            "../client/public/img/exhibitionImg",
+            outputFile
+          );
+
+          // sharp를 이용해 이미지를 webp로 변환하고 저장
+          await sharp(file.path).webp({ quality: 70 }).toFile(outputPath);
+
+          // 원본 파일 삭제
+          fs.unlinkSync(file.path);
+
+          // webp로 변환된 파일의 경로 저장
+          imageUrls.push(`/img/exhibitionImg/${outputFile}`);
+        }
+      }
+
+      // 이미지 URL을 원하는 형식으로 변환
+      const formattedImageUrls = `{${imageUrls
+        .map((url) => `"${url}"`)
+        .join(", ")}}`;
+
+      // MySQL 쿼리로 전시 데이터 저장
+      const query = `
+      INSERT INTO artlove1_art_lover.shows
+      (show_name, show_artist, show_term_start, show_term_end, show_city, gallery, show_place, show_search, show_price, show_link, show_imgs, image_url, show_brief, instagram_search, on_display, show_place_detail)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+      connection.query(
+        query,
+        [
+          show_name,
+          show_artist,
+          show_term_start,
+          show_term_end,
+          show_city,
+          gallery,
+          show_place,
+          show_search,
+          show_price,
+          show_link,
+          show_imgs,
+          formattedImageUrls,
+          show_brief,
+          instagram_search,
+          on_display,
+          show_place_detail,
+        ],
+        (err, result) => {
+          if (err) {
+            console.error("Error inserting exhibition data:", err);
+            return res.status(500).json({ message: "전시 정보 등록 실패" });
+          }
+
+          const exhibitionId = result.insertId;
+
+          // 전시회 태그를 exhibition_tags 테이블에 저장
+          const parsedTags = JSON.parse(selectedTags);
+          const tagInsertPromises = parsedTags.map((tagId) => {
+            const tagQuery = `INSERT INTO artlove1_art_lover.exhibition_tags (exhibition_id, tag_id) VALUES (?, ?)`;
+            return new Promise((resolve, reject) => {
+              connection.query(tagQuery, [exhibitionId, tagId], (err) => {
+                if (err) reject(err);
+                else resolve();
+              });
+            });
+          });
+
+          // 모든 태그 삽입 완료 후 응답
+          Promise.all(tagInsertPromises)
+            .then(() => {
+              res.status(201).json({
+                message: "전시 정보와 태그가 성공적으로 등록되었습니다.",
+              });
+            })
+            .catch((tagErr) => {
+              console.error("Error inserting tags:", tagErr);
+              res.status(500).json({ message: "태그 등록 실패" });
+            });
+        }
+      );
+    } catch (error) {
+      console.error("Error during exhibition post creation:", error);
+      res.status(500).json({ message: "전시 등록 중 서버 에러" });
+    }
+  }
+);
+
+// GET exhibition post section
+app.get("/api/exhibitionPosts", (req, res) => {
+  const query = `
+    SELECT
+      s.id, s.show_place, s.show_name, s.show_term_start, s.show_term_end,
+      s.image_url
+    FROM artlove1_art_lover.shows s
+    ORDER BY s.show_term_start DESC
+  `;
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching exhibition posts:", err);
+      return res
+        .status(500)
+        .json({ message: "서버 에러로 인해 게시물을 불러올 수 없습니다." });
+    }
+
+    // 각 결과의 image_url을 배열로 변환
+    const processedResults = results.map((post) => {
+      if (post.image_url) {
+        post.image_url = post.image_url
+          .replace(/^{|}$/g, "") // 중괄호 제거
+          .split(",") // 콤마로 분리
+          .map((url) => url.trim()); // 각 URL의 공백 제거
+      } else {
+        post.image_url = []; // image_url이 없는 경우 빈 배열
+      }
+      return post;
+    });
+
+    res.status(200).json(processedResults);
+  });
+});
+
+// GET exhibition post list
+app.get("/api/exhibitionPosts/latest", (req, res) => {
+  const query = `
+    SELECT s.id, s.show_place, s.show_name, s.show_term_start, s.show_term_end
+    FROM artlove1_art_lover.shows s
+    ORDER BY s.show_term_start DESC
+    Limit 3
+  `;
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching ordinary posts:", err);
+      return res
+        .status(500)
+        .json({ message: "서버 에러로 인해 게시물을 불러올 수 없습니다." });
+    }
+
+    res.status(200).json(results);
+  });
+});
+
+// GET exhibition post by ID
+app.get("/api/exhibitionPosts/:id", (req, res) => {
+  const postId = req.params.id;
+  const query = `
+    SELECT 
+      s.id, 
+      s.show_name, 
+      s.show_artist, 
+      s.show_term_start, 
+      s.show_term_end,
+      s.show_place, 
+      s.show_price,
+      s.show_link,
+      s.show_imgs,
+      s.image_url,
+      s.instagram_search,
+      s.show_place_detail,
+      GROUP_CONCAT(t.tag_name) AS tags,
+      g.gallery_add_word,
+      g.gallery_add_tude,
+      g.gallery_phone_num,
+      g.business_hours,
+      g.business_week,
+      g.site
+    FROM artlove1_art_lover.shows s
+    JOIN artlove1_art_lover.exhibition_tags et ON s.id = et.exhibition_id
+    JOIN artlove1_art_lover.tags t ON et.tag_id = t.id
+    JOIN artlove1_art_lover.galleries g ON s.gallery = g.id
+    WHERE s.id = ?
+    GROUP BY
+      s.id,
+      g.gallery_add_word,
+      g.gallery_add_tude,
+      g.gallery_phone_num,
+      g.business_hours,
+      g.business_week,
+      g.site;
+  `;
+
+  connection.query(query, [postId], (err, results) => {
+    if (err) {
+      console.error("Error fetching exhibition post:", err);
+      return res
+        .status(500)
+        .json({ message: "서버 에러로 인해 게시물을 불러올 수 없습니다." });
+    }
+
+    if (results.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "해당 게시물을 찾을 수 없습니다." });
+    }
+
+    const post = results[0];
+
+    post.tags = post.tags ? post.tags.split(",") : [];
+    if (post.image_url) {
+      post.image_url = post.image_url
+        .replace(/^{|}$/g, "")
+        .split(",")
+        .map((url) => url.trim());
+    } else {
+      post.image_url = [];
+    }
+
+    res.status(200).json(post);
+  });
+});
+
+// PUT ordinary post by ID
+app.put("/api/exhibitionPosts/:id", (req, res) => {
+  const postId = req.params.id;
+  const { title, content, updated_at } = req.body;
+
+  const query = `
+    UPDATE artlove1_art_lover.posts
+    SET title = ?, content = ?, updated_at = ?
+    WHERE id = ?`;
+
+  connection.query(
+    query,
+    [title, content, updated_at, postId],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating ordinary post:", err);
+        return res
+          .status(500)
+          .json({ message: "서버 에러로 인해 게시물 수정에 실패했습니다." });
+      }
+
+      if (result.affectedRows === 0) {
+        return res
+          .status(404)
+          .json({ message: "해당 게시물을 찾을 수 없습니다." });
+      }
+
+      res.status(200).json({ message: "게시물이 성공적으로 수정되었습니다." });
+    }
+  );
+});
+
+// DELETE exhibition post by ID
+app.delete("/api/exhibitionPosts/:id", (req, res) => {
   const postId = req.params.id;
 
   const query = `

@@ -10,36 +10,45 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
+import { DOMAIN } from "@/constants";
 import ViewMore from "@/pages/common/components/NavigateToList";
 import { Check } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+interface ExhibitionPost {
+  id: number;
+  show_place: string;
+  show_name: string;
+  show_term_start: string;
+  show_term_end: string;
+}
+
 const CurrentExhibition = () => {
+  const [exhibitionData, setExhibitionData] = useState<ExhibitionPost[]>([]);
   const navigate = useNavigate();
   const handleJoinClick = (id: number) => {
     navigate(`${pageRoutes.currentList}/${id}`);
   };
 
-  const discussionTopics = [
-    {
-      id: 1,
-      title: "Modern Art Showcase",
-      location: "New York City",
-      date: "June 15, 2023",
-    },
-    {
-      id: 2,
-      title: "Abstract Expressions",
-      location: "Los Angeles",
-      date: "July 22, 2023",
-    },
-    {
-      id: 3,
-      title: "Digital Art Revolution",
-      location: "San Francisco",
-      date: "August 10, 2023",
-    },
-  ];
+  const fetchRecentCuratorPosts = async () => {
+    try {
+      const response = await fetch(`${DOMAIN}api/exhibitionPosts/latest`);
+      if (response.ok) {
+        const data = await response.json();
+        setExhibitionData(data);
+      } else {
+        console.error("Failed to fetch recent curator posts");
+      }
+    } catch (error) {
+      console.error("Error fetching recent curator posts:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecentCuratorPosts();
+  }, []);
+
   return (
     <TabsContent value="current">
       <Card>
@@ -51,12 +60,13 @@ const CurrentExhibition = () => {
         </CardHeader>
         <CardContent>
           <ul className="space-y-4">
-            {discussionTopics.map((event, index) => (
+            {exhibitionData.map((event, index) => (
               <li key={index} className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold">{event.title}</h3>
+                  <h3 className="font-semibold">{event.show_name}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {event.location} • {event.date}
+                    {event.show_place} • {event.show_term_start} ~{" "}
+                    {event.show_term_end}
                   </p>
                 </div>
                 <Button

@@ -27,7 +27,7 @@ interface CuratorPost {
 }
 
 const Curators = () => {
-  const [reviewsData, setReviewsData] = useState<CuratorPost[]>([]);
+  const [curatorsData, setCuratorsData] = useState<CuratorPost[]>([]);
   const navigate = useNavigate();
 
   const fetchRecentCuratorPosts = async () => {
@@ -35,7 +35,7 @@ const Curators = () => {
       const response = await fetch(`${DOMAIN}api/curatorPosts/latest`);
       if (response.ok) {
         const data = await response.json();
-        setReviewsData(data);
+        setCuratorsData(data);
       } else {
         console.error("Failed to fetch recent curator posts");
       }
@@ -63,7 +63,7 @@ const Curators = () => {
         </CardHeader>
         <CardContent>
           <ul className="space-y-4">
-            {reviewsData.map((event) => (
+            {curatorsData.map((event) => (
               <li key={event.id} className="flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold">{event.title}</h3>

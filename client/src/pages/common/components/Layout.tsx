@@ -25,7 +25,13 @@ export const Layout: React.FC<LayoutProps> = ({
       });
       if (response.ok) {
         const data = await response.json();
-        setLogin(data.id, data.role, data.userName, data.imgUrl); // 로그인 상태 유지
+        setLogin(
+          data.id,
+          data.galleryId,
+          data.role,
+          data.userName,
+          data.imgUrl
+        ); // 로그인 상태 유지
       } else if (response.status === 401) {
         setLogout(); // 로그아웃 처리
       } else if (response.status === 403) {

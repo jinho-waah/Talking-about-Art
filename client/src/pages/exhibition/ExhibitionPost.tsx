@@ -3,121 +3,238 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, MapPin, Clock, Users, Share2 } from "lucide-react";
-import { useEffect } from "react";
+import { Share2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import Carousel from "./ui/Carousel";
+import { DOMAIN } from "@/constants";
+import { useParams } from "react-router-dom";
+
+interface Exhibition {
+  id: number;
+  show_name: string;
+  show_artist: string;
+  show_term_start: string;
+  show_term_end: string;
+  show_place: string;
+  show_place_detail: string;
+  show_price: number;
+  show_link: string;
+  show_imgs: number;
+  image_url: string[];
+  instagram_search: string;
+  tags: string[];
+  gallery_phone_num: string;
+  gallery_add_word: string;
+  gallery_add_tude: string;
+  business_hours: string;
+  business_week: string;
+  site: string;
+}
 
 export default function ExhibitionPost() {
+  const { id } = useParams<{ id: string }>();
+  const [exhibitionPosts, setExhibitionPosts] = useState<Exhibition | null>(
+    null
+  );
+
+  const fetchExhibitionPosts = async () => {
+    try {
+      const response = await fetch(`${DOMAIN}api/exhibitionPosts/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setExhibitionPosts(data);
+      } else {
+        console.error("Failed to fetch exhibition posts");
+      }
+    } catch (error) {
+      console.error("Error fetching exhibition posts:", error);
+    }
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchExhibitionPosts();
   }, []);
+
+  if (!exhibitionPosts) {
+    return <div>Loading...</div>;
+  }
+
+  // Convert show_term_start and show_term_end to Date objects
+  const startDate = new Date(
+    exhibitionPosts.show_term_start.replace(/\./g, "-")
+  );
+  const endDate = new Date(exhibitionPosts.show_term_end.replace(/\./g, "-"));
+
+  // Parse business hours JSON to object
+  const dailyTime: Record<string, string> = JSON.parse(
+    exhibitionPosts.business_hours
+  );
+
   return (
     <div className="container mx-auto px-1 py-8">
+      <h1 className="text-3xl font-bold mb-4">{exhibitionPosts.show_name}</h1>
       <div className="grid gap-6 md:grid-cols-3">
         <div className="md:col-span-2">
-          <h1 className="text-3xl font-bold mb-4">Modern Art Showcase</h1>
-          <div className="aspect-video bg-muted rounded-lg mb-6"></div>
-          <div className="flex flex-wrap gap-4 mb-6">
-            <Badge className="flex items-center">
-              <CalendarDays className="mr-1 h-4 w-4" />
-              June 15, 2023
-            </Badge>
-            <Badge variant="secondary" className="flex items-center">
-              <MapPin className="mr-1 h-4 w-4" />
-              New York City
-            </Badge>
-            <Badge variant="secondary" className="flex items-center">
-              <Clock className="mr-1 h-4 w-4" />
-              10:00 AM - 6:00 PM
-            </Badge>
-            <Badge variant="secondary" className="flex items-center">
-              <Users className="mr-1 h-4 w-4" />
-              120 Attending
-            </Badge>
+          <Carousel items={exhibitionPosts.image_url} />
+          <div className="flex flex-wrap gap-3 mb-6">
+            {exhibitionPosts.tags.map((tag, index) => (
+              <Badge
+                key={index}
+                variant="secondary"
+                className="flex items-center"
+              >
+                #{tag}
+              </Badge>
+            ))}
           </div>
-          <Card>
+
+          <Card className="md:hidden">
             <CardHeader>
-              <CardTitle>About the Exhibition</CardTitle>
+              <p className="text-2xl font-bold mb-2">
+                {exhibitionPosts.show_price !== 0
+                  ? `${exhibitionPosts.show_price}원`
+                  : "무료 전시입니다"}
+              </p>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">
-                The Modern Art Showcase is a cutting-edge exhibition featuring
-                works from contemporary artists pushing the boundaries of
-                artistic expression. From interactive installations to
-                thought-provoking paintings, this showcase represents the
-                forefront of modern art.
-              </p>
+              <Button className="w-full mb-2">사이트가기</Button>
+              <Button className="w-full mb-2">인스타그램</Button>
+              <Button variant="outline" className="w-full">
+                <Share2 className="mr-2 h-4 w-4" />
+                공유하기
+              </Button>
             </CardContent>
           </Card>
-          <Card className="mt-6">
+
+          <Card className="mt-5">
             <CardHeader>
-              <CardTitle>Featured Artists</CardTitle>
+              <CardTitle>참여 작가</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-2">
-                {["Jane Doe", "John Smith", "Emily Chen"].map(
-                  (artist, index) => (
-                    <div key={index} className="flex items-center space-x-4">
-                      <Avatar>
-                        <AvatarFallback>
-                          {artist
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{artist}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Contemporary Artist
-                        </p>
-                      </div>
-                    </div>
-                  )
-                )}
+              <div>
+                <p className="font-medium">{exhibitionPosts.show_artist}</p>
               </div>
             </CardContent>
           </Card>
-        </div>
-        <div>
-          <Card>
+
+          <Card className="mt-5">
             <CardHeader>
-              <CardTitle>Join the Event</CardTitle>
+              <CardTitle>전시 일정</CardTitle>
               <CardDescription>
-                Secure your spot at the Modern Art Showcase
+                {exhibitionPosts.show_term_start} ~{" "}
+                {exhibitionPosts.show_term_end}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold mb-2">$25.00</p>
-              <p className="text-muted-foreground mb-4">General Admission</p>
-              <Button className="w-full mb-2">Register Now</Button>
-              <Button variant="outline" className="w-full">
-                <Share2 className="mr-2 h-4 w-4" />
-                Share Event
-              </Button>
+              <Calendar
+                className="h-full w-full flex"
+                classNames={{
+                  months:
+                    "flex w-full flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 flex-1",
+                  month: "space-y-4 w-full flex flex-col",
+                  table: "w-full h-full border-collapse space-y-1",
+                  head_row: "",
+                  row: "w-full mt-2",
+                }}
+                mode="range"
+                selected={{ from: startDate, to: endDate }}
+                defaultMonth={new Date()}
+              />
             </CardContent>
           </Card>
-          <Card className="mt-6">
+
+          <Card className="mt-5 md:hidden">
             <CardHeader>
-              <CardTitle>Location</CardTitle>
+              <CardTitle>요일별 시간</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm text-muted-foreground">
+                {Object.entries(dailyTime).map(([day, time]) => (
+                  <p key={day} className="flex justify-between">
+                    <span className="font-medium">{day}</span>
+                    <span>{time}</span>
+                  </p>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="mt-5 md:hidden">
+            <CardHeader>
+              <CardTitle>전화번호</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm text-muted-foreground">
+                {exhibitionPosts.gallery_phone_num}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="mt-5">
+            <CardHeader>
+              <CardTitle>위치</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="aspect-video bg-muted rounded-lg mb-2"></div>
-              <p className="font-medium">Modern Art Gallery</p>
+              <p className="font-medium">{exhibitionPosts.show_place}</p>
               <p className="text-sm text-muted-foreground">
-                123 Art Street, New York, NY 10001
+                {exhibitionPosts.show_place_detail || "상세 정보 없음"}
               </p>
             </CardContent>
-            <CardFooter>
+          </Card>
+        </div>
+
+        {/* Right Column */}
+        <div>
+          <Card className="hidden md:block">
+            <CardHeader>
+              <p className="text-2xl font-bold mb-2">
+                {exhibitionPosts.show_price !== 0
+                  ? `${exhibitionPosts.show_price}원`
+                  : "무료 전시입니다"}
+              </p>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full mb-2">예매하기</Button>
+              <Button className="w-full mb-2">인스타그램</Button>
               <Button variant="outline" className="w-full">
-                Get Directions
+                <Share2 className="mr-2 h-4 w-4" />
+                공유하기
               </Button>
-            </CardFooter>
+            </CardContent>
+          </Card>
+
+          <Card className="mt-5 hidden md:block">
+            <CardHeader>
+              <CardTitle>요일별 시간</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm text-muted-foreground">
+                {Object.entries(dailyTime).map(([day, time]) => (
+                  <p key={day} className="flex justify-between">
+                    <span className="font-medium">{day}</span>
+                    <span>{time}</span>
+                  </p>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="mt-5 hidden md:block">
+            <CardHeader>
+              <CardTitle>전화번호</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm text-muted-foreground">
+                {exhibitionPosts.gallery_phone_num}
+              </div>
+            </CardContent>
           </Card>
         </div>
       </div>

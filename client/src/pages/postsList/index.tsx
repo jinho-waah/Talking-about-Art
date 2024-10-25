@@ -33,19 +33,33 @@ interface OrdinaryPost {
   created_at: string;
 }
 
+interface ExhibitionPost {
+  id: number;
+  show_place: string;
+  show_name: string;
+  show_term_start: string;
+  show_term_end: string;
+  image_url: string[];
+}
+
 export default function PostsList({ title }: PostsListProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { isLogin, role } = authStore();
 
   const [curatorPosts, setCuratorPosts] = useState<CuratorPost[]>([]);
-  const [ordinaryPosts, setOrdinaryosts] = useState<OrdinaryPost[]>([]);
+  const [ordinaryPosts, setOrdinaryPosts] = useState<OrdinaryPost[]>([]);
+  const [exhibitionPosts, setExhibitionPosts] = useState<ExhibitionPost[]>([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     if (title === "큐레이터") {
       fetchCuratorPosts();
     } else if (title === "게시글") {
+      fetchOrdinaryPosts();
+    } else if (title === "전시 소개") {
+      fetchExhibitionPosts();
+    } else if (title === "전시 예정") {
       fetchOrdinaryPosts();
     }
   }, [title]);
@@ -69,7 +83,21 @@ export default function PostsList({ title }: PostsListProps) {
       const response = await fetch(`${DOMAIN}api/ordinaryPosts`);
       if (response.ok) {
         const data = await response.json();
-        setOrdinaryosts((prevPosts) => [...prevPosts, ...data]);
+        setOrdinaryPosts((prevPosts) => [...prevPosts, ...data]);
+      } else {
+        console.error("Failed to fetch curator posts");
+      }
+    } catch (error) {
+      console.error("Error fetching curator posts:", error);
+    }
+  };
+
+  const fetchExhibitionPosts = async () => {
+    try {
+      const response = await fetch(`${DOMAIN}api/exhibitionPosts`);
+      if (response.ok) {
+        const data = await response.json();
+        setExhibitionPosts((prevPosts) => [...prevPosts, ...data]);
       } else {
         console.error("Failed to fetch curator posts");
       }
@@ -147,7 +175,7 @@ export default function PostsList({ title }: PostsListProps) {
 
           {(typeOfPost === "upcomingExhibition" ||
             typeOfPost === "currentExhibition") &&
-            (role === "exhibition" || role === "admin") && (
+            (role === "gallery" || role === "admin") && (
               <Button onClick={handleAddPost}>전시 추가 </Button>
             )}
           {typeOfPost === "curator" &&
@@ -243,7 +271,48 @@ export default function PostsList({ title }: PostsListProps) {
             </Card>
           ))}
 
-        {title === "전시소개" &&
+        {title === "전시 소개" &&
+          exhibitionPosts.map((post, index) => (
+            <Card key={index} className="mb-6">
+              <CardHeader>
+                <div className="flex items-center space-x-4">
+                  <Avatar>
+                    <AvatarFallback>{post.show_place[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{post.show_place}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {post.show_term_start}~{post.show_term_end}
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+              <div
+                className="cursor-pointer"
+                onClick={() => handlePostClick(post.id)}
+              >
+                <CardContent>
+                  <div
+                    className="min-w-full aspect-video rounded-lg mb-6 w-full object-cover"
+                    style={{
+                      backgroundImage: `url(${post.image_url[0]})`,
+                      backgroundPosition: "center", // 이미지가 중앙에 위치하도록 설정
+                      backgroundSize: "cover", // 컨테이너를 채우도록 설정
+                      backgroundRepeat: "no-repeat", // 반복 방지
+                      aspectRatio: "16 / 9", // 16:9 비율 설정
+                    }}
+                  />
+
+                  <h2 className="text-xl font-semibold mb-2">
+                    {post.show_name}
+                  </h2>
+                  {/* <p className="text-muted-foreground mb-4">{post.content}</p> */}
+                </CardContent>
+              </div>
+            </Card>
+          ))}
+
+        {title === "전시 예정" &&
           ordinaryPosts.map((post, index) => (
             <Card key={index} className="mb-6">
               <CardHeader>
