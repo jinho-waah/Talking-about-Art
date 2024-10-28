@@ -38,20 +38,21 @@ export default function Comments() {
     null
   );
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await fetch(`${SERVER_DOMAIN}api/post/comment/${id}`);
-        if (!response.ok) {
-          throw new Error("댓글을 불러오는 데 실패했습니다.");
-        }
-        const data: Comment[] = await response.json();
-        setComments(data);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
+  // 댓글 목록을 다시 가져오는 함수
+  const fetchComments = async () => {
+    try {
+      const response = await fetch(`${SERVER_DOMAIN}api/post/comment/${id}`);
+      if (!response.ok) {
+        throw new Error("댓글을 불러오는 데 실패했습니다.");
       }
-    };
+      const data: Comment[] = await response.json();
+      setComments(data);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchComments();
   }, [id]);
 
@@ -75,7 +76,7 @@ export default function Comments() {
         );
       }
     }
-    setIsModalOpen(false); // 모달 닫기
+    setIsModalOpen(false);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,17 +106,10 @@ export default function Comments() {
       );
 
       if (response.ok) {
-        const updatedComment = await response.json();
-        setComments((prevComments) =>
-          prevComments.map((comment) =>
-            comment.id === commentId
-              ? { ...comment, ...updatedComment }
-              : comment
-          )
-        );
         setEditCommentId(null);
         setEditFile(null);
         setPreviewUrl(null);
+        await fetchComments();
       } else {
         throw new Error("댓글 수정에 실패했습니다.");
       }
@@ -142,9 +136,7 @@ export default function Comments() {
         );
 
         if (response.ok) {
-          setComments((prevComments) =>
-            prevComments.filter((comment) => comment.id !== commentId)
-          );
+          await fetchComments();
         } else {
           throw new Error("댓글 삭제에 실패했습니다.");
         }
@@ -263,7 +255,7 @@ export default function Comments() {
           </CardFooter>
         </Card>
       ))}
-      <CommentsForm />
+      <CommentsForm onCommentAdded={fetchComments} />
 
       <Modal
         isModalOpen={isModalOpen}

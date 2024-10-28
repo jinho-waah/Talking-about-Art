@@ -13,7 +13,11 @@ import { useParams } from "react-router-dom";
 import { getKstTimeString } from "@/lib/utils";
 import authStore from "@/store/authStore";
 
-export default function CommentsForm() {
+interface CommentsFormProps {
+  onCommentAdded: () => void;
+}
+
+export default function CommentsForm({ onCommentAdded }: CommentsFormProps) {
   const { id } = useParams();
   const { userId } = authStore();
   const [replyText, setReplyText] = useState("");
@@ -21,12 +25,11 @@ export default function CommentsForm() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 파일 변경 시 미리보기 설정
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
       setAttachment(file);
-      setPreviewUrl(URL.createObjectURL(file)); // 파일 미리보기 URL 생성
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
@@ -56,10 +59,10 @@ export default function CommentsForm() {
         throw new Error("댓글 등록에 실패했습니다.");
       }
 
-      setReplyText(""); // 입력 초기화
+      setReplyText("");
       setAttachment(null);
       setPreviewUrl(null);
-      alert("댓글이 성공적으로 등록되었습니다.");
+      onCommentAdded(); // 댓글 등록 후 목록 새로고침
     } catch (error) {
       console.error("댓글 등록 에러:", error);
       alert("댓글 등록 중 오류가 발생했습니다.");
