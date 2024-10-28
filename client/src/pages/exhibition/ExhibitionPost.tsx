@@ -11,7 +11,7 @@ import { Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import Carousel from "./ui/Carousel";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import { useParams } from "react-router-dom";
 
 interface Exhibition {
@@ -44,7 +44,7 @@ export default function ExhibitionPost() {
 
   const fetchExhibitionPosts = async () => {
     try {
-      const response = await fetch(`${DOMAIN}api/exhibitionPosts/${id}`);
+      const response = await fetch(`${SERVER_DOMAIN}api/exhibitionPosts/${id}`);
       if (response.ok) {
         const data = await response.json();
         setExhibitionPosts(data);

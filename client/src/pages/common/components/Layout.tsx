@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { ReactNode } from "react";
 import { Header } from "./Header";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 
 interface LayoutProps {
@@ -19,7 +19,7 @@ export const Layout: React.FC<LayoutProps> = ({
   // 로그인 상태 확인 함수
   const checkLoginStatus = async () => {
     try {
-      const response = await fetch(`${DOMAIN}api/auth/status`, {
+      const response = await fetch(`${SERVER_DOMAIN}api/auth/status`, {
         method: "GET",
         credentials: "include", // 쿠키 포함
       });

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { pageRoutes } from "@/apiRoutes";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,7 +32,7 @@ const Curators = () => {
 
   const fetchRecentCuratorPosts = async () => {
     try {
-      const response = await fetch(`${DOMAIN}api/curatorPosts/latest`);
+      const response = await fetch(`${SERVER_DOMAIN}api/curatorPosts/latest`);
       if (response.ok) {
         const data = await response.json();
         setCuratorsData(data);

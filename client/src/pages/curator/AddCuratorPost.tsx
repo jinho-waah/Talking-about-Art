@@ -18,7 +18,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"; // 모달 UI 컴포넌트
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
@@ -70,7 +70,7 @@ export default function AddCuratorPost() {
     };
 
     try {
-      const response = await fetch(`${DOMAIN}api/curatorPosts`, {
+      const response = await fetch(`${SERVER_DOMAIN}api/curatorPosts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +106,9 @@ export default function AddCuratorPost() {
   const handleSearch = async () => {
     try {
       const response = await fetch(
-        `${DOMAIN}api/searchShowId?query=${encodeURIComponent(searchQuery)}`
+        `${SERVER_DOMAIN}api/searchShowId?query=${encodeURIComponent(
+          searchQuery
+        )}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch search results");

@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import ViewMore from "@/pages/common/components/NavigateToList";
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -33,7 +33,9 @@ const CurrentExhibition = () => {
 
   const fetchRecentCuratorPosts = async () => {
     try {
-      const response = await fetch(`${DOMAIN}api/exhibitionPosts/latest`);
+      const response = await fetch(
+        `${SERVER_DOMAIN}api/exhibitionPosts/latest`
+      );
       if (response.ok) {
         const data = await response.json();
         setExhibitionData(data);

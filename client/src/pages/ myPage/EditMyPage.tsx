@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Upload } from "lucide-react";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
@@ -46,7 +46,7 @@ export default function EditMyPage() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await fetch(`${DOMAIN}api/mypage/${userId}`);
+        const response = await fetch(`${SERVER_DOMAIN}api/mypage/${userId}`);
         if (response.ok) {
           const data = await response.json();
           setProfileData({
@@ -100,11 +100,14 @@ export default function EditMyPage() {
     formData.append("avatar", selectedFile);
 
     try {
-      const response = await fetch(`${DOMAIN}api/upload/avatar/${userId}`, {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-      });
+      const response = await fetch(
+        `${SERVER_DOMAIN}api/upload/avatar/${userId}`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         return data.filePath;
@@ -134,7 +137,7 @@ export default function EditMyPage() {
     }
 
     try {
-      const response = await fetch(`${DOMAIN}api/mypage/${userId}`, {
+      const response = await fetch(`${SERVER_DOMAIN}api/mypage/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

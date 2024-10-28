@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
@@ -28,7 +28,7 @@ export default function EditOrdinaryPost() {
     // 기존 포스트 내용 불러오기
     const fetchOrdinaryPost = async () => {
       try {
-        const response = await fetch(`${DOMAIN}api/ordinaryPosts/${id}`);
+        const response = await fetch(`${SERVER_DOMAIN}api/ordinaryPosts/${id}`);
         if (response.ok) {
           const data = await response.json();
           console.log(data);
@@ -57,7 +57,7 @@ export default function EditOrdinaryPost() {
     };
 
     try {
-      const response = await fetch(`${DOMAIN}api/ordinaryPosts/${id}`, {
+      const response = await fetch(`${SERVER_DOMAIN}api/ordinaryPosts/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

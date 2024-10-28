@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Upload, X } from "lucide-react";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { getKstTimeString } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -56,7 +56,7 @@ export default function AddOrdinaryPost() {
       formData.append("image", image);
 
       try {
-        const response = await fetch(`${DOMAIN}api/upload/image`, {
+        const response = await fetch(`${SERVER_DOMAIN}api/upload/image`, {
           method: "POST",
           body: formData,
         });
@@ -93,7 +93,7 @@ export default function AddOrdinaryPost() {
     };
 
     try {
-      const response = await fetch(`${DOMAIN}api/ordinaryPosts`, {
+      const response = await fetch(`${SERVER_DOMAIN}api/ordinaryPosts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

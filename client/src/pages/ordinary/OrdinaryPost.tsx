@@ -3,18 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, MessageSquare, Share2, Ellipsis } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription, // 추가된 설명 컴포넌트
-} from "@/components/ui/dialog";
 import { useNavigate, useParams } from "react-router-dom";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import Comments from "./comment";
 import authStore from "@/store/authStore";
 import { pageRoutes } from "@/apiRoutes";
+import Modal from "./ui/Modal";
 
 interface OrdinaryPost {
   id: number;
@@ -52,7 +46,7 @@ export default function OrdinaryPost() {
 
   const fetchOrdinaryPost = async () => {
     try {
-      const response = await fetch(`${DOMAIN}api/ordinaryPosts/${id}`);
+      const response = await fetch(`${SERVER_DOMAIN}api/ordinaryPosts/${id}`);
       if (response.ok) {
         const data = await response.json();
         setPost(data);
@@ -67,9 +61,12 @@ export default function OrdinaryPost() {
   const handleDelete = async () => {
     if (window.confirm("정말로 이 게시물을 삭제하시겠습니까?")) {
       try {
-        const response = await fetch(`${DOMAIN}api/ordinaryPosts/${id}`, {
-          method: "DELETE",
-        });
+        const response = await fetch(
+          `${SERVER_DOMAIN}api/ordinaryPosts/${id}`,
+          {
+            method: "DELETE",
+          }
+        );
 
         if (response.ok) {
           alert("게시물이 성공적으로 삭제되었습니다.");
@@ -122,7 +119,7 @@ export default function OrdinaryPost() {
           </CardHeader>
           <CardContent>
             <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-            <p className="text-muted-foreground mb-4">{post.content}</p>
+            <p className="mb-4">{post.content}</p>
             <div className="flex space-x-4">
               <Button variant="ghost" size="sm">
                 <ThumbsUp className="mr-2 h-4 w-4" />
@@ -140,25 +137,12 @@ export default function OrdinaryPost() {
           </CardContent>
         </Card>
         <Comments />
-
-        <Dialog open={isModalOpen} onOpenChange={toggleModal}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>게시물 옵션</DialogTitle>
-              <DialogDescription>
-                게시물을 수정하거나 삭제할 수 있습니다.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-col space-y-2">
-              <Button variant="outline" onClick={handleEdit}>
-                수정하기
-              </Button>
-              <Button variant="outline" onClick={handleDelete}>
-                삭제하기
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Modal
+          isModalOpen={isModalOpen}
+          toggleModal={toggleModal}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
       </div>
     </div>
   );

@@ -35,7 +35,7 @@ import {
 } from "./ui/Tags";
 import TagsCheckBox from "./ui/TagCheckBox";
 import authStore from "@/store/authStore";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import { useNavigate } from "react-router-dom";
 
 type Combobox =
@@ -167,6 +167,9 @@ export default function AddExhibitionPost() {
   const [selectedArtMovement, setSelectedArtMovement] = useState<number[]>([]);
   const [selectedFree, setSelectedFree] = useState<number[]>([]);
   const [imageNames, setImageNames] = useState<string[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const [comboboxOpen, setComboboxOpen] = useState<true | false>(false);
   const [comboboxValue, setComboboxValue] = useState<Combobox>(null);
@@ -176,17 +179,31 @@ export default function AddExhibitionPost() {
     setComboboxOpen(false);
   };
 
+  // 파일 업로드 핸들러 수정
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
       const names = Array.from(files).map((file) => file.name);
-      setImageNames((prevNames) => [...prevNames, ...names]); // 기존 파일에 추가로 저장
+      const previews = Array.from(files).map((file) =>
+        URL.createObjectURL(file)
+      );
+
+      const filesArray = Array.from(files);
+      setSelectedFiles([...selectedFiles, ...filesArray]);
+
+      setImageNames((prevNames) => [...prevNames, ...names]);
+      setPreviewUrls((prevUrls) => [...prevUrls, ...previews]); // 미리보기 URL 저장
     }
   };
+
+  console.log(imageNames);
 
   const handleImageDelete = (indexToDelete: number) => {
     setImageNames((prevNames) =>
       prevNames.filter((_, index) => index !== indexToDelete)
+    );
+    setPreviewUrls((prevUrls) =>
+      prevUrls.filter((_, index) => index !== indexToDelete)
     );
   };
 
@@ -247,6 +264,30 @@ export default function AddExhibitionPost() {
   ]);
 
   useEffect(() => {
+    if (galleryId) {
+      const fetchGalleryName = async () => {
+        try {
+          const response = await fetch(
+            `${SERVER_DOMAIN}api/galleryname/${galleryId}`,
+            {
+              method: "GET",
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("갤러리 이름을 가져오는 데 실패했습니다.");
+          }
+          const data = await response.json();
+          setGalleryName(data.gallery_name);
+        } catch (error) {
+          console.error("에러 발생:", error);
+        }
+      };
+      fetchGalleryName();
+    }
+  }, [galleryId]);
+
+  useEffect(() => {
     // 데이터가 변경될 때마다 localStorage에 저장
     saveToLocalStorage("title", title);
     saveToLocalStorage("description", description);
@@ -275,26 +316,14 @@ export default function AddExhibitionPost() {
 
     // FormData 객체 생성
     const formData = new FormData();
-
-    try {
-      const response = await fetch(`${DOMAIN}api/galleryname/${galleryId}`, {
-        method: "GET",
-      });
-
-      if (!response.ok) {
-        throw new Error("갤러리 이름을 가져오는 데 실패했습니다.");
-      }
-      const data = await response.json();
-      setGalleryName(data.gallery_name); // 받아온 갤러리 이름
-    } catch (error) {
-      console.error("에러 발생:", error);
-    }
+    const formattedStartDate = startDate.replace(/-/g, ".");
+    const formattedEndDate = endDate.replace(/-/g, ".");
 
     // 기본 데이터 추가
     formData.append("show_name", title);
     formData.append("show_artist", artists);
-    formData.append("show_term_start", startDate);
-    formData.append("show_term_end", endDate);
+    formData.append("show_term_start", formattedStartDate);
+    formData.append("show_term_end", formattedEndDate);
     formData.append("show_city", comboboxValue || "");
     formData.append("gallery", galleryId?.toString() || "");
     formData.append("show_place", galleryName);
@@ -310,16 +339,11 @@ export default function AddExhibitionPost() {
     // 선택된 태그 배열을 JSON 문자열로 변환해 추가
     formData.append("selectedTags", JSON.stringify(selectedTags));
 
-    // 이미지 파일을 FormData에 추가
-    const imageInput = document.getElementById("image") as HTMLInputElement;
-    if (imageInput && imageInput.files) {
-      Array.from(imageInput.files).forEach((file) => {
-        formData.append("images", file);
-      });
-    }
+    console.log(selectedFiles);
+    selectedFiles.forEach((file) => formData.append("images", file));
 
     try {
-      const response = await fetch(`${DOMAIN}api/exhibitionPosts`, {
+      const response = await fetch(`${SERVER_DOMAIN}api/exhibitionPosts`, {
         method: "POST",
         body: formData,
       });
@@ -428,10 +452,7 @@ export default function AddExhibitionPost() {
                       id="start-date"
                       type="date"
                       value={startDate}
-                      onChange={(e) => {
-                        const formattedDate = e.target.value.replace(/-/g, "."); // 날짜 형식을 변환
-                        setStartDate(formattedDate);
-                      }}
+                      onChange={(e) => setStartDate(e.target.value)}
                       className="pl-10"
                       required
                     />
@@ -445,10 +466,7 @@ export default function AddExhibitionPost() {
                       id="end-date"
                       type="date"
                       value={endDate}
-                      onChange={(e) => {
-                        const formattedDate = e.target.value.replace(/-/g, "."); // 날짜 형식을 변환
-                        setEndDate(formattedDate);
-                      }}
+                      onChange={(e) => setEndDate(e.target.value)}
                       className="pl-10"
                       required
                     />
@@ -604,7 +622,7 @@ export default function AddExhibitionPost() {
                         또는 드래그 앤 드롭
                         <br />
                         <span className="font-semibold">
-                          이미지는 순서대로 업로드 됩니다
+                          이미지는 순서대로 최대 10장 업로드 됩니다
                         </span>
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -621,16 +639,21 @@ export default function AddExhibitionPost() {
                     />
                   </label>
                 </div>
-                {imageNames.length > 0 && (
-                  <div className="mt-2 text-center text-sm text-muted-foreground">
-                    {imageNames.map((name, index) => (
-                      <p key={index} className="flex">
-                        업로드된 파일: {name}
+                {previewUrls.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {previewUrls.map((url, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={url}
+                          alt="미리보기"
+                          className="w-24 h-24 object-cover"
+                        />
                         <X
-                          className="pb-1 cursor-pointer"
+                          className="absolute top-1 right-1 cursor-pointer text-black bg-white border border-white rounded-full"
+                          style={{ padding: "2px" }}
                           onClick={() => handleImageDelete(index)}
                         />
-                      </p>
+                      </div>
                     ))}
                   </div>
                 )}

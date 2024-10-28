@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 
 // 인터페이스로 입력 값의 타입 정의
 interface RegisterFormData {
@@ -82,7 +82,7 @@ export default function RegisterPage() {
 
     // 서버로 회원가입 데이터 전송
     try {
-      const response = await fetch(`${DOMAIN}api/register`, {
+      const response = await fetch(`${SERVER_DOMAIN}api/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

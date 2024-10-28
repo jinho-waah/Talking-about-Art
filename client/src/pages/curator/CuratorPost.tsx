@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"; // 모달 컴포넌트 추가
 import { useParams, useNavigate } from "react-router-dom";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { pageRoutes } from "@/apiRoutes";
 
@@ -63,7 +63,7 @@ export default function CuratorPost() {
 
   const fetchCuratorPost = async () => {
     try {
-      const response = await fetch(`${DOMAIN}api/curatorPosts/${id}`);
+      const response = await fetch(`${SERVER_DOMAIN}api/curatorPosts/${id}`);
       if (response.ok) {
         const data = await response.json();
         setPost(data);
@@ -78,7 +78,7 @@ export default function CuratorPost() {
   const handleDelete = async () => {
     if (window.confirm("정말로 이 게시물을 삭제하시겠습니까?")) {
       try {
-        const response = await fetch(`${DOMAIN}api/curatorPosts/${id}`, {
+        const response = await fetch(`${SERVER_DOMAIN}api/curatorPosts/${id}`, {
           method: "DELETE",
         });
 

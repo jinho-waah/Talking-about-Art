@@ -868,60 +868,6 @@ app.get("/api/exhibitionPosts/:id", (req, res) => {
   });
 });
 
-// PUT ordinary post by ID
-app.put("/api/exhibitionPosts/:id", (req, res) => {
-  const postId = req.params.id;
-  const { title, content, updated_at } = req.body;
-
-  const query = `
-    UPDATE artlove1_art_lover.posts
-    SET title = ?, content = ?, updated_at = ?
-    WHERE id = ?`;
-
-  connection.query(
-    query,
-    [title, content, updated_at, postId],
-    (err, result) => {
-      if (err) {
-        console.error("Error updating ordinary post:", err);
-        return res
-          .status(500)
-          .json({ message: "서버 에러로 인해 게시물 수정에 실패했습니다." });
-      }
-
-      if (result.affectedRows === 0) {
-        return res
-          .status(404)
-          .json({ message: "해당 게시물을 찾을 수 없습니다." });
-      }
-
-      res.status(200).json({ message: "게시물이 성공적으로 수정되었습니다." });
-    }
-  );
-});
-
-// DELETE exhibition post by ID
-app.delete("/api/exhibitionPosts/:id", (req, res) => {
-  const postId = req.params.id;
-
-  const query = `
-    DELETE FROM artlove1_art_lover.posts WHERE id = ?
-  `;
-
-  connection.query(query, [postId], (err, result) => {
-    if (err) {
-      console.error("Error deleting ordinary post:", err);
-      return res.status(500).json({ message: "게시물 삭제 실패" });
-    }
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "게시물을 찾을 수 없습니다." });
-    }
-
-    res.status(200).json({ message: "게시물이 성공적으로 삭제되었습니다." });
-  });
-});
-
 // ================================== mypage ======================================
 
 // 유저 정보 업데이트 (마이페이지 수정)
@@ -1081,7 +1027,7 @@ app.get("/api/post/comment/:id", (req, res) => {
   // 댓글 및 작성자 정보를 가져오는 쿼리
   const query = `
     SELECT pc.id, pc.post_id, pc.user_id, pc.content, pc.like_count, pc.created_at, 
-           u.nickname, u.profile_image
+           pc.file_url ,u.nickname, u.profile_image
     FROM post_comments pc
     JOIN users u ON pc.user_id = u.id
     WHERE pc.post_id = ?;
@@ -1096,6 +1042,157 @@ app.get("/api/post/comment/:id", (req, res) => {
     res.status(200).json(results);
   });
 });
+
+const commentStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../client/public/img/commentImg"));
+  },
+  filename: (req, file, cb) => {
+    const userId = req.body.userId;
+    if (!userId) {
+      return cb(new Error("userId가 필요합니다"));
+    }
+    const timestamp = Date.now();
+    cb(null, `${userId}-${timestamp}.webp`);
+  },
+});
+
+const uploadComment = multer({ storage: commentStorage });
+
+app.post(
+  "/api/post/comment/:id",
+  uploadComment.single("file"),
+  async (req, res) => {
+    const postId = req.params.id;
+    const { userId, content, createdAt } = req.body;
+    let fileUrl = null;
+
+    try {
+      if (req.file) {
+        const outputFilePath = path.join(
+          __dirname,
+          "../client/public/img/commentImg",
+          `${userId}-${Date.now()}.webp`
+        );
+
+        // 이미지 변환 및 저장
+        await sharp(req.file.path).webp({ quality: 70 }).toFile(outputFilePath);
+
+        // 원본 파일 삭제
+        fs.unlinkSync(req.file.path);
+
+        // webp 파일의 URL 설정
+        fileUrl = `/img/commentImg/${path.basename(outputFilePath)}`;
+      }
+
+      const query = `
+        INSERT INTO post_comments (post_id, user_id, content, created_at, file_url)
+        VALUES (?, ?, ?, ?, ?)
+      `;
+
+      connection.query(
+        query,
+        [postId, userId, content, createdAt, fileUrl],
+        (err, result) => {
+          if (err) {
+            console.error("Error inserting new comment:", err);
+            return res.status(500).json({ message: "댓글 추가 실패" });
+          }
+
+          res.status(201).json({
+            message: "댓글이 성공적으로 추가되었습니다.",
+            comment: {
+              id: result.insertId,
+              post_id: postId,
+              user_id: userId,
+              content,
+              created_at: createdAt,
+              file_url: fileUrl, // `null`로 그대로 전달되어 DB에 `NULL`로 저장됨
+            },
+          });
+        }
+      );
+    } catch (error) {
+      console.error("Error processing file:", error);
+      res.status(500).json({ message: "파일 처리 중 오류가 발생했습니다." });
+    }
+  }
+);
+app.put(
+  "/api/post/comment/:id",
+  uploadComment.single("file"),
+  async (req, res) => {
+    const commentId = req.params.id;
+    const { userId, content } = req.body;
+    let newFileUrl = null;
+
+    try {
+      // 기존 이미지 파일 경로 가져오기
+      const [existingComment] = await new Promise((resolve, reject) => {
+        const query = "SELECT file_url FROM post_comments WHERE id = ?";
+        connection.query(query, [commentId], (err, results) => {
+          if (err) reject(err);
+          resolve(results);
+        });
+      });
+
+      if (!existingComment) {
+        return res.status(404).json({ message: "댓글을 찾을 수 없습니다." });
+      }
+
+      // 새로운 파일 업로드 및 변환
+      if (req.file) {
+        const outputFilePath = path.join(
+          __dirname,
+          "../client/public/img/commentImg",
+          `${userId}-${Date.now()}.webp`
+        );
+        await sharp(req.file.path).webp({ quality: 70 }).toFile(outputFilePath);
+        fs.unlinkSync(req.file.path);
+
+        // 새 파일 URL 설정
+        newFileUrl = `/img/commentImg/${path.basename(outputFilePath)}`;
+
+        // 기존 파일 삭제
+        if (existingComment.file_url) {
+          const existingFilePath = path.join(
+            __dirname,
+            "../client/public",
+            existingComment.file_url
+          );
+          if (fs.existsSync(existingFilePath)) {
+            fs.unlinkSync(existingFilePath);
+          }
+        }
+      }
+
+      // 댓글 내용 및 파일 URL 업데이트
+      const query = `
+        UPDATE post_comments 
+        SET content = ?, file_url = COALESCE(?, file_url)
+        WHERE id = ? AND user_id = ?;
+      `;
+      connection.query(
+        query,
+        [content, newFileUrl, commentId, userId],
+        (err) => {
+          if (err) {
+            console.error("Error updating comment:", err);
+            return res.status(500).json({ message: "댓글 수정 실패" });
+          }
+          res.status(200).json({
+            message: "댓글이 성공적으로 수정되었습니다.",
+            content,
+            file_url: newFileUrl,
+          });
+        }
+      );
+    } catch (error) {
+      console.error("Error processing file:", error);
+      res.status(500).json({ message: "파일 처리 중 오류가 발생했습니다." });
+    }
+  }
+);
 
 
 // Express에 정적 파일 제공 추가

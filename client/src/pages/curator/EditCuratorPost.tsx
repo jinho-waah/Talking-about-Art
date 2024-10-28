@@ -18,7 +18,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"; // 모달 UI 컴포넌트
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
@@ -45,7 +45,7 @@ export default function EditCuratorPost() {
     // 기존 포스트 내용 불러오기
     const fetchCuratorPost = async () => {
       try {
-        const response = await fetch(`${DOMAIN}api/curatorPosts/${id}`);
+        const response = await fetch(`${SERVER_DOMAIN}api/curatorPosts/${id}`);
         if (response.ok) {
           const data = await response.json();
           setTitle(data.title);
@@ -78,7 +78,7 @@ export default function EditCuratorPost() {
     };
 
     try {
-      const response = await fetch(`${DOMAIN}api/curatorPosts/${id}`, {
+      const response = await fetch(`${SERVER_DOMAIN}api/curatorPosts/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -108,7 +108,9 @@ export default function EditCuratorPost() {
   const handleSearch = async () => {
     try {
       const response = await fetch(
-        `${DOMAIN}api/searchShowId?query=${encodeURIComponent(searchQuery)}`
+        `${SERVER_DOMAIN}api/searchShowId?query=${encodeURIComponent(
+          searchQuery
+        )}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch search results");

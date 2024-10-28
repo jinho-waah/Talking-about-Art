@@ -10,7 +10,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 import { Instagram, Twitter, AtSign } from "lucide-react";
 import authStore from "@/store/authStore";
 
@@ -41,7 +41,7 @@ export default function ViewProfile() {
 
     const fetchProfileData = async () => {
       try {
-        const response = await fetch(`${DOMAIN}api/mypage/${pageId}`);
+        const response = await fetch(`${SERVER_DOMAIN}api/mypage/${pageId}`);
         if (response.ok) {
           const data = await response.json();
           setProfileData({

@@ -10,7 +10,7 @@ import {
 import MoreView from "@/pages/common/components/NavigateToList";
 import { ThumbsUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 
 interface OrdinaryPost {
   id: number;
@@ -26,7 +26,7 @@ export const PostList = () => {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch(`${DOMAIN}api/ordinaryPosts/latest`);
+      const response = await fetch(`${SERVER_DOMAIN}api/ordinaryPosts/latest`);
       if (response.ok) {
         const data: OrdinaryPost[] = await response.json();
         setPosts(data);

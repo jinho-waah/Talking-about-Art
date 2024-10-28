@@ -10,6 +10,6 @@ export const EVENT_TAB_TITLES = {
   PREVIOUS_EVENT: "지난 이벤트",
   MY_EVENT: "내 이벤트",
 };
-
-export const DOMAIN = "http://localhost:5100/"
+export const HOST_DOMAIN = "http://localhost:5173";
+export const SERVER_DOMAIN = "http://localhost:5100/";
 // export const DOMAIN = "http://localhost:5100/";

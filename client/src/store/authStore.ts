@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 
 // AuthStore 인터페이스 정의
 type AuthStoreState = {
@@ -29,7 +29,7 @@ type AuthStoreActions = {
 
 const deleteCookie = async () => {
   try {
-    const response = await fetch(`${DOMAIN}api/logout`, {
+    const response = await fetch(`${SERVER_DOMAIN}api/logout`, {
       method: "POST",
       credentials: "include",
     });

@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
 import { useEffect, useState } from "react";
 import authStore from "@/store/authStore";
-import { DOMAIN } from "@/constants";
+import { SERVER_DOMAIN } from "@/constants";
 
 interface PostsListProps {
   title: string;
@@ -66,7 +66,7 @@ export default function PostsList({ title }: PostsListProps) {
 
   const fetchCuratorPosts = async () => {
     try {
-      const response = await fetch(`${DOMAIN}api/curatorPosts`);
+      const response = await fetch(`${SERVER_DOMAIN}api/curatorPosts`);
       if (response.ok) {
         const data = await response.json();
         setCuratorPosts((prevPosts) => [...prevPosts, ...data]);
@@ -80,7 +80,7 @@ export default function PostsList({ title }: PostsListProps) {
 
   const fetchOrdinaryPosts = async () => {
     try {
-      const response = await fetch(`${DOMAIN}api/ordinaryPosts`);
+      const response = await fetch(`${SERVER_DOMAIN}api/ordinaryPosts`);
       if (response.ok) {
         const data = await response.json();
         setOrdinaryPosts((prevPosts) => [...prevPosts, ...data]);
@@ -94,7 +94,7 @@ export default function PostsList({ title }: PostsListProps) {
 
   const fetchExhibitionPosts = async () => {
     try {
-      const response = await fetch(`${DOMAIN}api/exhibitionPosts`);
+      const response = await fetch(`${SERVER_DOMAIN}api/exhibitionPosts`);
       if (response.ok) {
         const data = await response.json();
         setExhibitionPosts((prevPosts) => [...prevPosts, ...data]);
