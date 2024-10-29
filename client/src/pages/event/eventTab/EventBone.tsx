@@ -54,8 +54,8 @@ const EventBone: React.FC<EventBoneProps> = ({ events, status }) => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-muted-foreground">
-                <div className="flex flex-col sm:flex-row items-start gap-2">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-2 text-md text-muted-foreground">
+                <div className="flex flex-col lg:flex-row items-start gap-2">
                   <div className="flex items-center">
                     <CalendarDays className="mr-1 h-4 w-4" />
                     {event.date}
@@ -74,7 +74,7 @@ const EventBone: React.FC<EventBoneProps> = ({ events, status }) => {
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>{event.organizer[0]}</AvatarFallback>
                 </Avatar>
-                <span className="ml-2 text-sm">주최: {event.organizer}</span>
+                <span className="ml-2 text-lg">주최: {event.organizer}</span>
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
