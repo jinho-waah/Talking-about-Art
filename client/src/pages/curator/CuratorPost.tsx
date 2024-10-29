@@ -8,16 +8,13 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, Share2, Ellipsis } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"; // 모달 컴포넌트 추가
 import { useParams, useNavigate } from "react-router-dom";
 import { SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { pageRoutes } from "@/apiRoutes";
+import Modal from "../common/components/Modal";
+import { FormatDate } from "@/lib/utils";
+import { useLike } from "@/pages/common/hooks/useLike";
 
 interface CuratorPostData {
   id: number;
@@ -36,37 +33,36 @@ interface CuratorPostData {
   show_link: string;
   show_place_detail: string | null;
   business_hours: string;
+  isLiked: boolean;
 }
 
 export default function CuratorPost() {
   const { id } = useParams<{ id: string }>();
   const [post, setPost] = useState<CuratorPostData | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { userId, role } = authStore();
   const navigate = useNavigate();
+
+  // useLike 훅 사용
+  const { toggleLike } = useLike();
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchCuratorPost();
   }, []);
 
-  const formatDate = (isoString: string) => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   const fetchCuratorPost = async () => {
     try {
-      const response = await fetch(`${SERVER_DOMAIN}api/curatorPosts/${id}`);
+      const response = await fetch(
+        `${SERVER_DOMAIN}api/curatorPosts/${id}?userId=${userId}`
+      );
       if (response.ok) {
         const data = await response.json();
         setPost(data);
+        setIsLiked(data.isLiked); // 서버에서 받은 isLiked 값 설정
+        setLikeCount(data.like_count); // 서버에서 받은 like_count 설정
       } else {
         console.error("Failed to fetch curator post");
       }
@@ -84,7 +80,7 @@ export default function CuratorPost() {
 
         if (response.ok) {
           alert("게시물이 성공적으로 삭제되었습니다.");
-          navigate(pageRoutes.curatorList); // 게시물 목록 페이지로 이동
+          navigate(pageRoutes.curatorList);
         } else {
           alert("게시물 삭제에 실패했습니다.");
         }
@@ -105,10 +101,16 @@ export default function CuratorPost() {
     setIsModalOpen(!isModalOpen);
   };
 
+  const handleLikeToggle = async () => {
+    if (post && userId) {
+      await toggleLike({ userId, curatorPostId: post.id });
+      fetchCuratorPost(); // 좋아요 상태 갱신
+    }
+  };
+
   if (!post) {
     return <div>Loading...</div>;
   }
-
   const handleToSite = () => {
     window.open(post.show_link, "_blank");
   };
@@ -129,7 +131,7 @@ export default function CuratorPost() {
                 <div>
                   <p className="font-medium">{post.curator_name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {formatDate(post.created_at)}
+                    {FormatDate(post.created_at)}
                   </p>
                 </div>
               </div>
@@ -138,15 +140,25 @@ export default function CuratorPost() {
                   <Ellipsis />
                 </Button>
               )}
+              {(userId == post.curator_id || role === "admin") && (
+                <Modal
+                  isModalOpen={isModalOpen}
+                  toggleModal={toggleModal}
+                  handleEdit={handleEdit}
+                  handleDelete={handleDelete}
+                />
+              )}
             </div>
           </CardHeader>
           <CardContent>
             <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
             <p className="text-muted-foreground mb-4">{post.content}</p>
             <div className="flex space-x-4">
-              <Button variant="ghost" size="sm">
-                <ThumbsUp className="mr-2 h-4 w-4" />
-                {post.like_count}
+              <Button variant="ghost" size="sm" onClick={handleLikeToggle}>
+                <ThumbsUp
+                  className={`mr-2 h-4 w-4 ${isLiked ? "text-blue-500" : ""}`}
+                />
+                좋아요 {likeCount}
               </Button>
               <Button variant="ghost" size="sm">
                 <Share2 className="mr-2 h-4 w-4" />
@@ -154,25 +166,6 @@ export default function CuratorPost() {
               </Button>
             </div>
           </CardContent>
-          <CardFooter>
-            {(userId == post.curator_id || role === "admin") && (
-              <Dialog open={isModalOpen} onOpenChange={toggleModal}>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>게시물 옵션</DialogTitle>
-                  </DialogHeader>
-                  <div className="flex flex-col space-y-2">
-                    <Button variant="outline" onClick={handleEdit}>
-                      수정하기
-                    </Button>
-                    <Button variant="outline" onClick={handleDelete}>
-                      삭제하기
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            )}
-          </CardFooter>
         </Card>
 
         <h2 className="text-2xl font-semibold mb-4 ml-1">전시 정보</h2>

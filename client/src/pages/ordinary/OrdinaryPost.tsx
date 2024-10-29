@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, MessageSquare, Share2, Ellipsis } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,8 +13,9 @@ import { SERVER_DOMAIN } from "@/constants";
 import Comments from "./components/comment";
 import authStore from "@/store/authStore";
 import { pageRoutes } from "@/apiRoutes";
-import Modal from "./components/Modal";
+import Modal from "../common/components/Modal";
 import { FormatDate } from "@/lib/utils";
+import { useLike } from "@/pages/common/hooks/useLike";
 
 interface OrdinaryPost {
   id: number;
@@ -19,15 +25,19 @@ interface OrdinaryPost {
   content: string;
   like_count: number;
   comment_count: number;
-  created_at: string; // ISO 형식의 날짜 문자열
+  created_at: string;
 }
 
 export default function OrdinaryPost() {
   const { id } = useParams<{ id: string }>();
   const [post, setPost] = useState<OrdinaryPost | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { userId, role } = authStore();
   const navigate = useNavigate();
+
+  // useLike 훅 사용
+  const { toggleLike } = useLike();
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -36,10 +46,13 @@ export default function OrdinaryPost() {
 
   const fetchOrdinaryPost = async () => {
     try {
-      const response = await fetch(`${SERVER_DOMAIN}api/ordinaryPosts/${id}`);
+      const response = await fetch(
+        `${SERVER_DOMAIN}api/ordinaryPosts/${id}?userId=${userId}`
+      );
       if (response.ok) {
         const data = await response.json();
         setPost(data);
+        setIsLiked(data.isLiked === 1); // isLiked 값 초기화
       } else {
         console.error("Failed to fetch ordinary post");
       }
@@ -81,6 +94,14 @@ export default function OrdinaryPost() {
     setIsModalOpen(!isModalOpen);
   };
 
+  // 좋아요 버튼 클릭 핸들러
+  const handleLikeToggle = async () => {
+    if (post && userId) {
+      await toggleLike({ userId, postId: post.id });
+      fetchOrdinaryPost(); // 좋아요 상태 갱신
+    }
+  };
+
   if (!post) return <>Loading...</>;
 
   return (
@@ -109,10 +130,14 @@ export default function OrdinaryPost() {
           </CardHeader>
           <CardContent className="ml-2">
             <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-            <p className="mb-4">{post.content}</p>
+            <p>{post.content}</p>
+          </CardContent>
+          <CardFooter>
             <div className="flex space-x-4">
-              <Button variant="ghost" size="sm">
-                <ThumbsUp className="mr-2 h-4 w-4" />
+              <Button variant="ghost" size="sm" onClick={handleLikeToggle}>
+                <ThumbsUp
+                  className={`mr-2 h-4 w-4 ${isLiked ? "text-blue-500" : ""}`}
+                />
                 좋아요 {post.like_count}
               </Button>
               <Button variant="ghost" size="sm">
@@ -124,7 +149,7 @@ export default function OrdinaryPost() {
                 공유
               </Button>
             </div>
-          </CardContent>
+          </CardFooter>
         </Card>
         <Comments />
         <Modal

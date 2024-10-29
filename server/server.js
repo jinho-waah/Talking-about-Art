@@ -285,14 +285,6 @@ app.post("/api/curatorPosts", (req, res) => {
 
 // GET curator post list
 app.get("/api/curatorPosts", (req, res) => {
-  // const query = `
-  //   SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at,
-  //          cp.like_count, u.nickname AS curator_name
-  //   FROM artlove1_art_lover.curator_posts cp
-  //   JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
-  //   ORDER BY cp.created_at DESC
-  //   LIMIT 3
-  // `;
   const query = `
     SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at,
            cp.like_count, u.nickname AS curator_name
@@ -338,13 +330,18 @@ app.get("/api/curatorPosts/latest", (req, res) => {
 //  GET curator post id로 내용 불러오기
 app.get("/api/curatorPosts/:id", (req, res) => {
   const postId = req.params.id;
+  const userId = req.query.userId;
 
   const query = `
     SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at,
            cp.like_count, u.nickname AS curator_name,
            s.show_name, s.show_term_start, s.show_term_end, s.show_place,
            s.show_price, s.show_link, s.show_place_detail,
-           g.business_hours
+           g.business_hours,
+           EXISTS(
+             SELECT 1 FROM likes
+             WHERE user_id = ? AND curator_post_id = ?
+           ) AS isLiked
     FROM artlove1_art_lover.curator_posts cp
     JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
     LEFT JOIN artlove1_art_lover.shows s ON cp.show_id = s.id
@@ -352,7 +349,7 @@ app.get("/api/curatorPosts/:id", (req, res) => {
     WHERE cp.id = ?
   `;
 
-  connection.query(query, [postId], (err, results) => {
+  connection.query(query, [userId, postId, postId], (err, results) => {
     if (err) {
       console.error("Error fetching curator post:", err);
       return res
@@ -531,16 +528,21 @@ app.get("/api/ordinaryPosts/latest", (req, res) => {
 // GET ordinary post by ID
 app.get("/api/ordinaryPosts/:id", (req, res) => {
   const postId = req.params.id;
+  const userId = req.query.userId;
 
   const query = `
     SELECT p.id, p.author_id, p.title, p.content, p.created_at,
-           p.like_count, p.comment_count, u.nickname AS author_name
+           p.like_count, p.comment_count, u.nickname AS author_name,
+           EXISTS(
+             SELECT 1 FROM likes
+             WHERE user_id = ? AND post_id = ?
+           ) AS isLiked
     FROM artlove1_art_lover.posts p
     JOIN artlove1_art_lover.users u ON p.author_id = u.id
     WHERE p.id = ?
   `;
 
-  connection.query(query, [postId], (err, results) => {
+  connection.query(query, [userId, postId, postId], (err, results) => {
     if (err) {
       console.error("Error fetching ordinary post:", err);
       return res
@@ -1023,17 +1025,22 @@ app.get("/api/searchShowId", (req, res) => {
 
 app.get("/api/post/comment/:id", (req, res) => {
   const postId = req.params.id;
+  const userId = req.query.userId; // 쿼리 파라미터에서 사용자 ID 가져옴
 
-  // 댓글 및 작성자 정보를 가져오는 쿼리
+  // 댓글 및 작성자 정보와 isLiked 상태를 가져오는 쿼리
   const query = `
     SELECT pc.id, pc.post_id, pc.user_id, pc.content, pc.like_count, pc.created_at, 
-           pc.file_url ,u.nickname, u.profile_image
+           pc.file_url, u.nickname, u.profile_image,
+           EXISTS(
+             SELECT 1 FROM likes
+             WHERE user_id = ? AND comment_id = pc.id
+           ) AS isLiked
     FROM post_comments pc
     JOIN users u ON pc.user_id = u.id
     WHERE pc.post_id = ?;
   `;
 
-  connection.query(query, [postId], (err, results) => {
+  connection.query(query, [userId, postId], (err, results) => {
     if (err) {
       console.error("Error fetching post comments:", err);
       return res.status(500).json({ message: "서버 오류" });
@@ -1193,6 +1200,101 @@ app.put(
     }
   }
 );
+
+// ================================== likes ======================================
+
+// POST like toggle
+app.post("/api/likes/toggle", async (req, res) => {
+  const { userId, postId, curatorPostId, commentId } = req.body;
+
+  let query = "";
+  let idValue = null;
+
+  // 요청에 따라 likes 테이블에서 어떤 컬럼을 사용할지 결정
+  if (postId) {
+    query = "SELECT * FROM likes WHERE user_id = ? AND post_id = ?";
+    idValue = postId;
+  } else if (curatorPostId) {
+    query = "SELECT * FROM likes WHERE user_id = ? AND curator_post_id = ?";
+    idValue = curatorPostId;
+  } else if (commentId) {
+    query = "SELECT * FROM likes WHERE user_id = ? AND comment_id = ?";
+    idValue = commentId;
+  }
+
+  try {
+    // 좋아요 상태 확인
+    const result = await new Promise((resolve, reject) => {
+      connection.query(query, [userId, idValue], (error, results) => {
+        if (error) return reject(error);
+        resolve(results);
+      });
+    });
+
+    let isLiked;
+    let incrementValue;
+
+    if (result.length > 0) {
+      // 좋아요가 이미 존재하면 삭제 (unlike)
+      await new Promise((resolve, reject) => {
+        connection.query(
+          "DELETE FROM likes WHERE id = ?",
+          [result[0].id],
+          (error) => {
+            if (error) return reject(error);
+            resolve();
+          }
+        );
+      });
+      isLiked = false;
+      incrementValue = -1; // 좋아요 감소
+    } else {
+      // 좋아요가 없다면 추가 (like)
+      await new Promise((resolve, reject) => {
+        connection.query(
+          "INSERT INTO likes (user_id, post_id, curator_post_id, comment_id) VALUES (?, ?, ?, ?)",
+          [userId, postId, curatorPostId, commentId],
+          (error) => {
+            if (error) return reject(error);
+            resolve();
+          }
+        );
+      });
+      isLiked = true;
+      incrementValue = 1; // 좋아요 증가
+    }
+
+    // 해당 테이블의 like_count 업데이트
+    let updateQuery = "";
+    if (postId) {
+      updateQuery = "UPDATE posts SET like_count = like_count + ? WHERE id = ?";
+    } else if (curatorPostId) {
+      updateQuery =
+        "UPDATE curator_posts SET like_count = like_count + ? WHERE id = ?";
+    } else if (commentId) {
+      updateQuery =
+        "UPDATE post_comments SET like_count = like_count + ? WHERE id = ?";
+    }
+
+    if (updateQuery) {
+      await new Promise((resolve, reject) => {
+        connection.query(updateQuery, [incrementValue, idValue], (error) => {
+          if (error) return reject(error);
+          resolve();
+        });
+      });
+    }
+
+    res.status(200).json({ isLiked });
+  } catch (error) {
+    console.error("Error toggling like status:", error);
+    res.status(500).json({ message: "Error toggling like status" });
+  }
+});
+
+
+
+
 
 
 // Express에 정적 파일 제공 추가

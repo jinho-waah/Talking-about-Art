@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ThumbsUp, Share2 } from "lucide-react";
+import { ThumbsUp } from "lucide-react";
 import PostHeader from "./PostHeader";
 
 interface CuratorPostProps {
@@ -10,11 +10,13 @@ interface CuratorPostProps {
     curator_name: string;
     like_count: number;
     created_at: string;
+    isLiked: boolean; // 추가된 필드
   };
   onClick: (id: number) => void;
 }
 
 export default function CuratorPostCard({ post, onClick }: CuratorPostProps) {
+  console.log(post);
   return (
     <Card className="mb-6 cursor-pointer" onClick={() => onClick(post.id)}>
       <CardHeader>
@@ -26,9 +28,13 @@ export default function CuratorPostCard({ post, onClick }: CuratorPostProps) {
       <CardContent>
         <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
         <p className="text-muted-foreground mb-4">{post.content}</p>
-        <div className="flex space-x-4">
-          <ThumbsUp className="mr-2 h-4 w-4" /> {post.like_count}
-          <Share2 className="mr-2 h-4 w-4" />
+        <div className="flex items-center space-x-2">
+          <ThumbsUp
+            className={`h-4 w-4 ${
+              post.isLiked ? "text-blue-500" : "text-gray-400"
+            }`}
+          />
+          <span>{post.like_count}</span>
         </div>
       </CardContent>
     </Card>

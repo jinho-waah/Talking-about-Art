@@ -8,7 +8,7 @@ import CuratorPostCard from "./components/CuratorPostCard";
 import OrdinaryPostCard from "./components/OrdinaryPostCard";
 import ExhibitionPostCard from "./components/ExhibitionPostCard";
 import useFetchPosts from "./hooks/useFetchPosts";
-import { TabTitle } from "@/constants";
+import { TAB_TITLES, TabTitle } from "@/constants";
 import { Card } from "@/components/ui/card";
 
 interface PostsListProps {
@@ -28,16 +28,16 @@ export default function PostsList({ title }: PostsListProps) {
 
   const handlePostClick = (id: number) => {
     switch (title) {
-      case "전시 예정":
+      case TAB_TITLES.UPCOMING_EXHIBITION:
         navigate(pageRoutes.upCommingPost.replace(":id", String(id)));
         break;
-      case "전시 소개":
+      case TAB_TITLES.INTRODUCTION:
         navigate(pageRoutes.currentPost.replace(":id", String(id)));
         break;
-      case "큐레이터":
+      case TAB_TITLES.CURATOR:
         navigate(pageRoutes.curatorPost.replace(":id", String(id)));
         break;
-      case "게시글":
+      case TAB_TITLES.POSTS:
         navigate(pageRoutes.ordinaryPost.replace(":id", String(id)));
         break;
       default:
@@ -48,16 +48,16 @@ export default function PostsList({ title }: PostsListProps) {
 
   const handleAddPost = () => {
     switch (title) {
-      case "전시 예정":
-      case "전시 소개":
+      case TAB_TITLES.UPCOMING_EXHIBITION:
+      case TAB_TITLES.INTRODUCTION:
         if (role === "gallery" || role === "admin")
           navigate(pageRoutes.addExhibition);
         break;
-      case "큐레이터":
+      case TAB_TITLES.CURATOR:
         if (role === "curator" || role === "admin")
           navigate(pageRoutes.addCurator);
         break;
-      case "게시글":
+      case TAB_TITLES.POSTS:
         if (isLogin) navigate(pageRoutes.addPost);
         break;
     }
@@ -71,12 +71,12 @@ export default function PostsList({ title }: PostsListProps) {
       </div>
       <Input placeholder="Search posts..." className="mb-6" />
 
-      {title === "큐레이터" &&
+      {title === TAB_TITLES.CURATOR &&
         curatorPosts.map((post, index) => (
           <CuratorPostCard key={index} post={post} onClick={handlePostClick} />
         ))}
 
-      {title === "게시글" ? (
+      {title === TAB_TITLES.POSTS ? (
         <Card>
           {ordinaryPosts.map((post, index) => (
             <OrdinaryPostCard
@@ -88,7 +88,7 @@ export default function PostsList({ title }: PostsListProps) {
         </Card>
       ) : null}
 
-      {title === "전시 소개" &&
+      {title === TAB_TITLES.INTRODUCTION &&
         exhibitionPosts.map((post, index) => (
           <ExhibitionPostCard
             key={index}

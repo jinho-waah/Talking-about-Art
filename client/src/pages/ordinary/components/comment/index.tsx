@@ -10,10 +10,11 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, Share2, Flag, Ellipsis } from "lucide-react";
 import CommentsForm from "./CommentForm";
-import Modal from "../Modal";
+import Modal from "../../../common/components/Modal";
 import { HOST_DOMAIN, SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { FormatDate } from "@/lib/utils";
+import { useLike } from "@/pages/common/hooks/useLike";
 
 interface Comment {
   id: number;
@@ -24,6 +25,7 @@ interface Comment {
   created_at: string;
   profile_image?: string;
   file_url?: string;
+  isLiked?: boolean; // isLiked 상태 추가
 }
 
 export default function Comments() {
@@ -39,10 +41,13 @@ export default function Comments() {
     null
   );
 
-  // 댓글 목록을 다시 가져오는 함수
+  const { toggleLike } = useLike(); // useLike 훅 사용
+
   const fetchComments = async () => {
     try {
-      const response = await fetch(`${SERVER_DOMAIN}api/post/comment/${id}`);
+      const response = await fetch(
+        `${SERVER_DOMAIN}api/post/comment/${id}?userId=${userId}`
+      );
       if (!response.ok) {
         throw new Error("댓글을 불러오는 데 실패했습니다.");
       }
@@ -147,6 +152,13 @@ export default function Comments() {
     }
   };
 
+  const handleLikeToggle = async (commentId: number) => {
+    if (userId) {
+      await toggleLike({ userId, commentId });
+      fetchComments(); // 좋아요 상태 갱신
+    }
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-4">댓글</h2>
@@ -240,8 +252,16 @@ export default function Comments() {
           </CardContent>
           <CardFooter>
             <div className="flex space-x-4">
-              <Button variant="ghost" size="sm">
-                <ThumbsUp className="mr-2 h-4 w-4" />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleLikeToggle(comment.id)}
+              >
+                <ThumbsUp
+                  className={`mr-2 h-4 w-4 ${
+                    comment.isLiked ? "text-blue-500" : ""
+                  }`}
+                />
                 좋아요 {comment.like_count}
               </Button>
               <Button variant="ghost" size="sm">

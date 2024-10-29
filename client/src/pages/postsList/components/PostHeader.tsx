@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { FormatDate } from "@/lib/utils";
 
 interface PostHeaderProps {
   authorName: string;
@@ -13,7 +14,7 @@ export default function PostHeader({ authorName, createdAt }: PostHeaderProps) {
       </Avatar>
       <div>
         <p className="font-medium">{authorName}</p>
-        <p className="text-sm text-muted-foreground">{createdAt}</p>
+        <p className="text-sm text-muted-foreground">{FormatDate(createdAt)}</p>
       </div>
     </div>
   );

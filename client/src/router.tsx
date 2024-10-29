@@ -14,12 +14,12 @@ import EditMyPage from "./pages/myPage/EditMyPage";
 import EventPage from "@/pages/event";
 import AddExhibitionPost from "./pages/exhibition/AddExhibitionPost";
 import AddCuratorPost from "./pages/curator/AddCuratorPost";
-import AddOrdinaryPost from "./pages/ordinary/AddOrdinaryPost";
+import AddOrdinaryPost from "./pages/ordinary/components/AddOrdinaryPost";
 import PrivateRoute from "./PrivateRoute";
 import { Layout } from "./pages/common/layout/Layout";
 import { AuthLayout } from "./pages/common/layout/AuthLayout";
 import EditCuratorPost from "./pages/curator/EditCuratorPost";
-import EditOrdinaryPost from "./pages/ordinary/EditOrdinaryPost";
+import EditOrdinaryPost from "./pages/ordinary/components/EditOrdinaryPost";
 
 const CommonLayout = ({ isAuth }: { isAuth?: boolean }) =>
   isAuth ? (
