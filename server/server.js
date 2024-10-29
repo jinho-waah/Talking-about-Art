@@ -1106,16 +1106,28 @@ app.post(
             return res.status(500).json({ message: "댓글 추가 실패" });
           }
 
-          res.status(201).json({
-            message: "댓글이 성공적으로 추가되었습니다.",
-            comment: {
-              id: result.insertId,
-              post_id: postId,
-              user_id: userId,
-              content,
-              created_at: createdAt,
-              file_url: fileUrl, // `null`로 그대로 전달되어 DB에 `NULL`로 저장됨
-            },
+          // 댓글이 성공적으로 추가된 후 posts 테이블의 comment_count를 증가시킴
+          const updateCommentCountQuery = `
+            UPDATE posts SET comment_count = comment_count + 1 WHERE id = ?
+          `;
+
+          connection.query(updateCommentCountQuery, [postId], (err) => {
+            if (err) {
+              console.error("Error updating comment count:", err);
+              return res.status(500).json({ message: "댓글 수 업데이트 실패" });
+            }
+
+            res.status(201).json({
+              message: "댓글이 성공적으로 추가되었습니다.",
+              comment: {
+                id: result.insertId,
+                post_id: postId,
+                user_id: userId,
+                content,
+                created_at: createdAt,
+                file_url: fileUrl,
+              },
+            });
           });
         }
       );
@@ -1125,6 +1137,8 @@ app.post(
     }
   }
 );
+
+
 app.put(
   "/api/post/comment/:id",
   uploadComment.single("file"),
@@ -1200,6 +1214,65 @@ app.put(
     }
   }
 );
+
+// 댓글 삭제 엔드포인트
+app.delete("/api/post/comment/:id", async (req, res) => {
+  const commentId = req.params.id;
+
+  try {
+    // 삭제할 댓글의 post_id 가져오기
+    const [comment] = await new Promise((resolve, reject) => {
+      const query = "SELECT post_id, file_url FROM post_comments WHERE id = ?";
+      connection.query(query, [commentId], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+
+    if (!comment) {
+      return res.status(404).json({ message: "댓글을 찾을 수 없습니다." });
+    }
+
+    const postId = comment.post_id;
+
+    // 댓글 삭제 쿼리 실행
+    const deleteCommentQuery = "DELETE FROM post_comments WHERE id = ?";
+    await new Promise((resolve, reject) => {
+      connection.query(deleteCommentQuery, [commentId], (err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+
+    // posts 테이블의 comment_count 감소
+    const updateCommentCountQuery = `
+      UPDATE posts SET comment_count = comment_count - 1 WHERE id = ?
+    `;
+    await new Promise((resolve, reject) => {
+      connection.query(updateCommentCountQuery, [postId], (err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+
+    // 파일 삭제 처리
+    if (comment.file_url) {
+      const filePath = path.join(
+        __dirname,
+        "../client/public",
+        comment.file_url
+      );
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    res.status(200).json({ message: "댓글이 성공적으로 삭제되었습니다." });
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    res.status(500).json({ message: "댓글 삭제 중 오류가 발생했습니다." });
+  }
+});
 
 // ================================== likes ======================================
 

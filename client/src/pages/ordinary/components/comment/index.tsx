@@ -28,7 +28,15 @@ interface Comment {
   isLiked?: boolean; // isLiked 상태 추가
 }
 
-export default function Comments() {
+interface CommentsProps {
+  commentSectionRef: React.RefObject<HTMLDivElement>;
+  onCommentsUpdate: () => void; // 댓글 업데이트 콜백 추가
+}
+
+export default function Comments({
+  commentSectionRef,
+  onCommentsUpdate,
+}: CommentsProps) {
   const { id } = useParams<string>();
   const { userId, role } = authStore();
   const [comments, setComments] = useState<Comment[]>([]);
@@ -143,6 +151,8 @@ export default function Comments() {
 
         if (response.ok) {
           await fetchComments();
+          onCommentsUpdate();
+          setIsModalOpen(false); // 삭제 후 모달 닫기
         } else {
           throw new Error("댓글 삭제에 실패했습니다.");
         }
@@ -276,7 +286,11 @@ export default function Comments() {
           </CardFooter>
         </Card>
       ))}
-      <CommentsForm onCommentAdded={fetchComments} />
+      <CommentsForm
+        onCommentAdded={fetchComments}
+        commentSectionRef={commentSectionRef}
+        onCommentsUpdate={onCommentsUpdate}
+      />
 
       <Modal
         isModalOpen={isModalOpen}

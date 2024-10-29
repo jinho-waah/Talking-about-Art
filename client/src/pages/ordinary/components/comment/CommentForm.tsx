@@ -15,9 +15,15 @@ import authStore from "@/store/authStore";
 
 interface CommentsFormProps {
   onCommentAdded: () => void;
+  commentSectionRef: React.RefObject<HTMLDivElement>;
+  onCommentsUpdate: () => void;
 }
 
-export default function CommentsForm({ onCommentAdded }: CommentsFormProps) {
+export default function CommentsForm({
+  onCommentAdded,
+  commentSectionRef,
+  onCommentsUpdate,
+}: CommentsFormProps) {
   const { id } = useParams();
   const { userId } = authStore();
   const [replyText, setReplyText] = useState("");
@@ -62,7 +68,8 @@ export default function CommentsForm({ onCommentAdded }: CommentsFormProps) {
       setReplyText("");
       setAttachment(null);
       setPreviewUrl(null);
-      onCommentAdded(); // 댓글 등록 후 목록 새로고침
+      onCommentAdded();
+      onCommentsUpdate();
     } catch (error) {
       console.error("댓글 등록 에러:", error);
       alert("댓글 등록 중 오류가 발생했습니다.");
@@ -72,7 +79,7 @@ export default function CommentsForm({ onCommentAdded }: CommentsFormProps) {
   };
 
   return (
-    <div>
+    <div ref={commentSectionRef}>
       <Card>
         <CardHeader>
           <CardTitle>댓글 작성</CardTitle>
