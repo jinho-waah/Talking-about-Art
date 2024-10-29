@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
-import ViewMore from "@/pages/common/components/NavigateToList";
+import ViewMore from "@/pages/home/ui/NavigateToList";
 import { BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

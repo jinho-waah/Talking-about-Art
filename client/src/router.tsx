@@ -1,3 +1,4 @@
+// router 설정 파일
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
 import { Home } from "@/pages/home";
@@ -8,30 +9,34 @@ import CuratorPost from "@/pages/curator/CuratorPost";
 import OrdinaryPost from "@/pages/ordinary/OrdinaryPost";
 import LoginPage from "@/pages/login/LoginPage";
 import RegisterPage from "@/pages/register/RegisterPage";
-import MyPage from "@/pages/ myPage";
-import EditMyPage from "@/pages/ myPage/EditMyPage";
+import MyPage from "./pages/myPage";
+import EditMyPage from "./pages/myPage/EditMyPage";
 import EventPage from "@/pages/event";
 import AddExhibitionPost from "./pages/exhibition/AddExhibitionPost";
 import AddCuratorPost from "./pages/curator/AddCuratorPost";
 import AddOrdinaryPost from "./pages/ordinary/AddOrdinaryPost";
-import PrivateRoute from "./pages/common/components/PrivateRoute";
-import { Layout } from "./pages/common/components/Layout";
+import PrivateRoute from "./PrivateRoute";
+import { Layout } from "./pages/common/layout/Layout";
+import { AuthLayout } from "./pages/common/layout/AuthLayout";
 import EditCuratorPost from "./pages/curator/EditCuratorPost";
 import EditOrdinaryPost from "./pages/ordinary/EditOrdinaryPost";
 
-const CommonLayout = () => (
-  <Layout>
-    <Outlet />
-  </Layout>
-);
+const CommonLayout = ({ isAuth }: { isAuth?: boolean }) =>
+  isAuth ? (
+    <AuthLayout>
+      <Outlet />
+    </AuthLayout>
+  ) : (
+    <Layout>
+      <Outlet />
+    </Layout>
+  );
 
 const router = createBrowserRouter([
   {
-    element: <CommonLayout />,
+    element: <CommonLayout isAuth={false} />,
     children: [
       { path: pageRoutes.main, element: <Home /> },
-      { path: pageRoutes.login, element: <LoginPage /> },
-      { path: pageRoutes.register, element: <RegisterPage /> },
       { path: pageRoutes.myPageId, element: <MyPage /> },
       { path: pageRoutes.editMyPage, element: <EditMyPage /> },
       { path: pageRoutes.eventPage, element: <EventPage /> },
@@ -39,34 +44,22 @@ const router = createBrowserRouter([
         path: pageRoutes.upCommingList,
         element: <PostsList title={TAB_TITLES.UPCOMING_EXHIBITION} />,
       },
-      {
-        path: pageRoutes.upCommingPost,
-        element: <ExhibitionPost />,
-      },
+      { path: pageRoutes.upCommingPost, element: <ExhibitionPost /> },
       {
         path: pageRoutes.currentList,
         element: <PostsList title={TAB_TITLES.INTRODUCTION} />,
       },
-      {
-        path: pageRoutes.currentPost,
-        element: <ExhibitionPost />,
-      },
+      { path: pageRoutes.currentPost, element: <ExhibitionPost /> },
       {
         path: pageRoutes.curatorList,
         element: <PostsList title={TAB_TITLES.CURATOR} />,
       },
-      {
-        path: pageRoutes.curatorPost,
-        element: <CuratorPost />,
-      },
+      { path: pageRoutes.curatorPost, element: <CuratorPost /> },
       {
         path: pageRoutes.ordinaryList,
         element: <PostsList title={TAB_TITLES.POSTS} />,
       },
-      {
-        path: pageRoutes.ordinaryPost,
-        element: <OrdinaryPost />,
-      },
+      { path: pageRoutes.ordinaryPost, element: <OrdinaryPost /> },
       {
         path: pageRoutes.addExhibition,
         element: (
@@ -93,9 +86,8 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-
       {
-        path: pageRoutes.editCuratorPost, // 수정 페이지 추가
+        path: pageRoutes.editCuratorPost,
         element: (
           <PrivateRoute allowedRoles={["admin", "curator"]}>
             <EditCuratorPost />
@@ -103,7 +95,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: pageRoutes.editOrdinaryPost, // 수정 페이지 추가
+        path: pageRoutes.editOrdinaryPost,
         element: (
           <PrivateRoute
             allowedRoles={["admin", "gallery", "curator", "general"]}
@@ -112,6 +104,13 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+    ],
+  },
+  {
+    element: <CommonLayout isAuth={true} />,
+    children: [
+      { path: pageRoutes.login, element: <LoginPage /> },
+      { path: pageRoutes.register, element: <RegisterPage /> },
     ],
   },
 ]);

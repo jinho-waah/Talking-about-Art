@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { UserAvatar } from "@/pages/common/components/UserAvatar";
+import { UserAvatar } from "@/pages/common/layout/ui/UserAvatar";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 

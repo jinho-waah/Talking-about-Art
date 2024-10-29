@@ -10,9 +10,10 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, Share2, Flag, Ellipsis } from "lucide-react";
 import CommentsForm from "./CommentForm";
-import Modal from "../ui/Modal";
+import Modal from "../Modal";
 import { HOST_DOMAIN, SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
+import { FormatDate } from "@/lib/utils";
 
 interface Comment {
   id: number;
@@ -27,8 +28,8 @@ interface Comment {
 
 export default function Comments() {
   const { id } = useParams<string>();
-  const [comments, setComments] = useState<Comment[]>([]);
   const { userId, role } = authStore();
+  const [comments, setComments] = useState<Comment[]>([]);
   const [editCommentId, setEditCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState<string>("");
   const [editFile, setEditFile] = useState<File | null>(null);
@@ -54,7 +55,7 @@ export default function Comments() {
 
   useEffect(() => {
     fetchComments();
-  }, [id]);
+  }, []);
 
   const toggleModal = (commentId: number | null) => {
     setSelectedCommentId(commentId);
@@ -170,7 +171,7 @@ export default function Comments() {
                 <div>
                   <p className="font-medium">{comment.nickname}</p>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(comment.created_at).toLocaleDateString()}
+                    {FormatDate(comment.created_at)}
                   </p>
                 </div>
               </div>

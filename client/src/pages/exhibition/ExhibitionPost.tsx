@@ -77,10 +77,10 @@ export default function ExhibitionPost() {
   );
 
   return (
-    <div className="container mx-auto px-1 py-8">
+    <div className="container mx-auto px-1">
       <h1 className="text-3xl font-bold mb-4">{exhibitionPosts.show_name}</h1>
-      <div className="grid gap-6 md:grid-cols-3">
-        <div className="md:col-span-2">
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
           <Carousel items={exhibitionPosts.image_url} />
           <div className="flex flex-wrap gap-3 mb-6">
             {exhibitionPosts.tags.map((tag, index) => (
@@ -94,7 +94,7 @@ export default function ExhibitionPost() {
             ))}
           </div>
 
-          <Card className="md:hidden">
+          <Card className="lg:hidden">
             <CardHeader>
               <p className="text-2xl font-bold mb-2">
                 {exhibitionPosts.show_price !== 0
@@ -111,7 +111,6 @@ export default function ExhibitionPost() {
               </Button>
             </CardContent>
           </Card>
-
           <Card className="mt-5">
             <CardHeader>
               <CardTitle>참여 작가</CardTitle>
@@ -149,7 +148,7 @@ export default function ExhibitionPost() {
             </CardContent>
           </Card>
 
-          <Card className="mt-5 md:hidden">
+          <Card className="mt-5 lg:hidden">
             <CardHeader>
               <CardTitle>요일별 시간</CardTitle>
             </CardHeader>
@@ -165,7 +164,7 @@ export default function ExhibitionPost() {
             </CardContent>
           </Card>
 
-          <Card className="mt-5 md:hidden">
+          <Card className="mt-5 lg:hidden">
             <CardHeader>
               <CardTitle>전화번호</CardTitle>
             </CardHeader>
@@ -192,12 +191,14 @@ export default function ExhibitionPost() {
 
         {/* Right Column */}
         <div>
-          <Card className="hidden md:block">
+          <Card className="hidden lg:block">
             <CardHeader>
               <p className="text-2xl font-bold mb-2">
                 {exhibitionPosts.show_price !== 0
-                  ? `${exhibitionPosts.show_price}원`
-                  : "무료 전시입니다"}
+                  ? `${new Intl.NumberFormat().format(
+                      exhibitionPosts.show_price
+                    )}원`
+                  : "무료 전시"}
               </p>
             </CardHeader>
             <CardContent>
@@ -210,7 +211,7 @@ export default function ExhibitionPost() {
             </CardContent>
           </Card>
 
-          <Card className="mt-5 hidden md:block">
+          <Card className="mt-5 hidden lg:block">
             <CardHeader>
               <CardTitle>요일별 시간</CardTitle>
             </CardHeader>
@@ -226,7 +227,7 @@ export default function ExhibitionPost() {
             </CardContent>
           </Card>
 
-          <Card className="mt-5 hidden md:block">
+          <Card className="mt-5 hidden lg:block">
             <CardHeader>
               <CardTitle>전화번호</CardTitle>
             </CardHeader>

@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import MoreView from "@/pages/common/components/NavigateToList";
+import MoreView from "@/pages/home/ui/NavigateToList";
 import { ThumbsUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SERVER_DOMAIN } from "@/constants";

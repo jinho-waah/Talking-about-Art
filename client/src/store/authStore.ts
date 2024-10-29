@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { SERVER_DOMAIN } from "@/constants";
 
-// AuthStore 인터페이스 정의
 type AuthStoreState = {
   isLogin: boolean;
   userId: number | null;

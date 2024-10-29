@@ -116,7 +116,7 @@ export default function CuratorPost() {
   const businessHours = JSON.parse(post.business_hours);
 
   return (
-    <div className="container mx-auto px-1 py-8">
+    <div className="container mx-auto px-1">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold mb-5 ml-1">큐레이터의 전시 이야기</h1>
         <Card className="mb-8">

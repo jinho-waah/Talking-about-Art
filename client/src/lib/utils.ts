@@ -18,3 +18,15 @@ export const getKstTimeString = (): string => {
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
+
+
+export const FormatDate = (isoString: string) => {
+  const date = new Date(isoString);
+  return date.toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};

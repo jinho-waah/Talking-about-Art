@@ -5,10 +5,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, MessageSquare, Share2, Ellipsis } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { SERVER_DOMAIN } from "@/constants";
-import Comments from "./comment";
+import Comments from "./components/comment";
 import authStore from "@/store/authStore";
 import { pageRoutes } from "@/apiRoutes";
-import Modal from "./ui/Modal";
+import Modal from "./components/Modal";
+import { FormatDate } from "@/lib/utils";
 
 interface OrdinaryPost {
   id: number;
@@ -32,17 +33,6 @@ export default function OrdinaryPost() {
     window.scrollTo(0, 0);
     fetchOrdinaryPost();
   }, []);
-
-  const formatDate = (isoString: string) => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   const fetchOrdinaryPost = async () => {
     try {
@@ -94,7 +84,7 @@ export default function OrdinaryPost() {
   if (!post) return <>Loading...</>;
 
   return (
-    <div className="container mx-auto px-1 py-8">
+    <div className="container mx-auto px-1">
       <div className="max-w-3xl mx-auto">
         <Card className="mb-8">
           <CardHeader>
@@ -106,7 +96,7 @@ export default function OrdinaryPost() {
                 <div>
                   <p className="font-medium">{post.author_name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {formatDate(post.created_at)}
+                    {FormatDate(post.created_at)}
                   </p>
                 </div>
               </div>
@@ -117,7 +107,7 @@ export default function OrdinaryPost() {
               )}
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="ml-2">
             <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
             <p className="mb-4">{post.content}</p>
             <div className="flex space-x-4">

@@ -1,4 +1,9 @@
-export const TAB_TITLES = {
+export type TabTitle = "전시 예정" | "전시 소개" | "큐레이터" | "게시글";
+
+export const TAB_TITLES: Record<
+  "UPCOMING_EXHIBITION" | "INTRODUCTION" | "CURATOR" | "POSTS",
+  TabTitle
+> = {
   UPCOMING_EXHIBITION: "전시 예정",
   INTRODUCTION: "전시 소개",
   CURATOR: "큐레이터",
