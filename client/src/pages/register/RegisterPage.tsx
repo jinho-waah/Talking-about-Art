@@ -16,9 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { SERVER_DOMAIN } from "@/constants";
+import { EMAIL_PATTERN, SERVER_DOMAIN } from "@/constants";
 
-// 인터페이스로 입력 값의 타입 정의
 interface RegisterFormData {
   nickname: string;
   email: string;
@@ -28,7 +27,6 @@ interface RegisterFormData {
   role: string; // 추가된 필드
 }
 
-// 유효성 검사를 위한 에러 메시지 타입 정의
 interface FormErrors {
   nickname?: string;
   email?: string;
@@ -48,6 +46,7 @@ export default function RegisterPage() {
     role: "general", // 기본값 설정
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -55,7 +54,11 @@ export default function RegisterPage() {
   const validate = (): FormErrors => {
     const newErrors: FormErrors = {};
     if (!formData.nickname) newErrors.nickname = "이름을 입력해주세요.";
-    if (!formData.email) newErrors.email = "이메일을 입력해주세요.";
+    if (!formData.email) {
+      newErrors.email = "이메일을 입력해주세요.";
+    } else if (!EMAIL_PATTERN.test(formData.email)) {
+      newErrors.email = "이메일 양식이 올바르지 않습니다.";
+    }
     if (!formData.password) newErrors.password = "비밀번호를 입력해주세요.";
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
@@ -72,15 +75,63 @@ export default function RegisterPage() {
     setFormData({ ...formData, role: value });
   };
 
+  const handleEmailCheck = async () => {
+    if (!formData.email) {
+      setErrors({ ...errors, email: "이메일을 입력해주세요." });
+      return;
+    }
+
+    try {
+      const response = await fetch(`${SERVER_DOMAIN}api/check-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: formData.email }),
+      });
+
+      const data = await response.json();
+      if (data.isAvailable) {
+        setIsCheckingEmail(true);
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          email: "",
+        }));
+      }
+      if (!data.isAvailable) {
+        setErrors({ ...errors, email: "이미 사용 중인 이메일입니다." });
+      } else {
+        setErrors({ ...errors, email: "" });
+      }
+    } catch (error) {
+      console.error("이메일 중복 검사 오류:", error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isCheckingEmail) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        email: "이메일 중복 확인이 필요합니다.",
+      }));
+      return;
+    }
+    if (isCheckingEmail && errors.email === "이미 사용 중인 이메일입니다.") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        email: "다른 이메일이 필요합니다.",
+      }));
+      return;
+    }
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    // 서버로 회원가입 데이터 전송
     try {
       const response = await fetch(`${SERVER_DOMAIN}api/register`, {
         method: "POST",
@@ -93,14 +144,11 @@ export default function RegisterPage() {
       if (!response.ok) {
         throw new Error("회원가입에 실패했습니다.");
       }
-
-      // 회원가입 성공 시 로그인 페이지로 리디렉션
       navigate(pageRoutes.login);
     } catch (error) {
       console.error(error);
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-md">
@@ -119,7 +167,6 @@ export default function RegisterPage() {
                 placeholder="일반 회원은 닉네임을 사용해도 좋습니다"
                 value={formData.nickname}
                 onChange={handleChange}
-                required
               />
               {errors.nickname && (
                 <p className="text-red-500 text-sm">{errors.nickname}</p>
@@ -128,14 +175,21 @@ export default function RegisterPage() {
 
             <div className="space-y-2">
               <Label htmlFor="email">이메일</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="mail@example.com"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
+              <div className="flex items-center space-x-2">
+                <Input
+                  id="email"
+                  placeholder="mail@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+                <Button
+                  type="button"
+                  onClick={handleEmailCheck}
+                  disabled={isCheckingEmail}
+                >
+                  {isCheckingEmail ? "중복 없음" : "중복 확인"}
+                </Button>
+              </div>
               {errors.email && (
                 <p className="text-red-500 text-sm">{errors.email}</p>
               )}
@@ -150,7 +204,6 @@ export default function RegisterPage() {
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
-                  required
                 />
                 <Button
                   type="button"
@@ -179,7 +232,6 @@ export default function RegisterPage() {
                 placeholder="••••••••"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                required
               />
               {errors.confirmPassword && (
                 <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
@@ -193,7 +245,6 @@ export default function RegisterPage() {
                 type="date"
                 value={formData.birthday}
                 onChange={handleChange}
-                required
               />
               {errors.birthday && (
                 <p className="text-red-500 text-sm">{errors.birthday}</p>

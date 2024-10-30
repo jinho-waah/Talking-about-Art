@@ -16,7 +16,6 @@ export default function useFetchPosts() {
     try {
       const response = await fetch(`${SERVER_DOMAIN}api/${endpoint}`);
       const data = await response.json();
-
       if (title === "큐레이터") setCuratorPosts(data);
       else if (title === "게시글") setOrdinaryPosts(data);
       else setExhibitionPosts(data); // 전시 관련 포스트에 대해 하나로 처리

@@ -8,6 +8,7 @@ interface CuratorPostProps {
     title: string;
     content: string;
     curator_name: string;
+    profile_image: string;
     like_count: number;
     created_at: string;
     isLiked: boolean; // 추가된 필드
@@ -21,6 +22,7 @@ export default function CuratorPostCard({ post, onClick }: CuratorPostProps) {
       <CardHeader>
         <PostHeader
           authorName={post.curator_name}
+          profileImage={post.profile_image}
           createdAt={post.created_at}
         />
       </CardHeader>

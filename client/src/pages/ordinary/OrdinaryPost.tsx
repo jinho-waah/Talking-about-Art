@@ -6,7 +6,6 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, MessageSquare, Share2, Ellipsis } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { SERVER_DOMAIN } from "@/constants";
@@ -16,11 +15,13 @@ import { pageRoutes } from "@/apiRoutes";
 import Modal from "../common/components/Modal";
 import { FormatDate } from "@/lib/utils";
 import { useLike } from "@/pages/common/hooks/useLike";
+import { UserAvatar } from "../common/layout/ui/UserAvatar";
 
 interface OrdinaryPost {
   id: number;
   author_id: number;
   author_name: string;
+  profile_image: string;
   title: string;
   content: string;
   like_count: number;
@@ -69,38 +70,38 @@ export default function OrdinaryPost() {
     }
   };
 
-    const handleDelete = async () => {
-      if (window.confirm("정말로 이 게시물을 삭제하시겠습니까?")) {
-        try {
-          const response = await fetch(
-            `${SERVER_DOMAIN}api/ordinaryPosts/${id}`,
-            {
-              method: "DELETE",
-            }
-          );
-
-          if (response.ok) {
-            alert("게시물이 성공적으로 삭제되었습니다.");
-            navigate(pageRoutes.ordinaryList);
-          } else {
-            alert("게시물 삭제에 실패했습니다.");
+  const handleDelete = async () => {
+    if (window.confirm("정말로 이 게시물을 삭제하시겠습니까?")) {
+      try {
+        const response = await fetch(
+          `${SERVER_DOMAIN}api/ordinaryPosts/${id}`,
+          {
+            method: "DELETE",
           }
-        } catch (error) {
-          console.error("Error deleting curator post:", error);
-          alert("삭제 중 오류가 발생했습니다.");
+        );
+
+        if (response.ok) {
+          alert("게시물이 성공적으로 삭제되었습니다.");
+          navigate(pageRoutes.ordinaryList);
+        } else {
+          alert("게시물 삭제에 실패했습니다.");
         }
+      } catch (error) {
+        console.error("Error deleting curator post:", error);
+        alert("삭제 중 오류가 발생했습니다.");
       }
-    };
+    }
+  };
 
-    const handleEdit = () => {
-      if (id) {
-        navigate(pageRoutes.editOrdinaryPost.replace(":id", id));
-      }
-    };
+  const handleEdit = () => {
+    if (id) {
+      navigate(pageRoutes.editOrdinaryPost.replace(":id", id));
+    }
+  };
 
-    const toggleModal = () => {
-      setIsModalOpen(!isModalOpen);
-    };
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
 
   const handleLikeToggle = async () => {
     if (post && userId) {
@@ -122,9 +123,10 @@ export default function OrdinaryPost() {
           <CardHeader>
             <div className="flex justify-between items-start">
               <div className="flex items-center space-x-4">
-                <Avatar>
-                  <AvatarFallback>{post.author_name[0]}</AvatarFallback>
-                </Avatar>
+                <UserAvatar
+                  userName={post.author_name}
+                  imgUrl={post.profile_image}
+                />
                 <div>
                   <p className="font-medium">{post.author_name}</p>
                   <p className="text-sm text-muted-foreground">

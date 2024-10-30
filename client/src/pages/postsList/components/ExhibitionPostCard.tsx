@@ -6,6 +6,7 @@ interface ExhibitionPostProps {
     id: number;
     show_place: string;
     show_name: string;
+    profile_image: string;
     show_term_start: string;
     show_term_end: string;
     image_url: string[];
@@ -22,7 +23,8 @@ export default function ExhibitionPostCard({
       <CardHeader>
         <PostHeader
           authorName={post.show_place}
-          createdAt={`${post.show_term_start} ~ ${post.show_term_end}`}
+          profileImage={post.profile_image}
+          period={`${post.show_term_start} ~ ${post.show_term_end}`}
         />
       </CardHeader>
       <CardContent>

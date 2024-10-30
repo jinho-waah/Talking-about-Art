@@ -7,7 +7,6 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, Share2, Flag, Ellipsis } from "lucide-react";
 import CommentsForm from "./CommentForm";
 import Modal from "../../../common/components/Modal";
@@ -15,6 +14,7 @@ import { HOST_DOMAIN, SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { FormatDate } from "@/lib/utils";
 import { useLike } from "@/pages/common/hooks/useLike";
+import { UserAvatar } from "@/pages/common/layout/ui/UserAvatar";
 
 interface Comment {
   id: number;
@@ -23,7 +23,7 @@ interface Comment {
   content: string;
   like_count: number;
   created_at: string;
-  profile_image?: string;
+  profile_image: string;
   file_url?: string;
   isLiked?: boolean; // isLiked 상태 추가
 }
@@ -177,19 +177,10 @@ export default function Comments({
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <Avatar>
-                  {comment.profile_image ? (
-                    <img
-                      src={comment.profile_image}
-                      alt={`${comment.nickname}'s profile`}
-                      className="h-8 w-8 rounded-full"
-                    />
-                  ) : (
-                    <AvatarFallback>
-                      {comment.nickname.charAt(0)}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
+                <UserAvatar
+                  userName={comment.nickname}
+                  imgUrl={comment.profile_image}
+                />
                 <div>
                   <p className="font-medium">{comment.nickname}</p>
                   <p className="text-sm text-muted-foreground">

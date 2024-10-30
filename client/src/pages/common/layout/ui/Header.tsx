@@ -11,7 +11,7 @@ import authStore from "@/store/authStore";
 export const Header = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { userId } = authStore();
+  const { userId, userName, imgUrl } = authStore();
   const handleLogo = () => {
     navigate("/");
   };
@@ -32,9 +32,9 @@ export const Header = () => {
           Talking about Art
         </h1>
         <div className="flex items-center space-x-2 md:space-x-4">
-          {userId && (
+          {userName && (
             <div onClick={handleAvatar}>
-              <UserAvatar />
+              <UserAvatar userName={userName} imgUrl={imgUrl} />
             </div>
           )}
           <Button variant="ghost" size="icon" onClick={toggleMenu}>

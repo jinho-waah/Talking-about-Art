@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { pageRoutes } from "@/apiRoutes";
-import { SERVER_DOMAIN } from "@/constants";
+import { EMAIL_PATTERN, SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 
 // 유저 타입 정의
@@ -43,7 +43,11 @@ export default function LoginPage() {
   // 유효성 검사
   const validate = (): FormErrors => {
     const newErrors: FormErrors = {};
-    if (!formData.email) newErrors.email = "이메일을 입력해주세요.";
+    if (!formData.email) {
+      newErrors.email = "이메일을 입력해주세요.";
+    } else if (!EMAIL_PATTERN.test(formData.email)) {
+      newErrors.email = "이메일 양식이 올바르지 않습니다.";
+    }
     if (!formData.password) newErrors.password = "비밀번호를 입력해주세요.";
     return newErrors;
   };

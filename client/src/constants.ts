@@ -1,3 +1,5 @@
+export const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
 export type TabTitle = "전시 예정" | "전시 소개" | "큐레이터" | "게시글";
 
 export const TAB_TITLES: Record<

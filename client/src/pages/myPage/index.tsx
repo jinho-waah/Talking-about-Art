@@ -24,7 +24,7 @@ type ProfileData = {
   thread: string;
 };
 
-export default function ViewProfile() {
+export default function MyPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const pageId = id ? parseInt(id, 10) : null;
@@ -71,7 +71,7 @@ export default function ViewProfile() {
   };
 
   return (
-    <div className="container mx-auto px-1 py-8">
+    <div className="container mx-auto px-1">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">프로필</CardTitle>
