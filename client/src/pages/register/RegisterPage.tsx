@@ -1,22 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { pageRoutes } from "@/apiRoutes";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { EMAIL_PATTERN, SERVER_DOMAIN } from "@/constants";
+import { EMAIL_PATTERN } from "@/constants";
+import { emailCheck, registerUser } from "./api/api";
+import RegisterFooter from "./components/RegisterFooter";
+import RegisterRadio from "./components/RegisterRadio";
 
 interface RegisterFormData {
   nickname: string;
@@ -24,7 +23,7 @@ interface RegisterFormData {
   password: string;
   confirmPassword: string;
   birthday: string;
-  role: string; // 추가된 필드
+  role: string;
 }
 
 interface FormErrors {
@@ -82,23 +81,16 @@ export default function RegisterPage() {
     }
 
     try {
-      const response = await fetch(`${SERVER_DOMAIN}api/check-email`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: formData.email }),
-      });
+      const { isAvailable } = await emailCheck({ email: formData.email });
 
-      const data = await response.json();
-      if (data.isAvailable) {
+      if (isAvailable) {
         setIsCheckingEmail(true);
         setErrors((prevErrors) => ({
           ...prevErrors,
           email: "",
         }));
       }
-      if (!data.isAvailable) {
+      if (!isAvailable) {
         setErrors({ ...errors, email: "이미 사용 중인 이메일입니다." });
       } else {
         setErrors({ ...errors, email: "" });
@@ -133,15 +125,9 @@ export default function RegisterPage() {
     }
 
     try {
-      const response = await fetch(`${SERVER_DOMAIN}api/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
+      const response = await registerUser(formData);
+      console.log(response);
+      if (response.status !== 200 && response.status !== 201) {
         throw new Error("회원가입에 실패했습니다.");
       }
       navigate(pageRoutes.login);
@@ -149,6 +135,7 @@ export default function RegisterPage() {
       console.error(error);
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-md">
@@ -250,46 +237,12 @@ export default function RegisterPage() {
                 <p className="text-red-500 text-sm">{errors.birthday}</p>
               )}
             </div>
-
-            <div className="space-y-2">
-              <RadioGroup
-                value={formData.role}
-                onValueChange={handleRoleChange}
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="general" id="option-one" />
-                  <Label htmlFor="option-one">일반 회원</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="gallery" id="option-two" />
-                  <Label htmlFor="option-two">
-                    전시장 (추가 인증 후 전시장 전용 계정으로 전환 됩니다.)
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="curator" id="option-three" />
-                  <Label htmlFor="option-three">
-                    큐레이터 (추가 인증 후 큐레이터 전용 계정으로 전환 됩니다.)
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
+            <RegisterRadio
+              formData={formData}
+              onValueChange={handleRoleChange}
+            />
           </CardContent>
-
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full">
-              계정 생성
-            </Button>
-            <div className="text-sm text-center text-muted-foreground">
-              이미 계정이 있으신가요?{" "}
-              <span
-                onClick={() => navigate(pageRoutes.login)}
-                className="text-primary hover:underline cursor-pointer"
-              >
-                로그인
-              </span>
-            </div>
-          </CardFooter>
+          <RegisterFooter onNavigate={() => navigate(pageRoutes.login)} />
         </form>
       </Card>
     </div>

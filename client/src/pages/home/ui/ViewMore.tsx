@@ -6,7 +6,7 @@ interface ListName {
   path: string; // 해당하는 경로를 정의
 }
 
-const NavigateToPageList = ({ path }: ListName) => {
+const ViewMore = ({ path }: ListName) => {
   const navigate = useNavigate();
 
   const handleViewMoreClick = () => {
@@ -26,4 +26,4 @@ const NavigateToPageList = ({ path }: ListName) => {
   );
 };
 
-export default NavigateToPageList;
+export default ViewMore;

@@ -75,13 +75,31 @@ const verifyAuthToken = (req, res, next) => {
   });
 };
 
+app.post("/api/check-email", (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "이메일이 필요합니다." });
+  }
+
+  const query = `SELECT COUNT(*) AS count FROM users WHERE email = ?`;
+
+  connection.query(query, [email], (err, results) => {
+    if (err) {
+      console.error("Error checking email:", err);
+      return res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    }
+
+    const emailExists = results[0].count > 0;
+    res.status(200).json({ isAvailable: !emailExists });
+  });
+});
+
 // 회원가입
 app.post("/api/register", async (req, res) => {
   const { role, email, nickname, password, birthday, profile_image } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // 1. 사용자 정보 저장
     const userQuery = `
       INSERT INTO artlove1_art_lover.users (nickname, email, password, birthday, profile_image, role)
       VALUES (?, ?, ?, ?, ?, ?)
@@ -96,23 +114,38 @@ app.post("/api/register", async (req, res) => {
           return res.status(500).send("Error registering user");
         }
 
-        // 2. 등록된 사용자 ID 가져오기
         const userId = userResult.insertId;
 
-        // 3. 기본 권한 설정 (사용자 등록 시 기본 권한 추가)
-        const permissionsQuery = `
-          INSERT INTO artlove1_art_lover.permissions (user_id, request, flag)
-          VALUES (?, ?, ?)
-        `;
+        // role이 "general"이 아닌 경우에만 permissions 테이블에 삽입
+        if (role !== "general") {
+          const permissionsQuery = `
+            INSERT INTO artlove1_art_lover.permissions (user_id, request, flag)
+            VALUES (?, ?, ?)
+          `;
 
-        // 기본 role을 "general"로 설정하고 flag는 false
-        connection.query(permissionsQuery, [userId, role, false], (permErr) => {
-          if (permErr) {
-            console.error("Error setting permissions:", permErr);
-            return res.status(500).send("Error registering user permissions");
-          }
-          res.status(201).send("User registered successfully with permissions");
-        });
+          connection.query(
+            permissionsQuery,
+            [userId, role, false],
+            (permErr) => {
+              if (permErr) {
+                console.error("Error setting permissions:", permErr);
+                return res
+                  .status(500)
+                  .send("Error registering user permissions");
+              }
+              res
+                .status(201)
+                .send("User registered successfully with permissions");
+            }
+          );
+        } else {
+          // role이 "general"인 경우 바로 성공 응답
+          res
+            .status(201)
+            .send(
+              "User registered successfully without additional permissions"
+            );
+        }
       }
     );
   } catch (error) {
@@ -287,11 +320,12 @@ app.post("/api/curatorPosts", (req, res) => {
 app.get("/api/curatorPosts", (req, res) => {
   const query = `
     SELECT cp.id, cp.curator_id, cp.show_id, cp.title, cp.content, cp.created_at, cp.updated_at,
-           cp.like_count, u.nickname AS curator_name
+           cp.like_count, u.nickname AS curator_name, u.profile_image
     FROM artlove1_art_lover.curator_posts cp
     JOIN artlove1_art_lover.users u ON cp.curator_id = u.id
     ORDER BY cp.created_at DESC
   `;
+
   connection.query(query, (err, results) => {
     if (err) {
       console.error("Error fetching recent curator posts:", err);
@@ -533,6 +567,7 @@ app.get("/api/ordinaryPosts/:id", (req, res) => {
   const query = `
     SELECT p.id, p.author_id, p.title, p.content, p.created_at,
            p.like_count, p.comment_count, u.nickname AS author_name,
+           u.profile_image,  -- 프로필 이미지 추가
            EXISTS(
              SELECT 1 FROM likes
              WHERE user_id = ? AND post_id = ?
@@ -751,8 +786,9 @@ app.get("/api/exhibitionPosts", (req, res) => {
   const query = `
     SELECT
       s.id, s.show_place, s.show_name, s.show_term_start, s.show_term_end,
-      s.image_url
+      s.image_url, u.profile_image
     FROM artlove1_art_lover.shows s
+    LEFT JOIN artlove1_art_lover.users u ON s.gallery = u.gallery_id
     ORDER BY s.show_term_start DESC
   `;
 
@@ -917,11 +953,11 @@ const profileStorage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    cb(null, `${req.user.id}-${Date.now()}${ext}`);
+    cb(null, `${req.params.id}-${Date.now()}${ext}`);
   },
 });
 
-const uploadProfile = multer({ profileStorage });
+const uploadProfile = multer({ storage: profileStorage }); // 수정: storage 필드를 설정
 
 // 프로필 이미지 업로드
 app.post(
@@ -954,25 +990,25 @@ app.post(
             oldImagePath
           );
           fs.unlink(fullPath, (err) => {
-            if (err) {
-              console.error("이전 이미지 삭제 중 오류 발생:", err);
-            }
+            if (err) console.error("이전 이미지 삭제 중 오류 발생:", err);
           });
         }
       }
 
-      // 새로운 이미지 압축 및 저장 경로
-      const filePath = `/profileImg/${req.user.id}-${Date.now()}.webp`; // 압축된 파일은 JPEG로 저장
+      const filePath = `/img/profileImg/${userId}-${Date.now()}.webp`;
 
       try {
-        await sharp(req.file.path)
+        // 파일을 읽어 Buffer로 변환하여 Sharp에 전달
+        const imageBuffer = fs.readFileSync(req.file.path);
+
+        await sharp(imageBuffer)
           .resize(500, 500, {
             fit: sharp.fit.cover,
-          }) // 500x500으로 리사이즈
-          .webp({ quality: 70 }) // JPEG로 변환하고 품질 70%로 설정
-          .toFile(path.join(__dirname, "../client/public", filePath)); // 압축된 파일 저장
+          })
+          .webp({ quality: 70 })
+          .toFile(path.join(__dirname, "../client/public", filePath));
 
-        // 원래 파일 삭제
+        // 원본 파일 삭제
         fs.unlink(req.file.path, (err) => {
           if (err) console.error("원본 파일 삭제 중 오류:", err);
         });
@@ -996,6 +1032,7 @@ app.post(
     });
   }
 );
+
 
 // 쇼 이름으로 ID 검색 API
 app.get("/api/searchShowId", (req, res) => {
