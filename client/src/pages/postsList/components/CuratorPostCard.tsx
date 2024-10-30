@@ -16,7 +16,6 @@ interface CuratorPostProps {
 }
 
 export default function CuratorPostCard({ post, onClick }: CuratorPostProps) {
-  console.log(post);
   return (
     <Card className="mb-6 cursor-pointer" onClick={() => onClick(post.id)}>
       <CardHeader>
