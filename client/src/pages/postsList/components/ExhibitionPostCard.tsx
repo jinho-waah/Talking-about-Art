@@ -1,18 +1,8 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import PostHeader from "./PostHeader";
+import { ExhibitionPostProps } from "../types";
 
-interface ExhibitionPostProps {
-  post: {
-    id: number;
-    show_place: string;
-    show_name: string;
-    profile_image: string;
-    show_term_start: string;
-    show_term_end: string;
-    image_url: string[];
-  };
-  onClick: (id: number) => void;
-}
+
 
 export default function ExhibitionPostCard({
   post,

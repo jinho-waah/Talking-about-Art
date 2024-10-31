@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { ThumbsUp, Share2, Flag, Ellipsis } from "lucide-react";
 import CommentsForm from "./CommentForm";
-import Modal from "../../../common/components/Modal";
+import Modal from "../../common/components/Modal";
 import { HOST_DOMAIN, SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { FormatDate } from "@/lib/utils";

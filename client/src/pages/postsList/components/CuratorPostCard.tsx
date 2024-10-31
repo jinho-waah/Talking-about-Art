@@ -1,20 +1,9 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ThumbsUp } from "lucide-react";
 import PostHeader from "./PostHeader";
+import { CuratorPostProps } from "../types";
 
-interface CuratorPostProps {
-  post: {
-    id: number;
-    title: string;
-    content: string;
-    curator_name: string;
-    profile_image: string;
-    like_count: number;
-    created_at: string;
-    isLiked: boolean; // 추가된 필드
-  };
-  onClick: (id: number) => void;
-}
+
 
 export default function CuratorPostCard({ post, onClick }: CuratorPostProps) {
   return (

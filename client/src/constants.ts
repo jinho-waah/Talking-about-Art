@@ -12,11 +12,25 @@ export const TAB_TITLES: Record<
   POSTS: "게시글",
 };
 
+export enum Role {
+  ADMIN = "admin",
+  GALLERY = "gallery",
+  CURATOR = "curator",
+  ORDINARY = "ordinary",
+}
+
+export enum Post {
+  CURATOR = "curatorPosts",
+  ORDINARY = "ordinaryPosts",
+  EXHIBITION = "exhibitionPosts",
+}
+
 export const EVENT_TAB_TITLES = {
   UPCOMING_EVENT: "다가올 이벤트",
   PREVIOUS_EVENT: "지난 이벤트",
   MY_EVENT: "내 이벤트",
 };
+
 export const HOST_DOMAIN = "http://localhost:5173";
 export const SERVER_DOMAIN = "http://localhost:5100/";
 // export const DOMAIN = "http://localhost:5100/";

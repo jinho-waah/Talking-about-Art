@@ -1,5 +1,3 @@
-// types/index.ts
-
 export interface RegisterFormData {
   nickname: string;
   email: string;

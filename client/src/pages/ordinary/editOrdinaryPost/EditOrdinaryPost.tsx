@@ -18,14 +18,13 @@ import { pageRoutes } from "@/apiRoutes";
 import { getKstTimeString } from "@/lib/utils";
 
 export default function EditOrdinaryPost() {
-  const { id } = useParams<{ id: string }>(); // 현재 포스트 ID 가져오기
-  const [title, setTitle] = useState<string>("");
-  const [content, setContent] = useState<string>("");
+  const { id } = useParams<{ id: string }>();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const navigate = useNavigate();
   const { userId, role } = authStore();
 
   useEffect(() => {
-    // 기존 포스트 내용 불러오기
     const fetchOrdinaryPost = async () => {
       try {
         const response = await fetch(`${SERVER_DOMAIN}api/ordinaryPosts/${id}`);

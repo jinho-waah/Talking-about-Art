@@ -38,14 +38,12 @@ export default function RegisterPage() {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
   };
-
   const handleRoleChange = (value: string) => {
     setFormData({ ...formData, role: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!isCheckingEmail) {
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -59,10 +57,8 @@ export default function RegisterPage() {
       setErrors(validationErrors);
       return;
     }
-
     registerUser(formData);
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-md">
