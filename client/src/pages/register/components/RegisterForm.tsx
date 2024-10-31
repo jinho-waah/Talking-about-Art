@@ -4,23 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { FormErrors, RegisterFormData } from "../types";
 
 interface RegisterFormProps {
-  formData: {
-    nickname: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    birthday: string;
-    role: string;
-  };
-  errors: {
-    nickname?: string;
-    email?: string;
-    password?: string;
-    confirmPassword?: string;
-    birthday?: string;
-  };
+  formData: RegisterFormData;
+  errors: FormErrors;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onEmailCheck: () => void;
   isCheckingEmail: boolean;

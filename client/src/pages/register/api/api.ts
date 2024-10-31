@@ -14,6 +14,11 @@ interface EmailCheckResponse {
   isAvailable: boolean;
 }
 
+interface RegisterResponse {
+  status: number;
+  message: string;
+}
+
 export const emailCheck = async (
   formData: Pick<RegisterFormData, "email">
 ): Promise<EmailCheckResponse> => {
@@ -24,8 +29,9 @@ export const emailCheck = async (
   return response.data;
 };
 
-export const registerUser = async (formData: RegisterFormData) => {
-  // 전체 response 객체를 반환
+export const registerUser = async (
+  formData: RegisterFormData
+): Promise<RegisterResponse> => {
   const response = await axios.post(`${SERVER_DOMAIN}api/register`, formData);
-  return response;
+  return response.data;
 };

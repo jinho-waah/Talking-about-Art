@@ -8,7 +8,7 @@ import ExhibitionPost from "@/pages/exhibition/ExhibitionPost";
 import CuratorPost from "@/pages/curator/CuratorPost";
 import OrdinaryPost from "@/pages/ordinary/OrdinaryPost";
 import LoginPage from "@/pages/login/LoginPage";
-import RegisterPage from "@/pages/register/RegisterPage";
+import RegisterPage from "@/pages/register";
 import MyPage from "./pages/myPage";
 import EditMyPage from "./pages/myPage/EditMyPage";
 import EventPage from "@/pages/event";

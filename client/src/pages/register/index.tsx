@@ -7,28 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { emailCheck, registerUser } from "./api/api";
 import { validate } from "@/utils/register/Validate";
 import RegisterForm from "./components/RegisterForm";
 import RegisterFooter from "./components/RegisterFooter";
-
-interface RegisterFormData {
-  nickname: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  birthday: string;
-  role: string;
-}
-
-interface FormErrors {
-  nickname?: string;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  birthday?: string;
-  role?: string;
-}
+import { RegisterFormData, FormErrors } from "./types";
+import { useRegister } from "./hooks/useRegister";
+import { useEmailCheck } from "./hooks/useEmailCheck";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState<RegisterFormData>({
@@ -37,12 +21,18 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
     birthday: "",
-    role: "general", // 기본값 설정
+    role: "general",
   });
   const [errors, setErrors] = useState<FormErrors>({});
-  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const {
+    handleEmailCheck,
+    errors: emailErrors,
+    isCheckingEmail,
+  } = useEmailCheck(formData.email);
+  const { mutate: registerUser } = useRegister();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -51,31 +41,6 @@ export default function RegisterPage() {
 
   const handleRoleChange = (value: string) => {
     setFormData({ ...formData, role: value });
-  };
-
-  const handleEmailCheck = async () => {
-    if (!formData.email) {
-      setErrors({ ...errors, email: "이메일을 입력해주세요." });
-      return;
-    }
-    try {
-      const { isAvailable } = await emailCheck({ email: formData.email });
-
-      if (isAvailable) {
-        setIsCheckingEmail(true);
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          email: "",
-        }));
-      }
-      if (!isAvailable) {
-        setErrors({ ...errors, email: "이미 사용 중인 이메일입니다." });
-      } else {
-        setErrors({ ...errors, email: "" });
-      }
-    } catch (error) {
-      console.error("이메일 중복 검사 오류:", error);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,13 +53,6 @@ export default function RegisterPage() {
       }));
       return;
     }
-    if (isCheckingEmail && errors.email === "이미 사용 중인 이메일입니다.") {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        email: "다른 이메일이 필요합니다.",
-      }));
-      return;
-    }
 
     const validationErrors = validate(formData);
     if (Object.keys(validationErrors).length > 0) {
@@ -102,15 +60,7 @@ export default function RegisterPage() {
       return;
     }
 
-    try {
-      const response = await registerUser(formData);
-      if (response.status !== 200 && response.status !== 201) {
-        throw new Error("회원가입에 실패했습니다.");
-      }
-      navigate(pageRoutes.login);
-    } catch (error) {
-      console.error(error);
-    }
+    registerUser(formData);
   };
 
   return (
@@ -125,7 +75,7 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit}>
           <RegisterForm
             formData={formData}
-            errors={errors}
+            errors={{ ...errors, email: emailErrors }}
             onChange={handleChange}
             onEmailCheck={handleEmailCheck}
             isCheckingEmail={isCheckingEmail}
