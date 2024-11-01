@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { OrdinaryPostWithLike } from "../../types";
-import { fetchOrdinaryPostById } from "../api";
+import { OrdinaryPostWithLike } from "../types";
+import { fetchOrdinaryPostById } from "../ordinaryPost/api";
 
 export const useFetchOrdinaryPost = (id: string, userId: number | null) => {
   return useQuery<OrdinaryPostWithLike>({

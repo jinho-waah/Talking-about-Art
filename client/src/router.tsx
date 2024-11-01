@@ -4,14 +4,14 @@ import { pageRoutes } from "@/apiRoutes";
 import { Home } from "@/pages/home";
 import PostsList from "@/pages/postsList";
 import { TAB_TITLES } from "@/constants";
-import { Role } from "@/constants"; // Role import 추가
+import { Role } from "@/constants";
 import ExhibitionPost from "@/pages/exhibition/ExhibitionPost";
 import CuratorPost from "@/pages/curator/CuratorPost";
 import OrdinaryPost from "@/pages/ordinary/ordinaryPost/OrdinaryPost";
 import LoginPage from "@/pages/login/LoginPage";
 import RegisterPage from "@/pages/register";
 import MyPage from "./pages/myPage";
-import EditMyPage from "./pages/myPage/EditMyPage";
+import EditMyPage from "./pages/myPage/components/EditMyPage";
 import EventPage from "@/pages/event";
 import AddExhibitionPost from "./pages/exhibition/AddExhibitionPost";
 import AddCuratorPost from "./pages/curator/AddCuratorPost";

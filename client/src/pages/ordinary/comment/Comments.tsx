@@ -8,29 +8,20 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { ThumbsUp, Share2, Flag, Ellipsis } from "lucide-react";
-import CommentsForm from "./CommentForm";
+import CommentsForm from "./components/CommentForm";
 import Modal from "../../common/components/Modal";
-import { HOST_DOMAIN, SERVER_DOMAIN } from "@/constants";
+import { HOST_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { FormatDate } from "@/lib/utils";
 import { useLike } from "@/pages/common/hooks/useLike";
 import { UserAvatar } from "@/pages/common/layout/ui/UserAvatar";
-
-interface Comment {
-  id: number;
-  nickname: string;
-  user_id: number;
-  content: string;
-  like_count: number;
-  created_at: string;
-  profile_image: string;
-  file_url?: string;
-  isLiked?: boolean; // isLiked 상태 추가
-}
+import { useFetchComments } from "./hooks/useFetchComments";
+import { useUpdateComment } from "./hooks/useUpdateComment";
+import { useDeleteComment } from "./hooks/useDeleteComment";
 
 interface CommentsProps {
   commentSectionRef: React.RefObject<HTMLDivElement>;
-  onCommentsUpdate: () => void; // 댓글 업데이트 콜백 추가
+  onCommentsUpdate: () => void;
 }
 
 export default function Comments({
@@ -39,7 +30,6 @@ export default function Comments({
 }: CommentsProps) {
   const { id } = useParams<string>();
   const { userId, role } = authStore();
-  const [comments, setComments] = useState<Comment[]>([]);
   const [editCommentId, setEditCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState<string>("");
   const [editFile, setEditFile] = useState<File | null>(null);
@@ -49,26 +39,18 @@ export default function Comments({
     null
   );
 
-  const { toggleLike } = useLike(); // useLike 훅 사용
+  const { toggleLike } = useLike();
 
-  const fetchComments = async () => {
-    try {
-      const response = await fetch(
-        `${SERVER_DOMAIN}api/post/comment/${id}?userId=${userId}`
-      );
-      if (!response.ok) {
-        throw new Error("댓글을 불러오는 데 실패했습니다.");
-      }
-      const data: Comment[] = await response.json();
-      setComments(data);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  };
+  const { data: comments, refetch: refetchComments } = useFetchComments(
+    id!,
+    userId!
+  );
+  const updateCommentMutation = useUpdateComment(refetchComments);
+  const deleteCommentMutation = useDeleteComment();
 
   useEffect(() => {
-    fetchComments();
-  }, []);
+    refetchComments();
+  }, [refetchComments]);
 
   const toggleModal = (commentId: number | null) => {
     setSelectedCommentId(commentId);
@@ -77,7 +59,7 @@ export default function Comments({
 
   const initiateEdit = () => {
     if (selectedCommentId !== null) {
-      const commentToEdit = comments.find(
+      const commentToEdit = comments?.find(
         (comment) => comment.id === selectedCommentId
       );
       if (commentToEdit) {
@@ -102,34 +84,20 @@ export default function Comments({
   };
 
   const saveEdit = async (commentId: number) => {
-    const formData = new FormData();
-    formData.append("content", editContent);
-    formData.append("userId", userId?.toString() || "");
-
-    if (editFile) {
-      formData.append("file", editFile);
+    if (!editContent.trim() && !editFile) {
+      alert("수정할 내용이나 첨부 파일을 입력하세요.");
+      return;
     }
 
-    try {
-      const response = await fetch(
-        `${SERVER_DOMAIN}api/post/comment/${commentId}`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
-
-      if (response.ok) {
-        setEditCommentId(null);
-        setEditFile(null);
-        setPreviewUrl(null);
-        await fetchComments();
-      } else {
-        throw new Error("댓글 수정에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("Error editing comment:", error);
-    }
+    updateCommentMutation.mutate({
+      commentId,
+      content: editContent,
+      userId: userId!,
+      file: editFile || undefined,
+    });
+    setEditCommentId(null);
+    setEditFile(null);
+    setPreviewUrl(null);
   };
 
   const handleCancelEdit = () => {
@@ -141,38 +109,26 @@ export default function Comments({
 
   const handleDelete = async (commentId: number) => {
     if (window.confirm("이 댓글을 삭제하시겠습니까?")) {
-      try {
-        const response = await fetch(
-          `${SERVER_DOMAIN}api/post/comment/${commentId}`,
-          {
-            method: "DELETE",
-          }
-        );
-
-        if (response.ok) {
-          await fetchComments();
+      deleteCommentMutation.mutate(commentId, {
+        onSuccess: () => {
           onCommentsUpdate();
-          setIsModalOpen(false); // 삭제 후 모달 닫기
-        } else {
-          throw new Error("댓글 삭제에 실패했습니다.");
-        }
-      } catch (error) {
-        console.error("Error deleting comment:", error);
-      }
+          setIsModalOpen(false);
+        },
+      });
     }
   };
 
   const handleLikeToggle = async (commentId: number) => {
     if (userId) {
       await toggleLike({ userId, commentId });
-      fetchComments(); // 좋아요 상태 갱신
+      refetchComments(); // Refetch comments to update like status
     }
   };
 
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-4">댓글</h2>
-      {comments.map((comment) => (
+      {comments?.map((comment) => (
         <Card key={comment.id} className="mb-4">
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -278,7 +234,7 @@ export default function Comments({
         </Card>
       ))}
       <CommentsForm
-        onCommentAdded={fetchComments}
+        onCommentAdded={refetchComments}
         commentSectionRef={commentSectionRef}
         onCommentsUpdate={onCommentsUpdate}
       />

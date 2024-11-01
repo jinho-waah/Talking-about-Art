@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import Comments from "../comment";
+import Comments from "../comment/Comments";
 import authStore from "@/store/authStore";
 import { pageRoutes } from "@/apiRoutes";
 import Modal from "../../common/components/Modal";
 import OrdinaryPostBody from "./components/OrdinaryPostBody";
-import { useFetchOrdinaryPost } from "./hooks/useFetchOrdinaryPost";
+import { useFetchOrdinaryPost } from "../hooks/useFetchOrdinaryPost";
 import { useDeleteOrdinaryPost } from "./hooks/useDeleteOrdinaryPost";
 import { useToggleLike } from "./hooks/useToggleLike";
 
