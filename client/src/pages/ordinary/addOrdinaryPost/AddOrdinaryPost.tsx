@@ -1,5 +1,5 @@
+// AddOrdinaryPost.tsx
 import { useState, useEffect } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,17 +11,12 @@ import {
 } from "@/components/ui/card";
 import authStore from "@/store/authStore";
 import { getKstTimeString } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
-import { pageRoutes } from "@/apiRoutes";
 import { AddOrdinaryImage } from "./components/AddOrdinaryImage";
 import { AddOrdinaryForm } from "./components/AddOrdinaryForm";
-import { postOrdinaryPost } from "./api";
-import axios from "axios";
-import { SERVER_DOMAIN } from "@/constants";
+import { useImageUpload } from "./hooks/useImageUpload";
+import { usePostOrdinaryPost } from "./hooks/usePostOrdinaryPost";
 
 export default function AddOrdinaryPost() {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [title, setTitle] = useState<string>(
     localStorage.getItem("ordinaryPostTitle") || ""
   );
@@ -30,6 +25,9 @@ export default function AddOrdinaryPost() {
   );
   const [images, setImages] = useState<File[]>([]);
   const { userId } = authStore();
+
+  const imageUploadMutation = useImageUpload();
+  const postMutation = usePostOrdinaryPost();
 
   useEffect(() => {
     localStorage.setItem("ordinaryPostTitle", title);
@@ -49,43 +47,6 @@ export default function AddOrdinaryPost() {
   const removeImage = (index: number) => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
-
-  const imageUploadMutation = useMutation({
-    mutationFn: async (formData: FormData) => {
-      const { data } = await axios.post(
-        `${SERVER_DOMAIN}api/upload/image`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      return data.imageUrl;
-    },
-    onError: (error) => {
-      console.error("Error uploading images:", error);
-      alert("이미지 업로드 중 오류가 발생했습니다.");
-    },
-  });
-
-  const postMutation = useMutation({
-    mutationFn: postOrdinaryPost,
-    onSuccess: () => {
-      alert("게시물이 성공적으로 생성되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["ordinaryPosts"] });
-      setTitle("");
-      setContent("");
-      setImages([]);
-      localStorage.removeItem("ordinaryPostTitle");
-      localStorage.removeItem("ordinaryPostContent");
-      navigate(pageRoutes.ordinaryList);
-    },
-    onError: (error) => {
-      console.error("게시물 생성 중 오류가 발생했습니다.", error);
-      alert("게시물 생성 중 오류가 발생했습니다.");
-    },
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
