@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,13 +17,11 @@ import { pageRoutes } from "@/apiRoutes";
 import { EMAIL_PATTERN, SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 
-// 유저 타입 정의
 interface LoginFormData {
   email: string;
   password: string;
 }
 
-// 에러 타입 정의
 interface FormErrors {
   email?: string;
   password?: string;
@@ -37,10 +36,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  // zustand store에서 setLogin 액션 가져오기
   const { setLogin } = authStore().actions;
 
-  // 유효성 검사
   const validate = (): FormErrors => {
     const newErrors: FormErrors = {};
     if (!formData.email) {
@@ -52,17 +49,14 @@ export default function LoginPage() {
     return newErrors;
   };
 
-  // 입력 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
   };
 
-  // 로그인 처리 함수
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 유효성 검사
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -70,27 +64,17 @@ export default function LoginPage() {
     }
 
     try {
-      // 로그인 API 요청
-      const response = await fetch(`${SERVER_DOMAIN}api/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-        credentials: "include",
+      const response = await axios.post(`${SERVER_DOMAIN}api/login`, formData, {
+        withCredentials: true,
       });
 
-      if (!response.ok) {
-        throw new Error("로그인에 실패했습니다.");
-      }
-
-      const data = await response.json();
-      const { userId, galleryId, role, userName, imgUrl } = data;
+      const { userId, galleryId, role, userName, imgUrl } = response.data;
       setLogin(userId, galleryId, role, userName, imgUrl);
 
       navigate(pageRoutes.main);
     } catch (error) {
-      console.error(error);
+      console.error("로그인에 실패했습니다.", error);
+      alert("로그인에 실패했습니다. 다시 시도해주세요.");
     }
   };
 

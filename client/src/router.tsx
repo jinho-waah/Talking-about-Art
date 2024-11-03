@@ -11,7 +11,7 @@ import OrdinaryPost from "@/pages/ordinary/ordinaryPost/OrdinaryPost";
 import LoginPage from "@/pages/login/LoginPage";
 import RegisterPage from "@/pages/register";
 import MyPage from "./pages/myPage";
-import EditMyPage from "./pages/myPage/components/EditMyPage";
+import EditMyPage from "./pages/myPage/editMyPage/EditMyPage";
 import EventPage from "@/pages/event";
 import AddExhibitionPost from "./pages/exhibition/AddExhibitionPost";
 import AddCuratorPost from "./pages/curator/AddCuratorPost";
