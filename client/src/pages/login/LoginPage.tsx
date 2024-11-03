@@ -1,34 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { pageRoutes } from "@/apiRoutes";
-import { EMAIL_PATTERN, SERVER_DOMAIN } from "@/constants";
-import authStore from "@/store/authStore";
-
-interface LoginFormData {
-  email: string;
-  password: string;
-}
-
-interface FormErrors {
-  email?: string;
-  password?: string;
-}
+import { EMAIL_PATTERN } from "@/constants";
+import { LoginForm } from "./components/LoginForm";
+import { FormData, FormErrors } from "./types";
+import { useLogin } from "./hooks/useLogin";
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState<LoginFormData>({
+  const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
   });
@@ -36,7 +23,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const { setLogin } = authStore().actions;
+  const loginMutation = useLogin();
 
   const validate = (): FormErrors => {
     const newErrors: FormErrors = {};
@@ -63,19 +50,7 @@ export default function LoginPage() {
       return;
     }
 
-    try {
-      const response = await axios.post(`${SERVER_DOMAIN}api/login`, formData, {
-        withCredentials: true,
-      });
-
-      const { userId, galleryId, role, userName, imgUrl } = response.data;
-      setLogin(userId, galleryId, role, userName, imgUrl);
-
-      navigate(pageRoutes.main);
-    } catch (error) {
-      console.error("로그인에 실패했습니다.", error);
-      alert("로그인에 실패했습니다. 다시 시도해주세요.");
-    }
+    loginMutation.mutate(formData);
   };
 
   return (
@@ -88,52 +63,13 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">이메일</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="example@mail.com"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">비밀번호</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOffIcon className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <EyeIcon className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </Button>
-              </div>
-              {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password}</p>
-              )}
-            </div>
-          </CardContent>
+          <LoginForm
+            formData={formData}
+            handleChange={handleChange}
+            errors={errors}
+            showPassword={showPassword}
+            setShowPassword={setShowPassword}
+          />
 
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full">

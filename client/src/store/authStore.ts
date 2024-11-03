@@ -41,7 +41,6 @@ const deleteCookie = async () => {
   }
 };
 
-// AuthStore 타입
 type AuthStore = AuthStoreState & AuthStoreActions;
 
 const authStore = create<AuthStore>()(
