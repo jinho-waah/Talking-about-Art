@@ -1,20 +1,31 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { FormatDate } from "@/lib/utils";
+import { UserAvatar } from "@/pages/common/layout/ui/UserAvatar";
 
 interface PostHeaderProps {
   authorName: string;
-  createdAt: string;
+  profileImage: string;
+  createdAt?: string;
+  period?: string;
 }
 
-export default function PostHeader({ authorName, createdAt }: PostHeaderProps) {
+export default function PostHeader({
+  authorName,
+  profileImage,
+  createdAt,
+  period,
+}: PostHeaderProps) {
   return (
     <div className="flex items-center space-x-4">
-      <Avatar>
-        <AvatarFallback>{authorName[0]}</AvatarFallback>
-      </Avatar>
+      <UserAvatar userName={authorName} imgUrl={profileImage}></UserAvatar>
       <div>
         <p className="font-medium">{authorName}</p>
-        <p className="text-sm text-muted-foreground">{FormatDate(createdAt)}</p>
+        {period ? (
+          <p className="text-sm text-muted-foreground">{period}</p>
+        ) : createdAt ? (
+          <p className="text-sm text-muted-foreground">
+            {FormatDate(createdAt)}
+          </p>
+        ) : null}
       </div>
     </div>
   );

@@ -4,22 +4,23 @@ import { pageRoutes } from "@/apiRoutes";
 import { Home } from "@/pages/home";
 import PostsList from "@/pages/postsList";
 import { TAB_TITLES } from "@/constants";
+import { Role } from "@/constants";
 import ExhibitionPost from "@/pages/exhibition/ExhibitionPost";
 import CuratorPost from "@/pages/curator/CuratorPost";
-import OrdinaryPost from "@/pages/ordinary/OrdinaryPost";
+import OrdinaryPost from "@/pages/ordinary/ordinaryPost/OrdinaryPost";
 import LoginPage from "@/pages/login/LoginPage";
-import RegisterPage from "@/pages/register/RegisterPage";
+import RegisterPage from "@/pages/register";
 import MyPage from "./pages/myPage";
-import EditMyPage from "./pages/myPage/EditMyPage";
+import EditMyPage from "./pages/myPage/editMyPage/EditMyPage";
 import EventPage from "@/pages/event";
 import AddExhibitionPost from "./pages/exhibition/AddExhibitionPost";
 import AddCuratorPost from "./pages/curator/AddCuratorPost";
-import AddOrdinaryPost from "./pages/ordinary/components/AddOrdinaryPost";
+import AddOrdinaryPost from "./pages/ordinary/addOrdinaryPost/AddOrdinaryPost";
 import PrivateRoute from "./PrivateRoute";
 import { Layout } from "./pages/common/layout/Layout";
 import { AuthLayout } from "./pages/common/layout/AuthLayout";
 import EditCuratorPost from "./pages/curator/EditCuratorPost";
-import EditOrdinaryPost from "./pages/ordinary/components/EditOrdinaryPost";
+import EditOrdinaryPost from "./pages/ordinary/editOrdinaryPost/EditOrdinaryPost";
 
 const CommonLayout = ({ isAuth }: { isAuth?: boolean }) =>
   isAuth ? (
@@ -63,7 +64,7 @@ const router = createBrowserRouter([
       {
         path: pageRoutes.addExhibition,
         element: (
-          <PrivateRoute allowedRoles={["admin", "gallery"]}>
+          <PrivateRoute allowedRoles={[Role.ADMIN, Role.GALLERY]}>
             <AddExhibitionPost />
           </PrivateRoute>
         ),
@@ -71,7 +72,7 @@ const router = createBrowserRouter([
       {
         path: pageRoutes.addCurator,
         element: (
-          <PrivateRoute allowedRoles={["admin", "curator"]}>
+          <PrivateRoute allowedRoles={[Role.ADMIN, Role.CURATOR]}>
             <AddCuratorPost />
           </PrivateRoute>
         ),
@@ -80,7 +81,12 @@ const router = createBrowserRouter([
         path: pageRoutes.addPost,
         element: (
           <PrivateRoute
-            allowedRoles={["admin", "gallery", "curator", "general"]}
+            allowedRoles={[
+              Role.ADMIN,
+              Role.GALLERY,
+              Role.CURATOR,
+              Role.ORDINARY,
+            ]}
           >
             <AddOrdinaryPost />
           </PrivateRoute>
@@ -89,7 +95,7 @@ const router = createBrowserRouter([
       {
         path: pageRoutes.editCuratorPost,
         element: (
-          <PrivateRoute allowedRoles={["admin", "curator"]}>
+          <PrivateRoute allowedRoles={[Role.ADMIN, Role.CURATOR]}>
             <EditCuratorPost />
           </PrivateRoute>
         ),
@@ -98,7 +104,12 @@ const router = createBrowserRouter([
         path: pageRoutes.editOrdinaryPost,
         element: (
           <PrivateRoute
-            allowedRoles={["admin", "gallery", "curator", "general"]}
+            allowedRoles={[
+              Role.ADMIN,
+              Role.GALLERY,
+              Role.CURATOR,
+              Role.ORDINARY,
+            ]}
           >
             <EditOrdinaryPost />
           </PrivateRoute>

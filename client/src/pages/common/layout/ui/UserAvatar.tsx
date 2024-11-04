@@ -1,9 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import authStore from "@/store/authStore";
 import { useEffect, useState } from "react";
 
-export const UserAvatar = () => {
-  const { userName, imgUrl } = authStore();
+interface UserAvatarProps {
+  userName: string;
+  imgUrl: string | null;
+}
+
+export const UserAvatar = ({ userName, imgUrl }: UserAvatarProps) => {
   const [currentImgUrl, setCurrentImgUrl] = useState(imgUrl);
 
   useEffect(() => {

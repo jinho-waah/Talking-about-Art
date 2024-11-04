@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { SERVER_DOMAIN } from "@/constants";
+import { Role, SERVER_DOMAIN } from "@/constants";
 
 type AuthStoreState = {
   isLogin: boolean;
   userId: number | null;
   galleryId: number | null;
   userName: string | null;
-  role: "admin" | "gallery" | "curator" | "general" | null;
+  role: Role | null;
   isToken: boolean; // Token 상태 추가
   imgUrl: string | null;
 };
@@ -17,7 +17,7 @@ type AuthStoreActions = {
     setLogin: (
       userId: number,
       galleryId: number,
-      role: AuthStoreState["role"],
+      role: Role,
       userName: string,
       imgUrl: string
     ) => void;
@@ -41,7 +41,6 @@ const deleteCookie = async () => {
   }
 };
 
-// AuthStore 타입
 type AuthStore = AuthStoreState & AuthStoreActions;
 
 const authStore = create<AuthStore>()(

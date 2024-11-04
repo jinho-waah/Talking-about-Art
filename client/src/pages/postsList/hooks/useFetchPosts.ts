@@ -1,25 +1,35 @@
+// hooks/useFetchPosts.ts
 import { useState } from "react";
-import { SERVER_DOMAIN, TabTitle } from "@/constants";
+import { TAB_TITLES, TabTitle } from "@/constants";
+import {
+  fetchCuratorPosts,
+  fetchExhibitionPosts,
+  fetchOrdinaryPosts,
+} from "../api";
+import { CuratorPosts, ExhibitionPosts, OrdinaryPosts } from "../types";
 
 export default function useFetchPosts() {
-  const [curatorPosts, setCuratorPosts] = useState([]);
-  const [ordinaryPosts, setOrdinaryPosts] = useState([]);
-  const [exhibitionPosts, setExhibitionPosts] = useState([]);
+  const [curatorPosts, setCuratorPosts] = useState<CuratorPosts[]>([]);
+  const [ordinaryPosts, setOrdinaryPosts] = useState<OrdinaryPosts[]>([]);
+  const [exhibitionPosts, setExhibitionPosts] = useState<ExhibitionPosts[]>([]);
 
   const fetchPosts = async (title: TabTitle) => {
-    let endpoint = "";
-    if (title === "큐레이터") endpoint = "curatorPosts";
-    else if (title === "게시글") endpoint = "ordinaryPosts";
-    else if (title === "전시 소개" || title === "전시 예정")
-      endpoint = "exhibitionPosts";
-
     try {
-      const response = await fetch(`${SERVER_DOMAIN}api/${endpoint}`);
-      const data = await response.json();
-
-      if (title === "큐레이터") setCuratorPosts(data);
-      else if (title === "게시글") setOrdinaryPosts(data);
-      else setExhibitionPosts(data); // 전시 관련 포스트에 대해 하나로 처리
+      switch (title) {
+        case TAB_TITLES.CURATOR:
+          setCuratorPosts(await fetchCuratorPosts());
+          break;
+        case TAB_TITLES.POSTS:
+          setOrdinaryPosts(await fetchOrdinaryPosts());
+          break;
+        case TAB_TITLES.INTRODUCTION:
+        case TAB_TITLES.UPCOMING_EXHIBITION:
+          setExhibitionPosts(await fetchExhibitionPosts());
+          break;
+        default:
+          console.error("Invalid title provided");
+          break;
+      }
     } catch (error) {
       console.error(`Error fetching ${title} posts:`, error);
     }

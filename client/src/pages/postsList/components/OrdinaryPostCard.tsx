@@ -1,16 +1,6 @@
 import { ThumbsUp, MessageSquare } from "lucide-react";
+import { OrdinaryPostProps } from "../types";
 
-interface OrdinaryPostProps {
-  post: {
-    id: number;
-    author_name: string;
-    title: string;
-    like_count: number;
-    comment_count: number;
-    created_at: string;
-  };
-  onClick: (id: number) => void;
-}
 
 export default function OrdinaryPostCard({ post, onClick }: OrdinaryPostProps) {
   return (
