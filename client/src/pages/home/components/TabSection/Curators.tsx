@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { pageRoutes } from "@/apiRoutes";
-import { SERVER_DOMAIN } from "@/constants";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,47 +8,32 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
-import ViewMore from "@/pages/home/ui/ViewMore";
+import ViewMore from "@/pages/home/components/ViewMore";
 import { BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-interface CuratorPost {
-  id: number;
-  curator_id: number;
-  show_id: number;
-  title: string;
-  curator_name: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  like_count: number;
-}
+import { CuratorPost } from "../../types";
+import { useLatestCuratorPosts } from "../../hooks/useLatestCuratorPosts";
 
 const Curators = () => {
-  const [curatorsData, setCuratorsData] = useState<CuratorPost[]>([]);
   const navigate = useNavigate();
 
-  const fetchRecentCuratorPosts = async () => {
-    try {
-      const response = await fetch(`${SERVER_DOMAIN}api/curatorPosts/latest`);
-      if (response.ok) {
-        const data = await response.json();
-        setCuratorsData(data);
-      } else {
-        console.error("Failed to fetch recent curator posts");
-      }
-    } catch (error) {
-      console.error("Error fetching recent curator posts:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchRecentCuratorPosts();
-  }, []);
+  const {
+    data: curatorsData = [],
+    isLoading,
+    isError,
+  } = useLatestCuratorPosts();
 
   const handleReadClick = (id: number) => {
     navigate(`${pageRoutes.curatorList}/${id}`);
   };
+
+  if (isLoading || !curatorsData) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error loading posts.</div>;
+  }
 
   return (
     <TabsContent value="reviews">
@@ -63,7 +46,7 @@ const Curators = () => {
         </CardHeader>
         <CardContent>
           <ul className="space-y-4">
-            {curatorsData.map((event) => (
+            {curatorsData.map((event: CuratorPost) => (
               <li key={event.id} className="flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold">{event.title}</h3>

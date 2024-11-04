@@ -3,14 +3,14 @@ import { CardFooter } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 
 interface ListName {
-  path: string; // 해당하는 경로를 정의
+  path: string;
 }
 
 const ViewMore = ({ path }: ListName) => {
   const navigate = useNavigate();
 
   const handleViewMoreClick = () => {
-    navigate(path); // 경로로 직접 이동
+    navigate(path);
   };
 
   return (

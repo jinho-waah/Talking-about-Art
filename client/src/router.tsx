@@ -1,19 +1,18 @@
-// router 설정 파일
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
 import { Home } from "@/pages/home";
 import PostsList from "@/pages/postsList";
 import { TAB_TITLES } from "@/constants";
 import { Role } from "@/constants";
-import ExhibitionPost from "@/pages/exhibition/ExhibitionPost";
+import ExhibitionPost from "./pages/exhibition/exhibitionPost/ExhibitionPost";
 import CuratorPost from "@/pages/curator/CuratorPost";
 import OrdinaryPost from "@/pages/ordinary/ordinaryPost/OrdinaryPost";
 import LoginPage from "@/pages/login/LoginPage";
 import RegisterPage from "@/pages/register";
-import MyPage from "./pages/myPage";
+import MyPage from "./pages/myPage/myPage";
 import EditMyPage from "./pages/myPage/editMyPage/EditMyPage";
 import EventPage from "@/pages/event";
-import AddExhibitionPost from "./pages/exhibition/AddExhibitionPost";
+import AddExhibitionPost from "./pages/exhibition/addExhibitionPost/AddExhibitionPost";
 import AddCuratorPost from "./pages/curator/AddCuratorPost";
 import AddOrdinaryPost from "./pages/ordinary/addOrdinaryPost/AddOrdinaryPost";
 import PrivateRoute from "./PrivateRoute";
@@ -39,7 +38,21 @@ const router = createBrowserRouter([
     children: [
       { path: pageRoutes.main, element: <Home /> },
       { path: pageRoutes.myPageId, element: <MyPage /> },
-      { path: pageRoutes.editMyPage, element: <EditMyPage /> },
+      {
+        path: pageRoutes.editMyPage,
+        element: (
+          <PrivateRoute
+            allowedRoles={[
+              Role.ADMIN,
+              Role.GALLERY,
+              Role.CURATOR,
+              Role.ORDINARY,
+            ]}
+          >
+            <EditMyPage />
+          </PrivateRoute>
+        ),
+      },
       { path: pageRoutes.eventPage, element: <EventPage /> },
       {
         path: pageRoutes.upCommingList,

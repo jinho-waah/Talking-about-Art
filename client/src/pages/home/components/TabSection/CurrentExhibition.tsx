@@ -10,47 +10,30 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
-import { SERVER_DOMAIN } from "@/constants";
-import ViewMore from "@/pages/home/ui/ViewMore";
+import ViewMore from "@/pages/home/components/ViewMore";
 import { Check } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-interface ExhibitionPost {
-  id: number;
-  show_place: string;
-  show_name: string;
-  show_term_start: string;
-  show_term_end: string;
-}
+import { ExhibitionPost } from "../../types";
+import { useLatestExhibitionPosts } from "../../hooks/useLatestExhibitionPosts";
 
 const CurrentExhibition = () => {
-  const [exhibitionData, setExhibitionData] = useState<ExhibitionPost[]>([]);
   const navigate = useNavigate();
   const handleJoinClick = (id: number) => {
     navigate(`${pageRoutes.currentList}/${id}`);
   };
+  const {
+    data: exhibitionData = [],
+    isLoading,
+    isError,
+  } = useLatestExhibitionPosts();
 
-  const fetchRecentCuratorPosts = async () => {
-    try {
-      const response = await fetch(
-        `${SERVER_DOMAIN}api/exhibitionPosts/latest`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setExhibitionData(data);
-      } else {
-        console.error("Failed to fetch recent curator posts");
-      }
-    } catch (error) {
-      console.error("Error fetching recent curator posts:", error);
-    }
-  };
+  if (isLoading || !exhibitionData) {
+    return <div>Loading...</div>;
+  }
 
-  useEffect(() => {
-    fetchRecentCuratorPosts();
-  }, []);
-
+  if (isError) {
+    return <div>Error loading posts.</div>;
+  }
   return (
     <TabsContent value="current">
       <Card>
@@ -62,8 +45,8 @@ const CurrentExhibition = () => {
         </CardHeader>
         <CardContent>
           <ul className="space-y-4">
-            {exhibitionData.map((event, index) => (
-              <li key={index} className="flex items-center justify-between">
+            {exhibitionData.map((event: ExhibitionPost) => (
+              <li key={event.id} className="flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold">{event.show_name}</h3>
                   <p className="text-sm text-muted-foreground">

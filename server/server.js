@@ -238,33 +238,7 @@ app.get("/api/auth/status", verifyAuthToken, (req, res) => {
   });
 });
 
-// 유저 정보 갖고오기
-app.get("/api/mypage/:id", (req, res) => {
-  const userId = req.params.id;
 
-  const query = `
-    SELECT role, nickname, profile_image, created_at, bio,
-           website, x, instagram, thread
-    FROM artlove1_art_lover.users
-    WHERE id = ?`;
-
-  connection.query(query, [userId], (err, result) => {
-    if (err) {
-      console.error("Error fetching user data:", err);
-      return res.status(500).json({
-        message: "서버 에러로 인해 사용자 정보를 불러올 수 없습니다.",
-      });
-    }
-
-    if (result.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "해당 사용자를 찾을 수 없습니다." });
-    }
-
-    res.status(200).json(result[0]);
-  });
-});
 
 app.get("/api/galleryname/:galleryId", (req, res) => {
   const { galleryId } = req.params;
@@ -907,6 +881,33 @@ app.get("/api/exhibitionPosts/:id", (req, res) => {
 });
 
 // ================================== mypage ======================================
+// 유저 정보 갖고오기
+app.get("/api/mypage/:id", (req, res) => {
+  const userId = req.params.id;
+
+  const query = `
+    SELECT role, nickname, profile_image, created_at, bio,
+           website, x, instagram, thread
+    FROM artlove1_art_lover.users
+    WHERE id = ?`;
+
+  connection.query(query, [userId], (err, result) => {
+    if (err) {
+      console.error("Error fetching user data:", err);
+      return res.status(500).json({
+        message: "서버 에러로 인해 사용자 정보를 불러올 수 없습니다.",
+      });
+    }
+
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "해당 사용자를 찾을 수 없습니다." });
+    }
+
+    res.status(200).json(result[0]);
+  });
+});
 
 // 유저 정보 업데이트 (마이페이지 수정)
 app.put("/api/mypage/:id", verifyAuthToken, (req, res) => {

@@ -1,12 +1,12 @@
 import { CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Instagram, Twitter, AtSign } from "lucide-react";
-import { ProfileData } from "../types";
+import { ProfileData } from "../../types";
 
 export function MyPageForm({
   profileData,
 }: {
-  profileData: ProfileData | null;
+  profileData: ProfileData | undefined;
 }) {
   if (!profileData) {
     return <p>프로필 정보를 불러오는 중입니다...</p>;

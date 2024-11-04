@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Check } from "lucide-react";
 import { TabsContent } from "@/components/ui/tabs";
-import ViewMore from "@/pages/home/ui/ViewMore";
+import ViewMore from "@/pages/home/components/ViewMore";
 import { pageRoutes } from "@/apiRoutes";
 import { useNavigate } from "react-router-dom";
 

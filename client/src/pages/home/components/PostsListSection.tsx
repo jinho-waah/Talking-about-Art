@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { pageRoutes } from "@/apiRoutes";
 import {
   Card,
   CardContent,
@@ -7,44 +5,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import MoreView from "@/pages/home/ui/ViewMore";
 import { ThumbsUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { SERVER_DOMAIN } from "@/constants";
-
-interface OrdinaryPost {
-  id: number;
-  title: string;
-  author_name: string;
-  like_count: number;
-  comment_count: number;
-}
+import { pageRoutes } from "@/apiRoutes";
+import { OrdinaryPost } from "../types";
+import ViewMore from "@/pages/home/components/ViewMore";
+import { useLateestOrdinaryPost } from "../hooks/useLatestOrdinaryPosts";
 
 export const PostList = () => {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState<OrdinaryPost[]>([]);
 
-  const fetchPosts = async () => {
-    try {
-      const response = await fetch(`${SERVER_DOMAIN}api/ordinaryPosts/latest`);
-      if (response.ok) {
-        const data: OrdinaryPost[] = await response.json();
-        setPosts(data);
-      } else {
-        console.error("Failed to fetch posts.");
-      }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+  const { data: posts = [], isLoading, isError } = useLateestOrdinaryPost();
 
   const handlePostClick = (id: number) => {
     navigate(`${pageRoutes.ordinaryList}/${id}`);
   };
+
+  if (isLoading || !posts) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error loading posts.</div>;
+  }
 
   return (
     <Card>
@@ -54,7 +37,7 @@ export const PostList = () => {
       </CardHeader>
       <CardContent>
         <ul className="space-y-4">
-          {posts.map((post) => (
+          {posts.map((post: OrdinaryPost) => (
             <li
               key={post.id}
               className="flex items-center justify-between cursor-pointer"
@@ -81,7 +64,7 @@ export const PostList = () => {
           ))}
         </ul>
       </CardContent>
-      <MoreView path={pageRoutes.ordinaryList} />
+      <ViewMore path={pageRoutes.ordinaryList} />
     </Card>
   );
 };
