@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Comments from "../comment/Comments";
 import authStore from "@/store/authStore";
 import { pageRoutes } from "@/apiRoutes";
-import Modal from "../../common/components/Modal";
+import Modal from "../../../components/common/components/Modal";
 import OrdinaryPostBody from "./components/OrdinaryPostBody";
 import { useFetchOrdinaryPost } from "../hooks/useFetchOrdinaryPost";
 import { useDeleteOrdinaryPost } from "./hooks/useDeleteOrdinaryPost";

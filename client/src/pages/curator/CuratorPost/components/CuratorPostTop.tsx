@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, Share2, Ellipsis } from "lucide-react";
-import Modal from "@/pages/common/components/Modal";
+import Modal from "@/components/common/components/Modal";
 import { FormatDate } from "@/lib/utils";
 import { CuratorPostTopProps } from "../../types";
 import { Role } from "@/constants";

@@ -16,8 +16,8 @@ import AddExhibitionPost from "./pages/exhibition/addExhibitionPost/AddExhibitio
 import AddCuratorPost from "./pages/curator/AddCuratorPost/AddCuratorPost";
 import AddOrdinaryPost from "./pages/ordinary/addOrdinaryPost/AddOrdinaryPost";
 import PrivateRoute from "./PrivateRoute";
-import { Layout } from "./pages/common/layout/Layout";
-import { AuthLayout } from "./pages/common/layout/AuthLayout";
+import { Layout } from "./components/common/layout/Layout";
+import { AuthLayout } from "./components/common/layout/AuthLayout";
 import EditCuratorPost from "./pages/curator/EditCuratorPost/EditCuratorPost";
 import EditOrdinaryPost from "./pages/ordinary/editOrdinaryPost/EditOrdinaryPost";
 
