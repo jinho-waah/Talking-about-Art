@@ -3,7 +3,7 @@ import { OrdinaryPostWithLike } from "../../types";
 import axios from "axios";
 
 export const fetchOrdinaryPostById = async (
-  id: string,
+  id: string | undefined,
   userId: number | null
 ): Promise<OrdinaryPostWithLike> => {
   const response = await axios.get(`${SERVER_DOMAIN}api/ordinaryPosts/${id}`, {

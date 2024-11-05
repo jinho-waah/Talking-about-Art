@@ -5,7 +5,7 @@ import PostsList from "@/pages/postsList";
 import { TAB_TITLES } from "@/constants";
 import { Role } from "@/constants";
 import ExhibitionPost from "./pages/exhibition/exhibitionPost/ExhibitionPost";
-import CuratorPost from "@/pages/curator/CuratorPost";
+import CuratorPost from "./pages/curator/CuratorPost/CuratorPost";
 import OrdinaryPost from "@/pages/ordinary/ordinaryPost/OrdinaryPost";
 import LoginPage from "@/pages/login/LoginPage";
 import RegisterPage from "@/pages/register";
@@ -13,12 +13,12 @@ import MyPage from "./pages/myPage/myPage";
 import EditMyPage from "./pages/myPage/editMyPage/EditMyPage";
 import EventPage from "@/pages/event";
 import AddExhibitionPost from "./pages/exhibition/addExhibitionPost/AddExhibitionPost";
-import AddCuratorPost from "./pages/curator/AddCuratorPost";
+import AddCuratorPost from "./pages/curator/AddCuratorPost/AddCuratorPost";
 import AddOrdinaryPost from "./pages/ordinary/addOrdinaryPost/AddOrdinaryPost";
 import PrivateRoute from "./PrivateRoute";
 import { Layout } from "./pages/common/layout/Layout";
 import { AuthLayout } from "./pages/common/layout/AuthLayout";
-import EditCuratorPost from "./pages/curator/EditCuratorPost";
+import EditCuratorPost from "./pages/curator/EditCuratorPost/EditCuratorPost";
 import EditOrdinaryPost from "./pages/ordinary/editOrdinaryPost/EditOrdinaryPost";
 
 const CommonLayout = ({ isAuth }: { isAuth?: boolean }) =>

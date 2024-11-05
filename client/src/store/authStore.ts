@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Role, SERVER_DOMAIN } from "@/constants";
+import { Role, RoleType, SERVER_DOMAIN } from "@/constants";
 
 type AuthStoreState = {
   isLogin: boolean;
   userId: number | null;
   galleryId: number | null;
   userName: string | null;
-  role: Role | null;
+  role: RoleType;
   isToken: boolean; // Token 상태 추가
   imgUrl: string | null;
 };
@@ -17,7 +17,7 @@ type AuthStoreActions = {
     setLogin: (
       userId: number,
       galleryId: number,
-      role: Role,
+      role: (typeof Role)[keyof typeof Role],
       userName: string,
       imgUrl: string
     ) => void;

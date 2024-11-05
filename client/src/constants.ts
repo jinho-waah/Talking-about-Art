@@ -2,6 +2,8 @@ import { TabTitle } from "./types";
 
 export const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
+export type RoleType = "admin" | "gallery" | "curator" | "ordinary" | null;
+
 export const TAB_TITLES: Record<
   "UPCOMING_EXHIBITION" | "INTRODUCTION" | "CURATOR" | "POSTS",
   TabTitle
@@ -12,12 +14,12 @@ export const TAB_TITLES: Record<
   POSTS: "게시글",
 };
 
-export enum Role {
-  ADMIN = "admin",
-  GALLERY = "gallery",
-  CURATOR = "curator",
-  ORDINARY = "ordinary",
-}
+export const Role = {
+  ADMIN: "admin",
+  GALLERY: "gallery",
+  CURATOR: "curator",
+  ORDINARY: "ordinary",
+} as const;
 
 export enum Post {
   CURATOR = "curatorPosts",
@@ -29,7 +31,7 @@ export const EVENT_TAB_TITLES = {
   UPCOMING_EVENT: "다가올 이벤트",
   PREVIOUS_EVENT: "지난 이벤트",
   MY_EVENT: "내 이벤트",
-};
+} as const;
 
 export const HOST_DOMAIN = "http://localhost:5173";
 export const SERVER_DOMAIN = "http://localhost:5100/";

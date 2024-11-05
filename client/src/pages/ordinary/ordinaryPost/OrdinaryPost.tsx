@@ -11,7 +11,7 @@ import { useDeleteOrdinaryPost } from "./hooks/useDeleteOrdinaryPost";
 import { useToggleLike } from "./hooks/useToggleLike";
 
 export default function OrdinaryPost() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const { userId, role } = authStore();
   const navigate = useNavigate();
   const commentSectionRef = useRef<HTMLDivElement>(null);
@@ -21,7 +21,7 @@ export default function OrdinaryPost() {
 
   const queryClient = useQueryClient();
 
-  const { data: post, isLoading } = useFetchOrdinaryPost(id!, userId);
+  const { data: post, isLoading } = useFetchOrdinaryPost(id, userId);
   const deleteMutation = useDeleteOrdinaryPost();
   const { handleLikeToggle } = useToggleLike(post?.id, userId, id);
 

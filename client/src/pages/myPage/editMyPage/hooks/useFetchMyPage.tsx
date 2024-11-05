@@ -17,6 +17,6 @@ export const useFetchMyPage = (userId: number | null) => {
         thread: response.data.thread || "",
       };
     },
-    enabled: !!userId, // userId가 존재할 때만 쿼리 실행
+    enabled: !!userId,
   });
 };

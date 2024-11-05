@@ -25,7 +25,6 @@ export const useLike = () => {
   const [isLiked, setIsLiked] = useState(false);
 
   const toggleLike = async (options: LikeOptions) => {
-    // userId는 공통으로 필수이고, postId, curatorPostId, commentId 중 하나만 값을 받습니다.
     const {
       userId,
       postId = null,
