@@ -20,12 +20,15 @@ import { Layout } from "./components/common/layout/Layout";
 import { AuthLayout } from "./components/common/layout/AuthLayout";
 import EditCuratorPost from "./pages/curator/EditCuratorPost/EditCuratorPost";
 import EditOrdinaryPost from "./pages/ordinary/editOrdinaryPost/EditOrdinaryPost";
+import { RootSuspense } from "./components/common/components/RootSuspense";
 
 const CommonLayout = ({ isAuth }: { isAuth?: boolean }) =>
   isAuth ? (
-    <AuthLayout>
-      <Outlet />
-    </AuthLayout>
+    <RootSuspense>
+      <AuthLayout>
+        <Outlet />
+      </AuthLayout>
+    </RootSuspense>
   ) : (
     <Layout>
       <Outlet />
