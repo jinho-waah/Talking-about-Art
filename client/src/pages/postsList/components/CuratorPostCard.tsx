@@ -3,8 +3,6 @@ import { ThumbsUp } from "lucide-react";
 import PostHeader from "./PostHeader";
 import { CuratorPostProps } from "../types";
 
-
-
 export default function CuratorPostCard({ post, onClick }: CuratorPostProps) {
   return (
     <Card className="mb-6 cursor-pointer" onClick={() => onClick(post.id)}>

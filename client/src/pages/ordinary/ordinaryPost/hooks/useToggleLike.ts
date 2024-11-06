@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useLike } from "@/components/common/hooks/useLike";
+import { useLike } from "@/pages/common/hooks/useLike";
 
 export const useToggleLike = (
   postId?: number,

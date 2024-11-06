@@ -3,17 +3,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import authStore from "@/store/authStore";
-import CuratorPostCard from "./components/CuratorPostCard";
-import OrdinaryPostCard from "./components/OrdinaryPostCard";
-import ExhibitionPostCard from "./components/ExhibitionPostCard";
 import useFetchPosts from "./hooks/useFetchPosts";
 import { TAB_TITLES, Role } from "@/constants";
 import { Card } from "@/components/ui/card";
 import { PostsListProps } from "./types";
+import { CuratorPostCardSkeleton } from "./components/skeletons/CuratorPostCardSkeleton";
+import { ExhibitionPostCardSkeleton } from "./components/skeletons/ExhibitionPostCardSkeleton";
+import { OrdinaryPostCardSkeleton } from "./components/skeletons/OrdinaryPostCardSkeleton";
+
+const ExhibitionPostCard = lazy(
+  () => import("./components/ExhibitionPostCard")
+);
+const CuratorPostCard = lazy(() => import("./components/CuratorPostCard"));
+const OrdinaryPostCard = lazy(() => import("./components/OrdinaryPostCard"));
 
 export default function PostsList({ title }: PostsListProps) {
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { isLogin, role } = authStore();
 
@@ -21,7 +28,8 @@ export default function PostsList({ title }: PostsListProps) {
     useFetchPosts();
 
   useEffect(() => {
-    fetchPosts(title);
+    setIsLoading(true); // 데이터를 새로 로드하기 전에 로딩 상태로 설정
+    fetchPosts(title).finally(() => setIsLoading(false)); // 데이터 로딩 완료 시 로딩 해제
   }, [title]);
 
   const handlePostClick = (id: number) => {
@@ -87,31 +95,62 @@ export default function PostsList({ title }: PostsListProps) {
         <h1 className="text-3xl font-bold">{title}</h1>
         {canAddPost() && <Button onClick={handleAddPost}>글 추가</Button>}
       </div>
-      <Input placeholder="Search posts..." className="mb-6" />
-
-      {title === TAB_TITLES.CURATOR &&
-        curatorPosts.map((post, index) => (
-          <CuratorPostCard key={index} post={post} onClick={handlePostClick} />
-        ))}
-      {title === TAB_TITLES.INTRODUCTION &&
-        exhibitionPosts.map((post, index) => (
-          <ExhibitionPostCard
-            key={index}
-            post={post}
-            onClick={handlePostClick}
-          />
-        ))}
-      {title === TAB_TITLES.POSTS ? (
-        <Card>
-          {ordinaryPosts.map((post, index) => (
-            <OrdinaryPostCard
-              key={index}
-              post={post}
-              onClick={handlePostClick}
-            />
-          ))}
-        </Card>
-      ) : null}
+      <Input placeholder="검색..." className="mb-6" />
+      {isLoading ? (
+        <div>
+          {title === TAB_TITLES.CURATOR &&
+            Array.from({ length: 5 }).map((_, index) => (
+              <CuratorPostCardSkeleton key={index} />
+            ))}
+          {title === TAB_TITLES.INTRODUCTION &&
+            Array.from({ length: 5 }).map((_, index) => (
+              <ExhibitionPostCardSkeleton key={index} />
+            ))}
+          {title === TAB_TITLES.POSTS && (
+            <Card>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <OrdinaryPostCardSkeleton key={index} />
+              ))}
+            </Card>
+          )}
+        </div>
+      ) : (
+        <>
+          {title === TAB_TITLES.CURATOR &&
+            curatorPosts.map((post, index) => (
+              <Suspense key={index} fallback={<CuratorPostCardSkeleton />}>
+                <CuratorPostCard
+                  key={index}
+                  post={post}
+                  onClick={handlePostClick}
+                />
+              </Suspense>
+            ))}
+          {title === TAB_TITLES.INTRODUCTION &&
+            exhibitionPosts.map((post, index) => (
+              <Suspense key={index} fallback={<ExhibitionPostCardSkeleton />}>
+                <ExhibitionPostCard
+                  key={index}
+                  post={post}
+                  onClick={handlePostClick}
+                />
+              </Suspense>
+            ))}
+          {title === TAB_TITLES.POSTS ? (
+            <Card>
+              {ordinaryPosts.map((post, index) => (
+                <Suspense key={index} fallback={<OrdinaryPostCardSkeleton />}>
+                  <OrdinaryPostCard
+                    key={index}
+                    post={post}
+                    onClick={handlePostClick}
+                  />
+                </Suspense>
+              ))}
+            </Card>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }
