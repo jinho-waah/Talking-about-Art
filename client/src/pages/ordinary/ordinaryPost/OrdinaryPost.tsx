@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import Comments from "../comment/Comments";
+import Comments from "../comments/Comments";
 import authStore from "@/store/authStore";
 import { pageRoutes } from "@/apiRoutes";
 import Modal from "../../common/components/Modal";
@@ -49,37 +49,33 @@ export default function OrdinaryPost() {
     commentSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  if (isLoading) return <>Loading...</>;
+  if (isLoading || post === undefined) return <>Loading...</>;
 
   return (
-    <div className="container mx-auto px-1">
-      <div className="max-w-3xl mx-auto">
-        {post && (
-          <OrdinaryPostBody
-            post={post}
-            userId={userId}
-            role={role}
-            isLiked={isLiked}
-            toggleModal={toggleModal}
-            handleLikeToggle={handleLikeToggle}
-            scrollToComments={scrollToComments}
-          />
-        )}
-        <Comments
-          commentSectionRef={commentSectionRef}
-          onCommentsUpdate={() =>
-            queryClient.invalidateQueries({
-              queryKey: ["ordinaryPost", id, userId],
-            })
-          }
-        />
-        <Modal
-          isModalOpen={isModalOpen}
-          toggleModal={toggleModal}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-        />
-      </div>
+    <div className="container ml-auto max-w-4xl px-1">
+      <OrdinaryPostBody
+        post={post}
+        userId={userId}
+        role={role}
+        isLiked={isLiked}
+        toggleModal={toggleModal}
+        handleLikeToggle={handleLikeToggle}
+        scrollToComments={scrollToComments}
+      />
+      <Comments
+        commentSectionRef={commentSectionRef}
+        onCommentsUpdate={() =>
+          queryClient.invalidateQueries({
+            queryKey: ["ordinaryPost", id, userId],
+          })
+        }
+      />
+      <Modal
+        isModalOpen={isModalOpen}
+        toggleModal={toggleModal}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+      />
     </div>
   );
 }

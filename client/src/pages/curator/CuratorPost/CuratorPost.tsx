@@ -58,28 +58,26 @@ export default function CuratorPost() {
   const businessHours = JSON.parse(post.business_hours);
 
   return (
-    <div className="container mx-auto px-1">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-5 ml-1">큐레이터의 전시 이야기</h1>
-        <CuratorPostTop
-          post={post}
-          userId={userId}
-          role={role}
-          toggleModal={toggleModal}
-          isModalOpen={isModalOpen}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-          handleLikeToggle={handleLikeToggle}
-          isLiked={isLiked}
-        />
+    <div className="container ml-auto max-w-4xl px-1">
+      <h1 className="text-3xl font-bold mb-5 ml-1">큐레이터의 전시 이야기</h1>
+      <CuratorPostTop
+        post={post}
+        userId={userId}
+        role={role}
+        toggleModal={toggleModal}
+        isModalOpen={isModalOpen}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+        handleLikeToggle={handleLikeToggle}
+        isLiked={isLiked}
+      />
 
-        <h2 className="text-2xl font-semibold mb-4 ml-1">전시 정보</h2>
-        <CuratorPostBottom
-          post={post}
-          businessHours={businessHours}
-          handleToSite={handleToSite}
-        />
-      </div>
+      <h2 className="text-2xl font-semibold mb-4 ml-1">전시 정보</h2>
+      <CuratorPostBottom
+        post={post}
+        businessHours={businessHours}
+        handleToSite={handleToSite}
+      />
     </div>
   );
 }

@@ -73,7 +73,7 @@ export default function AddCuratorPost() {
     title.trim() !== "" && content.trim() !== "" && showId !== undefined;
 
   return (
-    <div className="container mx-auto px-1">
+    <div className="container ml-auto max-w-4xl px-1">
       <AddCuratorPostForm
         title={title}
         setTitle={setTitle}

@@ -3,11 +3,9 @@ import TabSection from "@/pages/home/components/TabSection";
 
 export const Home = () => {
   return (
-    <div>
-      <div>
-        <TabSection />
-        <PostList />
-      </div>
+    <div className="max-w-4xl ml-auto">
+      <TabSection />
+      <PostList />
     </div>
   );
 };

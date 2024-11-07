@@ -1,5 +1,3 @@
-// IntroduceExhibition.tsx
-
 import { pageRoutes } from "@/apiRoutes";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +13,7 @@ import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ExhibitionPost } from "../../types";
 import { useLatestExhibitionPosts } from "../../hooks/useLatestExhibitionPosts";
+import { CurrentExhibitionSkeleton } from "../skeletons/CurrentExhibitionSkeleton";
 
 const CurrentExhibition = () => {
   const navigate = useNavigate();
@@ -28,7 +27,7 @@ const CurrentExhibition = () => {
   } = useLatestExhibitionPosts();
 
   if (isLoading || !exhibitionData) {
-    return <div>Loading...</div>;
+    return <CurrentExhibitionSkeleton />;
   }
 
   if (isError) {
@@ -48,15 +47,18 @@ const CurrentExhibition = () => {
             {exhibitionData.map((event: ExhibitionPost) => (
               <li key={event.id} className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold">{event.show_name}</h3>
+                  <h3 className="font-semibold line-clamp-2 overflow-hidden text-ellipsis max-h-12">
+                    {event.show_name}
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    {event.show_place} • {event.show_term_start} ~{" "}
+                    {event.show_place} • {event.show_term_start}&nbsp;~&nbsp;
                     {event.show_term_end}
                   </p>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
+                  className="ml-2"
                   onClick={() => handleJoinClick(event.id)}
                 >
                   <Check className="w-4 h-4 mr-2" />

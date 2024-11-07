@@ -75,8 +75,8 @@ export default function AddOrdinaryPost() {
   };
 
   return (
-    <div className="container mx-auto px-1">
-      <Card className="max-w-2xl mx-auto">
+    <div className="container ml-auto max-w-4xl px-1">
+      <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">게시물 작성</CardTitle>
           <CardDescription>

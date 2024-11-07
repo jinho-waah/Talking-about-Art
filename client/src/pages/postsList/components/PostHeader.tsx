@@ -14,18 +14,21 @@ export default function PostHeader({
   createdAt,
   period,
 }: PostHeaderProps) {
+  let displayText;
+  if (period) {
+    displayText = period;
+  } else if (createdAt) {
+    displayText = FormatDate(createdAt);
+  }
+
   return (
     <div className="flex items-center space-x-4">
-      <UserAvatar userName={authorName} imgUrl={profileImage}></UserAvatar>
+      <UserAvatar userName={authorName} imgUrl={profileImage} />
       <div>
         <p className="font-medium">{authorName}</p>
-        {period ? (
-          <p className="text-sm text-muted-foreground">{period}</p>
-        ) : createdAt ? (
-          <p className="text-sm text-muted-foreground">
-            {FormatDate(createdAt)}
-          </p>
-        ) : null}
+        {displayText && (
+          <p className="text-sm text-muted-foreground">{displayText}</p>
+        )}
       </div>
     </div>
   );

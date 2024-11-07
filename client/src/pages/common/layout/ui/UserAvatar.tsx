@@ -15,7 +15,11 @@ export const UserAvatar = ({ userName, imgUrl }: UserAvatarProps) => {
 
   return (
     <Avatar>
-      <AvatarImage src={currentImgUrl || undefined} alt="User" />
+      <AvatarImage
+        src={currentImgUrl || undefined}
+        alt="프로필 이미지"
+        loading="lazy"
+      />
       <AvatarFallback>{userName && userName[0]}</AvatarFallback>
     </Avatar>
   );

@@ -13,6 +13,7 @@ import { BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CuratorPost } from "../../types";
 import { useLatestCuratorPosts } from "../../hooks/useLatestCuratorPosts";
+import { CuratorsSkeleton } from "../skeletons/CuratorSkeleton";
 
 const Curators = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const Curators = () => {
   };
 
   if (isLoading || !curatorsData) {
-    return <div>Loading...</div>;
+    return <CuratorsSkeleton />;
   }
 
   if (isError) {
@@ -49,7 +50,9 @@ const Curators = () => {
             {curatorsData.map((event: CuratorPost) => (
               <li key={event.id} className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold">{event.title}</h3>
+                  <h3 className="font-semibold line-clamp-2 overflow-hidden text-ellipsis max-h-12">
+                    {event.title}
+                  </h3>
                   <div className="flex items-center">
                     <span className="text-sm text-muted-foreground">
                       by {event.curator_name}
@@ -59,6 +62,7 @@ const Curators = () => {
                 <Button
                   variant="outline"
                   size="sm"
+                  className="ml-2"
                   onClick={() => handleReadClick(event.id)}
                 >
                   <BookOpen className="w-4 h-4 mr-2" />

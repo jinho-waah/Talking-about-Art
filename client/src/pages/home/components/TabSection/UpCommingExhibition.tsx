@@ -61,6 +61,7 @@ const UpCommingExhibition = () => {
                 <Button
                   variant="outline"
                   size="sm"
+                  className="ml-2"
                   onClick={() => handleJoinClick(event.id)}
                 >
                   <Check className="w-4 h-4 mr-2" />

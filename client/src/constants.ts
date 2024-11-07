@@ -2,7 +2,7 @@ import { TabTitle } from "./types";
 
 export const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
-export type RoleType = "admin" | "gallery" | "curator" | "ordinary" | null;
+export type RoleType = (typeof Role)[keyof typeof Role] | null;
 
 export const TAB_TITLES: Record<
   "UPCOMING_EXHIBITION" | "INTRODUCTION" | "CURATOR" | "POSTS",

@@ -16,9 +16,7 @@ export default function MyPage() {
   const navigate = useNavigate();
   const { id } = useParams<string>();
   const pageId = id ? parseInt(id, 10) : null;
-
   const { userId } = authStore();
-
   const { data: profileData, isLoading, isError } = useMyPageData(pageId);
 
   if (isLoading) return <p>프로필 정보를 불러오는 중입니다...</p>;

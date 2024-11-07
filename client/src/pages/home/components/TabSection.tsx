@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense, lazy } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import UpCommingExhibition from "./TabSection/UpCommingExhibition";
-import CurrentExhibition from "./TabSection/CurrentExhibition";
-import Curators from "./TabSection/Curators";
+import { LoadingPage } from "@/pages/loading/components/LoadingPage";
+
+const UpCommingExhibition = lazy(
+  () => import("./TabSection/UpCommingExhibition")
+);
+const CurrentExhibition = lazy(() => import("./TabSection/CurrentExhibition"));
+const Curators = lazy(() => import("./TabSection/Curators"));
 
 const TabSection = () => {
   const [activeTab, setActiveTab] = useState(() => {
@@ -19,14 +23,16 @@ const TabSection = () => {
       onValueChange={(value) => setActiveTab(value)}
       className="w-full mb-6"
     >
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="grid w-full grid-cols-3 ">
         <TabsTrigger value="current">전시 소개</TabsTrigger>
         <TabsTrigger value="upcoming">전시 예정</TabsTrigger>
         <TabsTrigger value="reviews">큐레이터</TabsTrigger>
       </TabsList>
-      {activeTab === "current" && <CurrentExhibition />}
-      {activeTab === "upcoming" && <UpCommingExhibition />}
-      {activeTab === "reviews" && <Curators />}
+      <Suspense fallback={<LoadingPage />}>
+        {activeTab === "current" && <CurrentExhibition />}
+        {activeTab === "upcoming" && <UpCommingExhibition />}
+        {activeTab === "reviews" && <Curators />}
+      </Suspense>
     </Tabs>
   );
 };

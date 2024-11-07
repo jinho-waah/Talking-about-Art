@@ -26,7 +26,7 @@ export default function ExhibitionPost() {
   );
 
   return (
-    <div className="container mx-auto px-1">
+    <div className="container px-1 ml-auto max-w-4xl">
       <h1 className="text-3xl font-bold mb-4">{exhibitionPosts.show_name}</h1>
       <div className="grid gap-6 lg:grid-cols-3">
         <ExhibitionMainBlock

@@ -193,46 +193,44 @@ export default function AddExhibitionPost() {
   };
 
   return (
-    <div className="container mx-auto px-1">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">새로운 전시 소개하기</h1>
+    <div className="container ml-auto max-w-4xl px-1">
+      <h1 className="text-3xl font-bold mb-6">새로운 전시 소개하기</h1>
 
-        <AddExhibitionPostForm
-          handleSubmit={handleSubmit}
-          title={title}
-          setTitle={setTitle}
-          description={description}
-          setDescription={setDescription}
-          comboboxOpen={comboboxOpen}
-          setComboboxOpen={setComboboxOpen}
-          comboboxValue={comboboxValue}
-          handleComboboxSelect={handleComboboxSelect}
-          startDate={startDate}
-          setStartDate={setStartDate}
-          endDate={endDate}
-          setEndDate={setEndDate}
-          detailLocation={detailLocation}
-          setDetailLocation={setDetailLocation}
-          price={price}
-          setPrice={setPrice}
-          artists={artists}
-          setArtists={setArtists}
-          siteLink={siteLink}
-          setSiteLink={setSiteLink}
-          instagramSearch={instagramSearch}
-          setInstagramSearch={setInstagramSearch}
-          handleImageUpload={handleImageUpload}
-          previewUrls={previewUrls}
-          handleImageDelete={handleImageDelete}
-          handleCheckedFree={handleCheckedFree}
-          handleCheckedPhoto={handleCheckedPhoto}
-          handleCheckpermanent={handleCheckpermanent}
-          handleCheckedOrient={handleCheckedOrient}
-          handleCheckedGenre={handleCheckedGenre}
-          handleCheckedEra={handleCheckedEra}
-          handleCheckedArtMovement={handleCheckedArtMovement}
-        />
-      </div>
+      <AddExhibitionPostForm
+        handleSubmit={handleSubmit}
+        title={title}
+        setTitle={setTitle}
+        description={description}
+        setDescription={setDescription}
+        comboboxOpen={comboboxOpen}
+        setComboboxOpen={setComboboxOpen}
+        comboboxValue={comboboxValue}
+        handleComboboxSelect={handleComboboxSelect}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        detailLocation={detailLocation}
+        setDetailLocation={setDetailLocation}
+        price={price}
+        setPrice={setPrice}
+        artists={artists}
+        setArtists={setArtists}
+        siteLink={siteLink}
+        setSiteLink={setSiteLink}
+        instagramSearch={instagramSearch}
+        setInstagramSearch={setInstagramSearch}
+        handleImageUpload={handleImageUpload}
+        previewUrls={previewUrls}
+        handleImageDelete={handleImageDelete}
+        handleCheckedFree={handleCheckedFree}
+        handleCheckedPhoto={handleCheckedPhoto}
+        handleCheckpermanent={handleCheckpermanent}
+        handleCheckedOrient={handleCheckedOrient}
+        handleCheckedGenre={handleCheckedGenre}
+        handleCheckedEra={handleCheckedEra}
+        handleCheckedArtMovement={handleCheckedArtMovement}
+      />
     </div>
   );
 }

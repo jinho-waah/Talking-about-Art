@@ -1,7 +1,7 @@
 import { CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Instagram, Twitter, AtSign } from "lucide-react";
 import { ProfileData } from "../../types";
+import { UserAvatar } from "@/pages/common/layout/ui/UserAvatar";
 
 export function MyPageForm({
   profileData,
@@ -11,14 +11,34 @@ export function MyPageForm({
   if (!profileData) {
     return <p>프로필 정보를 불러오는 중입니다...</p>;
   }
+  const socialLinks = [
+    {
+      type: "Twitter",
+      icon: Twitter,
+      href: `https://x.com/${profileData.x}`,
+      username: profileData.x,
+    },
+    {
+      type: "Instagram",
+      icon: Instagram,
+      href: `https://www.instagram.com/${profileData.instagram}`,
+      username: profileData.instagram,
+    },
+    {
+      type: "Thread",
+      icon: AtSign,
+      href: `https://www.threads.net/@${profileData.thread}`,
+      username: profileData.thread,
+    },
+  ].filter((link) => link.username);
 
   return (
     <CardContent className="space-y-6">
       <div className="flex items-center space-x-4">
-        <Avatar className="w-24 h-24">
-          <AvatarImage src={profileData.avatarSrc} alt="프로필 이미지" />
-          <AvatarFallback>{profileData.nickname[0]}</AvatarFallback>
-        </Avatar>
+        <UserAvatar
+          userName={profileData.nickname}
+          imgUrl={profileData.avatarSrc}
+        />
         <div>
           <h2 className="text-xl font-semibold">{profileData.nickname}</h2>
         </div>
@@ -47,45 +67,19 @@ export function MyPageForm({
       <div className="space-y-2">
         <h3 className="font-semibold">소셜 미디어</h3>
         <ul>
-          {profileData.x && (
-            <li className="flex items-center space-x-2">
-              <Twitter className="w-5 h-5" />
+          {socialLinks.map(({ type, icon: Icon, href, username }, index) => (
+            <li key={index} className="flex items-center space-x-2">
+              <Icon className="w-5 h-5" />
               <a
-                href={`https://x.com/${profileData.x}`}
+                href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline hover:no-underline"
+                className="link-hover underline hover:no-underline"
               >
-                @{profileData.x}
+                {type === "Twitter" ? `@${username}` : username}
               </a>
             </li>
-          )}
-          {profileData.instagram && (
-            <li className="flex items-center space-x-2">
-              <Instagram className="w-5 h-5" />
-              <a
-                href={`https://www.instagram.com/${profileData.instagram}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:no-underline"
-              >
-                {profileData.instagram}
-              </a>
-            </li>
-          )}
-          {profileData.thread && (
-            <li className="flex items-center space-x-2">
-              <AtSign className="w-5 h-5" />
-              <a
-                href={`https://www.threads.net/@${profileData.thread}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:no-underline"
-              >
-                {profileData.thread}
-              </a>
-            </li>
-          )}
+          ))}
         </ul>
       </div>
     </CardContent>

@@ -56,3 +56,18 @@ export interface PostOrdinaryPostProps {
 export interface PostOrdinaryPostImageProps {
   formData: FormData;
 }
+
+export interface CommentsListProps {
+  comments: Comment[];
+  userId: number | null;
+  role: string | null;
+  editCommentId: number | null;
+  editContent: string;
+  setEditContent: (content: string) => void;
+  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  previewUrl: string | null;
+  saveEdit: (commentId: number) => void;
+  toggleModal: (commentId: number | null) => void;
+  handleLikeToggle: (commentId: number) => void;
+  handleCancelEdit: () => void;
+}
