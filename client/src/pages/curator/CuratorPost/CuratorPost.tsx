@@ -14,15 +14,14 @@ export default function CuratorPost() {
   const { userId, role } = authStore();
   const navigate = useNavigate();
 
-  const [isLiked, setIsLiked] = useState(false);
-
   const { data: post, isError, isLoading } = useGetCuratorPost(id, userId);
-  const { handleLikeToggle } = useToggleLike(post?.id, userId, id);
-
+  const { isLiked, setIsLiked, likeCount, setLikeCount, handleLikeToggle } =
+    useToggleLike(post?.id, userId, id);
 
   useEffect(() => {
     if (post) {
-      setIsLiked(post.isLiked === 1);
+      setIsLiked(post.isLiked == 1);
+      setLikeCount(post.like_count);
     }
   }, [post]);
 
@@ -71,6 +70,7 @@ export default function CuratorPost() {
         handleDelete={handleDelete}
         handleLikeToggle={handleLikeToggle}
         isLiked={isLiked}
+        likeCount={likeCount}
       />
 
       <h2 className="text-2xl font-semibold mb-4 ml-1">전시 정보</h2>

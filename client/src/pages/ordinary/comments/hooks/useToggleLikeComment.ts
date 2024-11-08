@@ -1,17 +1,17 @@
 import { Like } from "@/pages/common/components/Like";
 
-export const useToggleLike = (
-  curatorPostId?: number,
-  userId?: number | null,
-  id?: string | undefined
+export const useToggleLikeComment = (
+  commentId?: number,
+  userId?: number | null
 ) => {
   const { isLiked, setIsLiked, likeCount, setLikeCount, toggleLike } = Like({
-    queryKey: ["curatorPost", curatorPostId],
+    queryKey: ["comments", userId],
   });
-
+  console.log(isLiked);
   const handleLikeToggle = async () => {
-    if (!curatorPostId || !userId || !id) return;
-    toggleLike({ userId, curatorPostId });
+    if (!commentId || !userId) return;
+    toggleLike({ userId, commentId });
   };
+
   return { isLiked, setIsLiked, likeCount, setLikeCount, handleLikeToggle };
 };

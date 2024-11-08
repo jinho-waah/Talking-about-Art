@@ -17,6 +17,7 @@ export default function CuratorPostTop({
   handleDelete,
   handleLikeToggle,
   isLiked,
+  likeCount,
 }: CuratorPostTopProps) {
   return (
     <Card className="mb-8">
@@ -57,7 +58,7 @@ export default function CuratorPostTop({
             <ThumbsUp
               className={`mr-2 h-4 w-4 ${isLiked ? "text-blue-500" : ""}`}
             />
-            좋아요 {post.like_count}
+            좋아요 {likeCount}
           </Button>
           <Button variant="ghost" size="sm">
             <Share2 className="mr-2 h-4 w-4" />

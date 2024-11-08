@@ -7,13 +7,13 @@ interface LikeProps {
 }
 
 export const Like = ({ queryKey }: LikeProps) => {
-  const [isLiked, setIsLiked] = useState(false);
+    const [isLiked, setIsLiked] = useState<boolean>(false);
+    const [likeCount, setLikeCount] = useState<number>(0);
 
-  const likeMutation = useLike(setIsLiked, queryKey);
+    const likeMutation = useLike(isLiked, setIsLiked, setLikeCount, queryKey);
 
-  const toggleLike = async (options: LikeOptions) => {
-    likeMutation.mutate(options);
-  };
-
-  return { isLiked, toggleLike };
+    const toggleLike = async (options: LikeOptions) => {
+      likeMutation.mutate(options);
+    };
+    return { isLiked, setIsLiked, likeCount, setLikeCount, toggleLike };
 };

@@ -4,7 +4,6 @@ import CommentsForm from "./components/CommentForm";
 import Modal from "../../common/components/Modal";
 import { HOST_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
-import { Like } from "@/pages/common/components/Like";
 import { useFetchComments } from "./hooks/useFetchComments";
 import { useUpdateComment } from "./hooks/useUpdateComment";
 import { useDeleteComment } from "./hooks/useDeleteComment";
@@ -19,7 +18,7 @@ export default function Comments({
   commentSectionRef,
   onCommentsUpdate,
 }: CommentsProps) {
-  const { id } = useParams<string>();
+  const { id } = useParams();
   const { userId, role } = authStore();
   const [editCommentId, setEditCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState<string>("");
@@ -29,8 +28,6 @@ export default function Comments({
   const [selectedCommentId, setSelectedCommentId] = useState<number | null>(
     null
   );
-
-  const { toggleLike } = Like();
 
   const { data: comments, refetch: refetchComments } = useFetchComments(
     id!,
@@ -109,30 +106,27 @@ export default function Comments({
     }
   };
 
-  const handleLikeToggle = async (commentId: number) => {
-    if (userId) {
-      await toggleLike({ userId, commentId });
-      refetchComments();
-    }
-  };
-
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-4">댓글</h2>
-      <CommentsList
-        comments={comments || []}
-        userId={userId}
-        role={role}
-        editCommentId={editCommentId}
-        editContent={editContent}
-        setEditContent={setEditContent}
-        handleFileChange={handleFileChange}
-        previewUrl={previewUrl}
-        saveEdit={saveEdit}
-        toggleModal={toggleModal}
-        handleLikeToggle={handleLikeToggle}
-        handleCancelEdit={handleCancelEdit}
-      />
+      {comments &&
+        comments.map((comment) => (
+          <CommentsList
+            key={comment.id}
+            comment={comment}
+            userId={userId}
+            role={role}
+            editCommentId={editCommentId}
+            editContent={editContent}
+            setEditContent={setEditContent}
+            handleFileChange={handleFileChange}
+            previewUrl={previewUrl}
+            saveEdit={saveEdit}
+            toggleModal={toggleModal}
+            handleCancelEdit={handleCancelEdit}
+          />
+        ))}
+
       <CommentsForm
         onCommentAdded={refetchComments}
         commentSectionRef={commentSectionRef}

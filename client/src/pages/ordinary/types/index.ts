@@ -28,7 +28,7 @@ export interface Comment {
   created_at: string;
   profile_image: string;
   file_url?: string;
-  isLiked?: boolean;
+  isLiked: boolean;
 }
 
 export interface UpdateComment {

@@ -15,6 +15,7 @@ interface OrdinaryPostCardProps {
   userId: number | null;
   role: string | null;
   isLiked: boolean;
+  likeCount: number;
   toggleModal: () => void;
   handleLikeToggle: () => void;
   scrollToComments: () => void;
@@ -25,6 +26,7 @@ export default function OrdinaryPostBody({
   userId,
   role,
   isLiked,
+  likeCount,
   toggleModal,
   handleLikeToggle,
   scrollToComments,
@@ -62,7 +64,7 @@ export default function OrdinaryPostBody({
             <ThumbsUp
               className={`mr-2 h-4 w-4 ${isLiked ? "text-blue-500" : ""}`}
             />
-            좋아요 {post.like_count}
+            좋아요 {likeCount}
           </Button>
           <Button variant="ghost" size="sm" onClick={scrollToComments}>
             <MessageSquare className="mr-2 h-4 w-4" />

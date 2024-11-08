@@ -4,12 +4,11 @@ import { Dispatch, SetStateAction } from "react";
 import { LikeOptions } from "../types";
 import { like } from "../api";
 
-interface LikeProps {
-  queryKey: object;
-}
 export const useLike = (
+  isLiked: boolean,
   setIsLiked: Dispatch<SetStateAction<boolean>>,
-  queryKey: LikeProps["queryKey"]
+  setLikeCount: Dispatch<SetStateAction<number>>,
+  queryKey: object
 ) => {
   const queryClient = useQueryClient();
   const likeMutation = useMutation({
@@ -22,12 +21,25 @@ export const useLike = (
       } = options;
       return like(userId, postId, curatorPostId, commentId);
     },
+
+    onMutate: async () => {
+      await queryClient.cancelQueries(queryKey);
+      setIsLiked((prev) => !prev);
+      if (isLiked) {
+        setLikeCount((prev) => prev - 1);
+      } else if (!isLiked) {
+        setLikeCount((prev) => prev + 1);
+      }
+    },
+
     onSuccess: (response: AxiosResponse<{ isLiked: boolean }>) => {
       setIsLiked(response.data.isLiked);
-      queryClient.invalidateQueries(queryKey);
     },
     onError: (error) => {
       console.error("Error toggling like status:", error);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(queryKey);
     },
   });
 

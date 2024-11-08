@@ -13,7 +13,7 @@ export const CuratorsSkeleton = () => (
         <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
       </CardTitle>
       <CardDescription>
-        <div className="h-3 w-48 bg-gray-200 rounded animate-pulse" />
+        <span className="h-3 w-48 bg-gray-200 rounded animate-pulse" />
       </CardDescription>
     </CardHeader>
     <CardContent>

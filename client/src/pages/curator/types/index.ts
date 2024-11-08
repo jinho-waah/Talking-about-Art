@@ -31,6 +31,7 @@ export interface CuratorPostTopProps {
   handleDelete: () => void;
   handleLikeToggle: () => void;
   isLiked: boolean;
+  likeCount: number;
 }
 
 export interface Show {

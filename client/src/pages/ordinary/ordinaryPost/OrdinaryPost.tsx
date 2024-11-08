@@ -8,7 +8,7 @@ import Modal from "../../common/components/Modal";
 import OrdinaryPostBody from "./components/OrdinaryPostBody";
 import { useFetchOrdinaryPost } from "../hooks/useFetchOrdinaryPost";
 import { useDeleteOrdinaryPost } from "./hooks/useDeleteOrdinaryPost";
-import { useToggleLike } from "./hooks/useToggleLike";
+import { useToggleLikeOrdinary } from "./hooks/useToggleLikeOrdinary";
 
 export default function OrdinaryPost() {
   const { id } = useParams();
@@ -17,20 +17,20 @@ export default function OrdinaryPost() {
   const commentSectionRef = useRef<HTMLDivElement>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
 
   const queryClient = useQueryClient();
 
   const { data: post, isLoading } = useFetchOrdinaryPost(id, userId);
   const deleteMutation = useDeleteOrdinaryPost();
-  const { handleLikeToggle } = useToggleLike(post?.id, userId, id);
+  const { isLiked, setIsLiked, likeCount, setLikeCount, handleLikeToggle } =
+    useToggleLikeOrdinary(post?.id, userId);
 
   useEffect(() => {
     if (post) {
       setIsLiked(post.isLiked === 1);
+      setLikeCount(post.like_count);
     }
   }, [post]);
-
   const handleDelete = () => {
     if (window.confirm("정말로 이 게시물을 삭제하시겠습니까?") && id) {
       deleteMutation.mutate(id);
@@ -58,6 +58,7 @@ export default function OrdinaryPost() {
         userId={userId}
         role={role}
         isLiked={isLiked}
+        likeCount={likeCount}
         toggleModal={toggleModal}
         handleLikeToggle={handleLikeToggle}
         scrollToComments={scrollToComments}

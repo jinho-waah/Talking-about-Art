@@ -1274,13 +1274,27 @@ app.delete("/api/post/comment/:id", async (req, res) => {
     const postId = comment.post_id;
 
     // 댓글 삭제 쿼리 실행
+    const deleteLikesQuery = "DELETE FROM likes WHERE comment_id = ?";
     const deleteCommentQuery = "DELETE FROM post_comments WHERE id = ?";
-    await new Promise((resolve, reject) => {
-      connection.query(deleteCommentQuery, [commentId], (err) => {
-        if (err) return reject(err);
-        resolve();
+    try {
+      // 먼저 관련된 좋아요 데이터 삭제
+      await new Promise((resolve, reject) => {
+        connection.query(deleteLikesQuery, [commentId], (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
       });
-    });
+
+      // 댓글 데이터 삭제
+      await new Promise((resolve, reject) => {
+        connection.query(deleteCommentQuery, [commentId], (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+    } catch (error) {
+      console.error("댓글 삭제 중 오류 발생:", error);
+    }
 
     // posts 테이블의 comment_count 감소
     const updateCommentCountQuery = `
@@ -1297,7 +1311,7 @@ app.delete("/api/post/comment/:id", async (req, res) => {
     if (comment.file_url) {
       const filePath = path.join(
         __dirname,
-        "../client/public",
+        "../client/public/img/commentImg",
         comment.file_url
       );
       if (fs.existsSync(filePath)) {
