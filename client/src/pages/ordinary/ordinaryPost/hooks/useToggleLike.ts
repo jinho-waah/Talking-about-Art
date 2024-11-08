@@ -1,12 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useLike } from "@/pages/common/hooks/useLike";
+import { Like } from "@/pages/common/components/Like";
 
 export const useToggleLike = (
   postId?: number,
   userId?: number | null,
   id?: string | undefined
 ) => {
-  const { toggleLike } = useLike();
+  const { toggleLike } = Like();
   const queryClient = useQueryClient();
 
   const handleLikeToggle = async () => {

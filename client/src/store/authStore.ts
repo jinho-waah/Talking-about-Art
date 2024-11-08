@@ -8,7 +8,7 @@ type AuthStoreState = {
   galleryId: number | null;
   userName: string | null;
   role: RoleType;
-  isToken: boolean; // Token 상태 추가
+  isToken: boolean;
   imgUrl: string | null;
 };
 
@@ -91,7 +91,7 @@ const authStore = create<AuthStore>()(
       },
     }),
     {
-      name: "auth-storage", // localStorage에 저장될 key 이름
+      name: "auth-storage",
       partialize: (state) => ({
         isLogin: state.isLogin,
         userId: state.userId,

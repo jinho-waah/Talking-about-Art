@@ -4,7 +4,7 @@ import CommentsForm from "./components/CommentForm";
 import Modal from "../../common/components/Modal";
 import { HOST_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
-import { useLike } from "@/pages/common/hooks/useLike";
+import { Like } from "@/pages/common/components/Like";
 import { useFetchComments } from "./hooks/useFetchComments";
 import { useUpdateComment } from "./hooks/useUpdateComment";
 import { useDeleteComment } from "./hooks/useDeleteComment";
@@ -30,7 +30,7 @@ export default function Comments({
     null
   );
 
-  const { toggleLike } = useLike();
+  const { toggleLike } = Like();
 
   const { data: comments, refetch: refetchComments } = useFetchComments(
     id!,

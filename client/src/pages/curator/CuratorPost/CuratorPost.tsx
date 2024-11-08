@@ -19,6 +19,7 @@ export default function CuratorPost() {
   const { data: post, isError, isLoading } = useGetCuratorPost(id, userId);
   const { handleLikeToggle } = useToggleLike(post?.id, userId, id);
 
+
   useEffect(() => {
     if (post) {
       setIsLiked(post.isLiked === 1);

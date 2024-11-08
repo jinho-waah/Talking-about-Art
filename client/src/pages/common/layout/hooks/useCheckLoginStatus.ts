@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import axios from "axios";
 import { SERVER_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 
@@ -8,12 +9,12 @@ export const useCheckLoginStatus = () => {
 
   const checkLoginStatus = async () => {
     try {
-      const response = await fetch(`${SERVER_DOMAIN}api/auth/status`, {
-        method: "GET",
-        credentials: "include", // 쿠키 포함
+      const response = await axios.get(`${SERVER_DOMAIN}api/auth/status`, {
+        withCredentials: true,
       });
-      if (response.ok) {
-        const data = await response.json();
+
+      if (response.status === 200) {
+        const data = response.data;
         setLogin(
           data.id,
           data.galleryId,
@@ -21,14 +22,12 @@ export const useCheckLoginStatus = () => {
           data.userName,
           data.imgUrl
         );
-      } else if (response.status === 401 || response.status === 403) {
+      }
+      if (response && (response.status === 401 || response.status === 403)) {
         setLogout();
-      } else {
-        console.error("로그인 상태 확인 실패:", response.statusText);
       }
     } catch (error) {
       console.error("로그인 상태 확인 중 오류 발생:", error);
-      setLogout();
     }
   };
 
