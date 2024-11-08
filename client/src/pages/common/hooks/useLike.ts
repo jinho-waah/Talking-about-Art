@@ -15,11 +15,11 @@ export const useLike = (
     mutationFn: (options: LikeOptions) => {
       const {
         userId,
-        postId = null,
+        ordinaryPostId = null,
         curatorPostId = null,
         commentId = null,
       } = options;
-      return like(userId, postId, curatorPostId, commentId);
+      return like(userId, ordinaryPostId, curatorPostId, commentId);
     },
 
     onMutate: async () => {

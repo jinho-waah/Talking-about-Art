@@ -1,6 +1,6 @@
 import { useEffect, useState, Suspense, lazy } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LoadingPage } from "@/pages/loading/components/LoadingPage";
+import { TabSectionSkeleton } from "./skeletons/TabsectionSkeleton";
 
 const UpCommingExhibition = lazy(
   () => import("./TabSection/UpCommingExhibition")
@@ -28,7 +28,7 @@ const TabSection = () => {
         <TabsTrigger value="upcoming">전시 예정</TabsTrigger>
         <TabsTrigger value="reviews">큐레이터</TabsTrigger>
       </TabsList>
-      <Suspense fallback={<LoadingPage />}>
+      <Suspense fallback={<TabSectionSkeleton />}>
         {activeTab === "current" && <CurrentExhibition />}
         {activeTab === "upcoming" && <UpCommingExhibition />}
         {activeTab === "reviews" && <Curators />}

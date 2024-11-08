@@ -5,9 +5,8 @@ export const useToggleLikeComment = (
   userId?: number | null
 ) => {
   const { isLiked, setIsLiked, likeCount, setLikeCount, toggleLike } = Like({
-    queryKey: ["comments", userId],
+    queryKey: ["comments", commentId, userId],
   });
-  console.log(isLiked);
   const handleLikeToggle = async () => {
     if (!commentId || !userId) return;
     toggleLike({ userId, commentId });

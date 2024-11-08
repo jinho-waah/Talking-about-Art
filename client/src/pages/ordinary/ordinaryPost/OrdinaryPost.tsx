@@ -8,7 +8,7 @@ import Modal from "../../common/components/Modal";
 import OrdinaryPostBody from "./components/OrdinaryPostBody";
 import { useFetchOrdinaryPost } from "../hooks/useFetchOrdinaryPost";
 import { useDeleteOrdinaryPost } from "./hooks/useDeleteOrdinaryPost";
-import { useToggleLikeOrdinary } from "./hooks/useToggleLikeOrdinary";
+import { useToggleLike } from "@/pages/common/hooks/useToggleLike";
 
 export default function OrdinaryPost() {
   const { id } = useParams();
@@ -22,8 +22,13 @@ export default function OrdinaryPost() {
 
   const { data: post, isLoading } = useFetchOrdinaryPost(id, userId);
   const deleteMutation = useDeleteOrdinaryPost();
+
   const { isLiked, setIsLiked, likeCount, setLikeCount, handleLikeToggle } =
-    useToggleLikeOrdinary(post?.id, userId);
+    useToggleLike({
+      targetType: "ordinaryPost",
+      targetId: post?.id,
+      userId: userId,
+    });
 
   useEffect(() => {
     if (post) {
@@ -31,6 +36,7 @@ export default function OrdinaryPost() {
       setLikeCount(post.like_count);
     }
   }, [post]);
+
   const handleDelete = () => {
     if (window.confirm("정말로 이 게시물을 삭제하시겠습니까?") && id) {
       deleteMutation.mutate(id);

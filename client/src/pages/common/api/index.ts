@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const like = async (
   userId: number,
-  postId: number | null,
+  ordinaryPostId: number | null,
   curatorPostId: number | null,
   commentId: number | null
 ) => {
@@ -11,7 +11,7 @@ export const like = async (
     `${SERVER_DOMAIN}api/likes/toggle`,
     {
       userId,
-      postId,
+      postId: ordinaryPostId,
       curatorPostId,
       commentId,
     }

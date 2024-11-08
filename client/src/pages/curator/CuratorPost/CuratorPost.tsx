@@ -5,7 +5,7 @@ import { pageRoutes } from "@/apiRoutes";
 import CuratorPostBottom from "./components/CuratorPostBottom";
 import CuratorPostTop from "./components/CuratorPostTop";
 import { useGetCuratorPost } from "../hooks/useGetCuratorPost";
-import { useToggleLike } from "./hooks/useToggleLike";
+import { useToggleLike } from "@/pages/common/hooks/useToggleLike";
 import { useDeleteCuratorPost } from "./hooks/useDeleteCuratorPost";
 
 export default function CuratorPost() {
@@ -16,7 +16,11 @@ export default function CuratorPost() {
 
   const { data: post, isError, isLoading } = useGetCuratorPost(id, userId);
   const { isLiked, setIsLiked, likeCount, setLikeCount, handleLikeToggle } =
-    useToggleLike(post?.id, userId, id);
+    useToggleLike({
+      targetType: "curatorPost",
+      targetId: post?.id,
+      userId: userId,
+    });
 
   useEffect(() => {
     if (post) {

@@ -1331,7 +1331,6 @@ app.delete("/api/post/comment/:id", async (req, res) => {
 // POST like toggle
 app.post("/api/likes/toggle", async (req, res) => {
   const { userId, postId, curatorPostId, commentId } = req.body;
-
   let query = "";
   let idValue = null;
 

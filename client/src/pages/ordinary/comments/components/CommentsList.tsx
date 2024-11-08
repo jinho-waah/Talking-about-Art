@@ -9,10 +9,10 @@ import { ThumbsUp, Share2, Flag, Ellipsis } from "lucide-react";
 import { UserAvatar } from "@/pages/common/layout/ui/UserAvatar";
 import { FormatDate } from "@/lib/utils";
 import { CommentEditForm } from "./CommentEditForm";
-import { Comment } from "../../types"; // 단일 comment 타입으로 변경
+import { Comment } from "../../types";
 import { HOST_DOMAIN } from "@/constants";
-import { useToggleLikeComment } from "../hooks/useToggleLikeComment";
 import { useEffect } from "react";
+import { useToggleLike } from "@/pages/common/hooks/useToggleLike";
 
 interface CommentProps {
   comment: Comment;
@@ -42,7 +42,11 @@ export const CommentsList = ({
   handleCancelEdit,
 }: CommentProps) => {
   const { isLiked, setIsLiked, likeCount, setLikeCount, handleLikeToggle } =
-    useToggleLikeComment(comment?.id, userId);
+    useToggleLike({
+      targetType: "comments",
+      targetId: comment?.id,
+      userId: userId,
+    });
 
   useEffect(() => {
     setIsLiked(comment.isLiked == true);

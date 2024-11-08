@@ -13,7 +13,7 @@ import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ExhibitionPost } from "../../types";
 import { useLatestExhibitionPosts } from "../../hooks/useLatestExhibitionPosts";
-import { CurrentExhibitionSkeleton } from "../skeletons/CurrentExhibitionSkeleton";
+import { TabSectionSkeleton } from "../skeletons/TabsectionSkeleton";
 
 const CurrentExhibition = () => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const CurrentExhibition = () => {
   } = useLatestExhibitionPosts();
 
   if (isLoading || !exhibitionData) {
-    return <CurrentExhibitionSkeleton />;
+    return <TabSectionSkeleton />;
   }
 
   if (isError) {
