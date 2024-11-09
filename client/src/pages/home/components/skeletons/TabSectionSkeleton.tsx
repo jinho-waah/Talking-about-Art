@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 
 export const TabSectionSkeleton = () => (
-  <Card>
+  <Card className="my-2">
     <CardHeader>
       <CardTitle>
         <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />

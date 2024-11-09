@@ -605,23 +605,35 @@ app.put("/api/ordinaryPosts/:id", (req, res) => {
 app.delete("/api/ordinaryPosts/:id", (req, res) => {
   const postId = req.params.id;
 
-  const query = `
-    DELETE FROM artlove1_art_lover.posts WHERE id = ?
+  const deleteLikesQuery = `
+    DELETE FROM artlove1_art_lover.likes WHERE post_id = ?
   `;
 
-  connection.query(query, [postId], (err, result) => {
+  connection.query(deleteLikesQuery, [postId], (err, result) => {
     if (err) {
-      console.error("Error deleting ordinary post:", err);
-      return res.status(500).json({ message: "게시물 삭제 실패" });
+      console.error("Error deleting related likes:", err);
+      return res.status(500).json({ message: "관련된 좋아요 삭제 실패" });
     }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "게시물을 찾을 수 없습니다." });
-    }
+    const deletePostQuery = `
+      DELETE FROM artlove1_art_lover.posts WHERE id = ?
+    `;
 
-    res.status(200).json({ message: "게시물이 성공적으로 삭제되었습니다." });
+    connection.query(deletePostQuery, [postId], (err, result) => {
+      if (err) {
+        console.error("Error deleting ordinary post:", err);
+        return res.status(500).json({ message: "게시물 삭제 실패" });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "게시물을 찾을 수 없습니다." });
+      }
+
+      res.status(200).json({ message: "게시물이 성공적으로 삭제되었습니다." });
+    });
   });
 });
+
 // ================================== show ======================================
 
 // POST exhibition post (이미지 포함)
@@ -1034,7 +1046,6 @@ app.post(
   }
 );
 
-
 // 쇼 이름으로 ID 검색 API
 app.get("/api/searchShowId", (req, res) => {
   const { query } = req.query;
@@ -1175,7 +1186,6 @@ app.post(
     }
   }
 );
-
 
 app.put(
   "/api/post/comment/:id",
@@ -1330,7 +1340,7 @@ app.delete("/api/post/comment/:id", async (req, res) => {
 
 // POST like toggle
 app.post("/api/likes/toggle", async (req, res) => {
-  const { userId, postId, curatorPostId, commentId } = req.body;
+  const { userId, postId, curatorPostId, commentId, isLiked } = req.body;
   let query = "";
   let idValue = null;
 
@@ -1355,11 +1365,16 @@ app.post("/api/likes/toggle", async (req, res) => {
       });
     });
 
-    let isLiked;
-    let incrementValue;
+    // 현재 좋아요 상태와 동일하다면 아무 작업도 수행하지 않음
+    const dbHasLike = result.length > 0;
+    if (dbHasLike === isLiked) {
+      return res.status(200).json({ isLiked });
+    }
 
-    if (result.length > 0) {
-      // 좋아요가 이미 존재하면 삭제 (unlike)
+    // 좋아요 상태가 다르면 업데이트
+    let incrementValue;
+    if (dbHasLike) {
+      // 이미 좋아요가 존재하면 삭제 (unlike)
       await new Promise((resolve, reject) => {
         connection.query(
           "DELETE FROM likes WHERE id = ?",
@@ -1370,7 +1385,6 @@ app.post("/api/likes/toggle", async (req, res) => {
           }
         );
       });
-      isLiked = false;
       incrementValue = -1; // 좋아요 감소
     } else {
       // 좋아요가 없다면 추가 (like)
@@ -1384,7 +1398,6 @@ app.post("/api/likes/toggle", async (req, res) => {
           }
         );
       });
-      isLiked = true;
       incrementValue = 1; // 좋아요 증가
     }
 
@@ -1409,7 +1422,7 @@ app.post("/api/likes/toggle", async (req, res) => {
       });
     }
 
-    res.status(200).json({ isLiked });
+    res.status(200).json({ isLiked: !dbHasLike });
   } catch (error) {
     console.error("Error toggling like status:", error);
     res.status(500).json({ message: "Error toggling like status" });

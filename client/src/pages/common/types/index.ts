@@ -9,3 +9,10 @@ export type LikeOptions =
       commentId?: number;
     };
 
+export type TargetType = "ordinaryPost" | "comments" | "curatorPost";
+
+export interface UseToggleLikeProps {
+  targetType: TargetType;
+  targetId: number | undefined;
+  userId: number | null;
+}

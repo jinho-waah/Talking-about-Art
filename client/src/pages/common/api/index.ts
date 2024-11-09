@@ -5,7 +5,8 @@ export const like = async (
   userId: number,
   ordinaryPostId: number | null,
   curatorPostId: number | null,
-  commentId: number | null
+  commentId: number | null,
+  isLiked: boolean
 ) => {
   return await axios.post<{ isLiked: boolean }>(
     `${SERVER_DOMAIN}api/likes/toggle`,
@@ -14,6 +15,7 @@ export const like = async (
       postId: ordinaryPostId,
       curatorPostId,
       commentId,
+      isLiked,
     }
   );
 };
