@@ -6,7 +6,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { ThumbsUp, MessageSquare, Share2, Ellipsis } from "lucide-react";
-import { UserAvatar } from "@/pages/common/layout/ui/UserAvatar";
+import { UserAvatar } from "@/pages/common/layout/components/UserAvatar";
 import { FormatDate } from "@/lib/utils";
 import { OrdinaryPost } from "../../types";
 

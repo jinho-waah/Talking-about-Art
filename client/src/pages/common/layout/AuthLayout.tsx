@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Header } from "./ui/Header";
+import { Header } from "./components/Header";
 import { useCheckLoginStatus } from "./hooks/useCheckLoginStatus";
 
 interface AuthLayoutProps {

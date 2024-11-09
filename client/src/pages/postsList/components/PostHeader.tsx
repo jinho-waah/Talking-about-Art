@@ -1,5 +1,5 @@
 import { FormatDate } from "@/lib/utils";
-import { UserAvatar } from "@/pages/common/layout/ui/UserAvatar";
+import { UserAvatar } from "@/pages/common/layout/components/UserAvatar";
 
 interface PostHeaderProps {
   authorName: string;

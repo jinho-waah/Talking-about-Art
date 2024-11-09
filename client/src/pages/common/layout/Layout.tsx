@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
-import { Header } from "./ui/Header";
+import { Header } from "./components/Header";
 import { useCheckLoginStatus } from "./hooks/useCheckLoginStatus";
-import { EventSection } from "./ui/EventSection";
-import { RecommendSection } from "./ui/RecommendSection";
-import { HashTagsSection } from "./ui/HashTagsSection";
+import { EventSection } from "./components/EventSection";
+import { RecommendSection } from "./components/RecommendSection";
+import { HashTagsSection } from "./components/HashTagsSection";
 
 interface LayoutProps {
   children: ReactNode;
@@ -15,6 +15,7 @@ export const Layout: React.FC<LayoutProps> = ({
   containerClassName,
 }) => {
   useCheckLoginStatus();
+
   return (
     <div>
       <Header />

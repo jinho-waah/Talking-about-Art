@@ -1,7 +1,7 @@
 import { CardContent } from "@/components/ui/card";
 import { Instagram, Twitter, AtSign } from "lucide-react";
 import { ProfileData } from "../../types";
-import { UserAvatar } from "@/pages/common/layout/ui/UserAvatar";
+import { UserAvatar } from "@/pages/common/layout/components/UserAvatar";
 
 export function MyPageForm({
   profileData,
