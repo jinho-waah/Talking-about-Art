@@ -13,7 +13,7 @@ import RegisterPage from "@/pages/register";
 import MyPage from "./pages/myPage/myPage";
 import EventPage from "@/pages/event";
 import { LoadingPage } from "./pages/loading/components/LoadingPage";
-import ScrollToTop from "./pages/common/layout/components/ScrollToTop";
+import ScrollToTop from "./pages/common/layout/hooks/ScrollToTop";
 
 const EditMyPage = lazy(() => import("./pages/myPage/editMyPage/EditMyPage"));
 const ExhibitionPost = lazy(

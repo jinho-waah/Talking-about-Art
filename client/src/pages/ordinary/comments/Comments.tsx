@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CommentsForm from "./components/CommentForm";
-import Modal from "../../common/components/Modal";
 import { HOST_DOMAIN } from "@/constants";
 import authStore from "@/store/authStore";
 import { useFetchComments } from "./hooks/useFetchComments";
 import { useUpdateComment } from "./hooks/useUpdateComment";
 import { useDeleteComment } from "./hooks/useDeleteComment";
 import { CommentsList } from "./components/CommentsList";
+import { createPortal } from "react-dom";
+import { LoadingPage } from "@/pages/loading/components/LoadingPage";
+
+const Modal = lazy(() => import("../../common/components/Modal"));
 
 interface CommentsProps {
   commentSectionRef: React.RefObject<HTMLDivElement>;
@@ -133,14 +136,20 @@ export default function Comments({
         onCommentsUpdate={onCommentsUpdate}
       />
 
-      <Modal
-        isModalOpen={isModalOpen}
-        toggleModal={() => toggleModal(null)}
-        handleEdit={initiateEdit}
-        handleDelete={() =>
-          selectedCommentId !== null && handleDelete(selectedCommentId)
-        }
-      />
+      {isModalOpen &&
+        createPortal(
+          <Suspense fallback={<LoadingPage />}>
+            <Modal
+              isModalOpen={isModalOpen}
+              toggleModal={() => toggleModal(null)}
+              handleEdit={initiateEdit}
+              handleDelete={() =>
+                selectedCommentId !== null && handleDelete(selectedCommentId)
+              }
+            />
+          </Suspense>,
+          document.body
+        )}
     </div>
   );
 }

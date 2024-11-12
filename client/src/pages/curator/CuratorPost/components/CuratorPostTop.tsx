@@ -2,10 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, Share2, Ellipsis } from "lucide-react";
-import Modal from "@/pages/common/components/Modal";
 import { FormatDate } from "@/lib/utils";
 import { CuratorPostTopProps } from "../../types";
 import { Role } from "@/constants";
+import { createPortal } from "react-dom";
+import { lazy, Suspense } from "react";
+import { LoadingPage } from "@/pages/loading/components/LoadingPage";
+
+const Modal = lazy(() => import("../../../common/components/Modal"));
 
 export default function CuratorPostTop({
   post,
@@ -40,14 +44,18 @@ export default function CuratorPostTop({
               <Ellipsis />
             </Button>
           )}
-          {(userId == post.curator_id || role === "admin") && (
-            <Modal
-              isModalOpen={isModalOpen}
-              toggleModal={toggleModal}
-              handleEdit={handleEdit}
-              handleDelete={handleDelete}
-            />
-          )}
+          {isModalOpen &&
+            createPortal(
+              <Suspense fallback={<LoadingPage />}>
+                <Modal
+                  isModalOpen={isModalOpen}
+                  toggleModal={toggleModal}
+                  handleEdit={handleEdit}
+                  handleDelete={handleDelete}
+                />
+              </Suspense>,
+              document.body
+            )}
         </div>
       </CardHeader>
       <CardContent>
