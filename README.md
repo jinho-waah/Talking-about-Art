@@ -4,7 +4,7 @@
 
 ![스크린샷 2024-09-16 오후 6 21 25](https://github.com/user-attachments/assets/717a97f0-dc62-49ec-9b1d-cd105cbee2c3)
 
-> Talking about Art는 전시회 상세 정보, 큐레이터의 전시 소개, 일반 게시글을 올릴 수 있는 커뮤니티.<br/>
+> Talking about Art는 전시회 상세 정보, 큐레이터의 전시 소개, 일반 게시글을 올릴 수 있는 커뮤니티입니다.<br/>
 > Frontend by 조진호<br/>
 > Backend by 조진호 <br/>
 > Designed by 조진호 <br/>
