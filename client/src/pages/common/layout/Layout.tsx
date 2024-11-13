@@ -15,7 +15,6 @@ export const Layout: React.FC<LayoutProps> = ({
   containerClassName,
 }) => {
   useCheckLoginStatus();
-
   return (
     <div>
       <Header />

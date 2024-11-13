@@ -20,9 +20,9 @@ export const useLike = (queryKey: object) => {
       } = options;
       return like(userId, ordinaryPostId, curatorPostId, commentId, isLiked);
     },
-    onMutate: async () => {
-      await queryClient.cancelQueries(queryKey);
-    },
+    // onMutate: async () => {
+    //   await queryClient.cancelQueries(queryKey);
+    // },
     onError: (error) => {
       console.error("Error toggling like status:", error);
     },
