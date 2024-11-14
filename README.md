@@ -61,7 +61,7 @@
 
 ## **3. Talking about Art 폴더 구조**
 ```
-```
+
 📦 
 ├─ client
 │  ├─ eslint.config.js
