@@ -10,7 +10,7 @@ import {
 import authStore from "@/store/authStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
-import { getKstTimeString } from "@/lib/utils";
+import { getKstTimeString } from "@/utils/time/getKstTimeString"; 
 import EditOrdinaryPostForm from "./components/EditOrdinaryPostForm";
 import { useFetchOrdinaryPost } from "../hooks/useFetchOrdinaryPost";
 import { useUpdateOrdinaryPost } from "./hooks/useUpdateOrdinaryPost";

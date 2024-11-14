@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useParams } from "react-router-dom";
-import { getKstTimeString } from "@/lib/utils";
+import { getKstTimeString } from "@/utils/time/getKstTimeString"; 
 import authStore from "@/store/authStore";
 import { usePostComment } from "../hooks/usePostComment";
 

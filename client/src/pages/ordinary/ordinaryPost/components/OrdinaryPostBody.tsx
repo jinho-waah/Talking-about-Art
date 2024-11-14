@@ -7,8 +7,8 @@ import {
 } from "@/components/ui/card";
 import { ThumbsUp, MessageSquare, Share2, Ellipsis } from "lucide-react";
 import { UserAvatar } from "@/pages/common/layout/components/UserAvatar";
-import { FormatDate } from "@/lib/utils";
 import { OrdinaryPost } from "../../types";
+import { formatDate } from "@/utils/time/formatDate";
 
 interface OrdinaryPostCardProps {
   post: OrdinaryPost;
@@ -43,7 +43,7 @@ export default function OrdinaryPostBody({
             <div>
               <p className="font-medium">{post.author_name}</p>
               <p className="text-sm text-muted-foreground">
-                {FormatDate(post.created_at)}
+                {formatDate(post.created_at)}
               </p>
             </div>
           </div>

@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import authStore from "@/store/authStore";
-import { getKstTimeString } from "@/lib/utils";
+import { getKstTimeString } from "@/utils/time/getKstTimeString"; 
 import { AddOrdinaryImage } from "./components/AddOrdinaryImage";
 import { AddOrdinaryForm } from "./components/AddOrdinaryForm";
 import { useImageUpload } from "./hooks/useImageUpload";

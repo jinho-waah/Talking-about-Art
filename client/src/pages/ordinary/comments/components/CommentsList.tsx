@@ -7,12 +7,12 @@ import {
 } from "@/components/ui/card";
 import { ThumbsUp, Share2, Flag, Ellipsis } from "lucide-react";
 import { UserAvatar } from "@/pages/common/layout/components/UserAvatar";
-import { FormatDate } from "@/lib/utils";
 import { CommentEditForm } from "./CommentEditForm";
 import { Comment } from "../../types";
 import { HOST_DOMAIN } from "@/constants";
 import { useEffect } from "react";
 import { useToggleLike } from "@/pages/common/hooks/useToggleLike";
+import { formatDate } from "@/utils/time/formatDate";
 
 interface CommentProps {
   comment: Comment;
@@ -65,7 +65,7 @@ export const CommentsList = ({
             <div>
               <p className="font-medium">{comment.nickname}</p>
               <p className="text-sm text-muted-foreground">
-                {FormatDate(comment.created_at)}
+                {formatDate(comment.created_at)}
               </p>
             </div>
           </div>

@@ -1,5 +1,5 @@
-import { FormatDate } from "@/lib/utils";
 import { UserAvatar } from "@/pages/common/layout/components/UserAvatar";
+import { formatDate } from "@/utils/time/formatDate";
 
 interface PostHeaderProps {
   authorName: string;
@@ -18,7 +18,7 @@ export default function PostHeader({
   if (period) {
     displayText = period;
   } else if (createdAt) {
-    displayText = FormatDate(createdAt);
+    displayText = formatDate(createdAt);
   }
 
   return (

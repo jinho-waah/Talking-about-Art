@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import authStore from "@/store/authStore";
-import { getKstTimeString } from "@/lib/utils";
+import { getKstTimeString } from "@/utils/time/getKstTimeString"; 
 import { useSearchShowForCuratorPost } from "../hooks/useSearchShowForCuratorPost";
 import AddCuratorPostForm from "./components/AddCuratorPostForm";
 import { useAddCuratorPost } from "./hooks/useAddCuratorPost";

@@ -2,12 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, Share2, Ellipsis } from "lucide-react";
-import { FormatDate } from "@/lib/utils";
 import { CuratorPostTopProps } from "../../types";
 import { Role } from "@/constants";
 import { createPortal } from "react-dom";
 import { lazy, Suspense } from "react";
 import { LoadingPage } from "@/pages/loading/components/LoadingPage";
+import { formatDate } from "@/utils/time/formatDate";
 
 const Modal = lazy(() => import("../../../common/components/Modal"));
 
@@ -34,7 +34,7 @@ export default function CuratorPostTop({
             <div>
               <p className="font-medium">{post.curator_name}</p>
               <p className="text-sm text-muted-foreground">
-                {FormatDate(post.created_at)}
+                {formatDate(post.created_at)}
               </p>
             </div>
           </div>
