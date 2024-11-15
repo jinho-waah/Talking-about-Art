@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
 import { TAB_TITLES } from "@/constants";
-import { Role } from "@/constants";
+import { ROLE } from "@/constants";
 import PrivateRoute from "./PrivateRoute";
 import { Layout } from "./pages/common/layout/Layout";
 import { AuthLayout } from "./pages/common/layout/AuthLayout";
@@ -69,10 +69,10 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute
             allowedRoles={[
-              Role.ADMIN,
-              Role.GALLERY,
-              Role.CURATOR,
-              Role.ORDINARY,
+              ROLE.ADMIN,
+              ROLE.GALLERY,
+              ROLE.CURATOR,
+              ROLE.ORDINARY,
             ]}
           >
             <SuspenseWrapper>
@@ -133,7 +133,7 @@ const router = createBrowserRouter([
       {
         path: pageRoutes.addExhibition,
         element: (
-          <PrivateRoute allowedRoles={[Role.ADMIN, Role.GALLERY]}>
+          <PrivateRoute allowedRoles={[ROLE.ADMIN, ROLE.GALLERY]}>
             <SuspenseWrapper>
               <AddExhibitionPost />
             </SuspenseWrapper>
@@ -143,7 +143,7 @@ const router = createBrowserRouter([
       {
         path: pageRoutes.addCurator,
         element: (
-          <PrivateRoute allowedRoles={[Role.ADMIN, Role.CURATOR]}>
+          <PrivateRoute allowedRoles={[ROLE.ADMIN, ROLE.CURATOR]}>
             <SuspenseWrapper>
               <AddCuratorPost />
             </SuspenseWrapper>
@@ -155,10 +155,10 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute
             allowedRoles={[
-              Role.ADMIN,
-              Role.GALLERY,
-              Role.CURATOR,
-              Role.ORDINARY,
+              ROLE.ADMIN,
+              ROLE.GALLERY,
+              ROLE.CURATOR,
+              ROLE.ORDINARY,
             ]}
           >
             <SuspenseWrapper>
@@ -170,7 +170,7 @@ const router = createBrowserRouter([
       {
         path: pageRoutes.editCuratorPost,
         element: (
-          <PrivateRoute allowedRoles={[Role.ADMIN, Role.CURATOR]}>
+          <PrivateRoute allowedRoles={[ROLE.ADMIN, ROLE.CURATOR]}>
             <SuspenseWrapper>
               <EditCuratorPost />
             </SuspenseWrapper>
@@ -182,10 +182,10 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute
             allowedRoles={[
-              Role.ADMIN,
-              Role.GALLERY,
-              Role.CURATOR,
-              Role.ORDINARY,
+              ROLE.ADMIN,
+              ROLE.GALLERY,
+              ROLE.CURATOR,
+              ROLE.ORDINARY,
             ]}
           >
             <SuspenseWrapper>

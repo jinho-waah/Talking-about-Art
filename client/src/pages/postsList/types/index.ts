@@ -1,4 +1,4 @@
-import { TabTitle } from "@/constants";
+import { TabTitle } from "@/types";
 
 export interface PostsListProps {
   title: TabTitle;

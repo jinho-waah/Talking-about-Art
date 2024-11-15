@@ -1,4 +1,4 @@
-import { RoleType } from "@/constants";
+import { ROLE_TYPE } from "@/constants";
 
 export interface CuratorPostData {
   id: number;
@@ -24,7 +24,7 @@ export interface CuratorPostData {
 export interface CuratorPostTopProps {
   post: CuratorPostData;
   userId: number | null;
-  role: RoleType;
+  role: ROLE_TYPE;
   toggleModal: () => void;
   isModalOpen: boolean;
   handleEdit: () => void;
