@@ -127,8 +127,7 @@
 │     │  │  │  └─ hooks
 │     │  │  ├─ myPage
 │     │  │  │  ├─ components
-│     │  │  │  ├─ hooks
-│     │  │  │  └─ index.tsx
+│     │  │  │  └─ hooks
 │     │  │  └─ types
 │     │  ├─ ordinary
 │     │  │  ├─ addOrdinaryPost
@@ -154,19 +153,15 @@
 │     │  │  ├─ api
 │     │  │  ├─ components
 │     │  │  ├─ hooks
-│     │  │  ├─ index.tsx
 │     │  │  └─ types
 │     │  └─ register
 │     │     ├─ api
 │     │     ├─ components
 │     │     ├─ hooks
-│     │     ├─ index.tsx
 │     │     └─ types
 │     ├─ router.tsx
 │     ├─ store
-│     │  └─ authStore.ts
 │     ├─ types
-│     │  └─ index.ts
 │     └─ utils
 │        ├─ location
 │        ├─ register
