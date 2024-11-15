@@ -68,108 +68,102 @@
     - 유연성 증대: 프로젝트 요구사항에 맞게 구조를 조정했기 때문에 필요할 때 구조를 쉽게 변경할 수 있음
 ```
 📦 
-├─ README.md
-├─ client
-│  └─ src
-│     ├─ PrivateRoute.tsx
-│     ├─ apiRoutes.ts
-│     ├─ components
-│     ├─ constants.ts
-│     ├─ index.css
-│     ├─ lib
-│     ├─ main.tsx
-│     ├─ pages
-│     │  ├─ common
-│     │  │  ├─ api
-│     │  │  ├─ components
-│     │  │  ├─ hooks
-│     │  │  ├─ layout
-│     │  │  └─ types
-│     │  ├─ curator
-│     │  │  ├─ AddCuratorPost
-│     │  │  ├─ CuratorPost
-│     │  │  ├─ EditCuratorPost
-│     │  │  ├─ api
-│     │  │  ├─ hooks
-│     │  │  └─ types
-│     │  ├─ event
-│     │  │  ├─ api
-│     │  │  ├─ eventTab
-│     │  │  └─ index.tsx
-│     │  ├─ exhibition
-│     │  │  ├─ addExhibitionPost
-│     │  │  │  ├─ api
-│     │  │  │  ├─ components
-│     │  │  │  └─ hooks
-│     │  │  ├─ exhibitionPost
-│     │  │  │  ├─ api
-│     │  │  │  ├─ components
-│     │  │  │  └─ hooks
-│     │  │  ├─ types
-│     │  │  └─ ui
-│     │  ├─ home
-│     │  │  ├─ api
-│     │  │  ├─ components
-│     │  │  ├─ hooks
-│     │  │  └─ types
-│     │  ├─ loading
-│     │  │  └─ components
-│     │  ├─ login
-│     │  │  ├─ api
-│     │  │  ├─ components
-│     │  │  ├─ hooks
-│     │  │  └─ types
-│     │  ├─ myPage
-│     │  │  ├─ api
-│     │  │  ├─ editMyPage
-│     │  │  │  ├─ api
-│     │  │  │  ├─ components
-│     │  │  │  └─ hooks
-│     │  │  ├─ myPage
-│     │  │  │  ├─ components
-│     │  │  │  └─ hooks
-│     │  │  └─ types
-│     │  ├─ ordinary
-│     │  │  ├─ addOrdinaryPost
-│     │  │  │  ├─ api
-│     │  │  │  ├─ components
-│     │  │  │  └─ hooks
-│     │  │  ├─ api
-│     │  │  ├─ comments
-│     │  │  │  ├─ api
-│     │  │  │  ├─ components
-│     │  │  │  └─ hooks
-│     │  │  ├─ editOrdinaryPost
-│     │  │  │  ├─ api
-│     │  │  │  ├─ components
-│     │  │  │  └─ hooks
-│     │  │  ├─ hooks
-│     │  │  ├─ ordinaryPost
-│     │  │  │  ├─ api
-│     │  │  │  ├─ components
-│     │  │  │  └─ hooks
-│     │  │  └─ types
-│     │  ├─ postsList
-│     │  │  ├─ api
-│     │  │  ├─ components
-│     │  │  ├─ hooks
-│     │  │  └─ types
-│     │  └─ register
-│     │     ├─ api
-│     │     ├─ components
-│     │     ├─ hooks
-│     │     └─ types
-│     ├─ router.tsx
-│     ├─ store
-│     ├─ types
-│     └─ utils
-│        ├─ location
-│        ├─ register
-│        └─ time
-└─ server
-   ├─ package.json
-   ├─ pnpm-lock.yaml
-   └─ server.js
+└─ src
+    ├─ PrivateRoute.tsx
+    ├─ apiRoutes.ts
+    ├─ components
+    ├─ constants.ts
+    ├─ index.css
+    ├─ lib
+    ├─ main.tsx
+    ├─ pages
+    │  ├─ common
+    │  │  ├─ api
+    │  │  ├─ components
+    │  │  ├─ hooks
+    │  │  ├─ layout
+    │  │  └─ types
+    │  ├─ curator
+    │  │  ├─ AddCuratorPost
+    │  │  ├─ CuratorPost
+    │  │  ├─ EditCuratorPost
+    │  │  ├─ api
+    │  │  ├─ hooks
+    │  │  └─ types
+    │  ├─ event
+    │  │  ├─ api
+    │  │  ├─ eventTab
+    │  │  └─ index.tsx
+    │  ├─ exhibition
+    │  │  ├─ addExhibitionPost
+    │  │  │  ├─ api
+    │  │  │  ├─ components
+    │  │  │  └─ hooks
+    │  │  ├─ exhibitionPost
+    │  │  │  ├─ api
+    │  │  │  ├─ components
+    │  │  │  └─ hooks
+    │  │  ├─ types
+    │  │  └─ ui
+    │  ├─ home
+    │  │  ├─ api
+    │  │  ├─ components
+    │  │  ├─ hooks
+    │  │  └─ types
+    │  ├─ loading
+    │  │  └─ components
+    │  ├─ login
+    │  │  ├─ api
+    │  │  ├─ components
+    │  │  ├─ hooks
+    │  │  └─ types
+    │  ├─ myPage
+    │  │  ├─ api
+    │  │  ├─ editMyPage
+    │  │  │  ├─ api
+    │  │  │  ├─ components
+    │  │  │  └─ hooks
+    │  │  ├─ myPage
+    │  │  │  ├─ components
+    │  │  │  └─ hooks
+    │  │  └─ types
+    │  ├─ ordinary
+    │  │  ├─ addOrdinaryPost
+    │  │  │  ├─ api
+    │  │  │  ├─ components
+    │  │  │  └─ hooks
+    │  │  ├─ api
+    │  │  ├─ comments
+    │  │  │  ├─ api
+    │  │  │  ├─ components
+    │  │  │  └─ hooks
+    │  │  ├─ editOrdinaryPost
+    │  │  │  ├─ api
+    │  │  │  ├─ components
+    │  │  │  └─ hooks
+    │  │  ├─ hooks
+    │  │  ├─ ordinaryPost
+    │  │  │  ├─ api
+    │  │  │  ├─ components
+    │  │  │  └─ hooks
+    │  │  └─ types
+    │  ├─ postsList
+    │  │  ├─ api
+    │  │  ├─ components
+    │  │  ├─ hooks
+    │  │  └─ types
+    │  └─ register
+    │     ├─ api
+    │     ├─ components
+    │     ├─ hooks
+    │     └─ types
+    ├─ router.tsx
+    ├─ store
+    ├─ types
+    └─ utils
+       ├─ location
+       ├─ register
+       └─ time
 ```
 
 ## **4. 핵심 코드**
