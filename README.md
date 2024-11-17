@@ -199,7 +199,7 @@
 <details>
 	<summary>
 		<b>
-			tmp3
+			tmp3
 		</b>
 	</summary>
 <br/>
@@ -257,13 +257,6 @@ function Search() {
 - 해결방법: debounce와 useCallback을 사용하여 서버에 "좋아요" 상태를 업데이트하는 debouncedToggleLikeServer 함수를 생성하고, 클라이언트 쪽에서는 isLiked와 likeCount 상태를 즉시 업데이트하도록 구성.
 - 결과: 로컬 상태와 서버 상태가 일치하면서도, debounce로 인해 발생하는 의도치 않은 상태 변화 문제를 해결하여, 사용자 경험을 개선함.
 
-<b style="font-size:18px">http-only cookie 문제</b><br/>
-
-- 원인: http-only cookie로 인해 서버가 지속적으로 인증 상태를 확인하는 요청을 보내고, 이는 로그인이 필요 없는 요청에서도 불필요하게 서버 리소스를 사용하게 만듦.
-- 고민 과정: http-only cookie는 보안을 강화하는 장점이 있어 이를 유지하는 방법을 고려하면서, 비로그인 상태에서 발생하는 불필요한 인증 요청을 제한할 방법을 고민.
-- 해결 방법: Zustand에 isToken이라는 boolean 값을 추가하여, 로그인 시 이 값을 true로 설정하고, 이 값이 true일 때만 로그인 상태를 확인하도록 함.
-- 결과: 보안을 유지하면서도 불필요한 서버 리소스 사용을 방지하여 전반적인 성능 최적화에 기여함.
-
 ## **6. 기술 의사 결정**
 
 <b style="font-size:18px">Zustand</b><br/>
@@ -276,8 +269,9 @@ function Search() {
 
 <b style="font-size:18px">pnpm 사용</b><br/>
 
-- 상태 관리를 위해 useQuery를 사용하여 서버에서 데이터를 비동기적으로 가져오고 있으며, 캐싱과 staleTime 등을 통해 성능 최적화
-- onMutate를 이용한 Optimistic update 적용
+- pnpm으로 설치한 Node.js는 Corepacke이 포함되어 있지 않지만 Node.js 버전 관리 용이
+- 패키지 설치 속도와 디스크 공간 절약 가능
+- npm이나 Yarn에서는 종속성 트리가 깊어질 수 있지만, pnpm은 항상 최상위 노드에서 종속성을 공유하도록 강제하므로, 종속성 트리가 일관되고 예상 가능한 방식으로 유지
 
 
 <b style="font-size:18px">Tanstack Query</b><br/>
