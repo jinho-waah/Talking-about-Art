@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Role } from "@/constants";
+import { ROLE } from "@/constants";
 import authStore from "@/store/authStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
@@ -28,7 +28,7 @@ export default function EditCuratorPost() {
       setShowId(post.show_id);
       setShowName(post.show_name);
 
-      if (post.curator_id !== userId && role !== Role.ADMIN) {
+      if (post.curator_id !== userId && role !== ROLE.ADMIN) {
         alert("접근 권한이 없습니다.");
         navigate(pageRoutes.main);
       }

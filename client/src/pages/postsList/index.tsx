@@ -5,7 +5,7 @@ import { pageRoutes } from "@/apiRoutes";
 import { lazy, Suspense, useEffect, useState } from "react";
 import authStore from "@/store/authStore";
 import useFetchPosts from "./hooks/useFetchPosts";
-import { TAB_TITLES, Role } from "@/constants";
+import { TAB_TITLES, ROLE } from "@/constants";
 import { Card } from "@/components/ui/card";
 import { PostsListProps } from "./types";
 import ListSkeleton from "./components/skeletons/ListSkeleton";
@@ -53,11 +53,11 @@ export default function PostsList({ title }: PostsListProps) {
     switch (title) {
       case TAB_TITLES.UPCOMING_EXHIBITION:
       case TAB_TITLES.INTRODUCTION:
-        if (role === Role.GALLERY || role === Role.ADMIN)
+        if (role === ROLE.GALLERY || role === ROLE.ADMIN)
           navigate(pageRoutes.addExhibition);
         break;
       case TAB_TITLES.CURATOR:
-        if (role === Role.CURATOR || role === Role.ADMIN)
+        if (role === ROLE.CURATOR || role === ROLE.ADMIN)
           navigate(pageRoutes.addCurator);
         break;
       case TAB_TITLES.POSTS:
@@ -70,13 +70,13 @@ export default function PostsList({ title }: PostsListProps) {
     if (
       (title === TAB_TITLES.UPCOMING_EXHIBITION ||
         title === TAB_TITLES.INTRODUCTION) &&
-      (role === Role.GALLERY || role === Role.ADMIN)
+      (role === ROLE.GALLERY || role === ROLE.ADMIN)
     ) {
       return true;
     }
     if (
       title === TAB_TITLES.CURATOR &&
-      (role === Role.CURATOR || role === Role.ADMIN)
+      (role === ROLE.CURATOR || role === ROLE.ADMIN)
     ) {
       return true;
     }

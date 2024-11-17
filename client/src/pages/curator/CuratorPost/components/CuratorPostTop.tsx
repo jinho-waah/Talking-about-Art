@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThumbsUp, Share2, Ellipsis } from "lucide-react";
 import { CuratorPostTopProps } from "../../types";
-import { Role } from "@/constants";
+import { ROLE } from "@/constants";
 import { createPortal } from "react-dom";
 import { lazy, Suspense } from "react";
 import { LoadingPage } from "@/pages/loading/components/LoadingPage";
@@ -39,7 +39,7 @@ export default function CuratorPostTop({
             </div>
           </div>
           {((userId !== null && userId === post.curator_id) ||
-            role === Role.ADMIN) && (
+            role === ROLE.ADMIN) && (
             <Button variant="ghost" size="icon" onClick={toggleModal}>
               <Ellipsis />
             </Button>

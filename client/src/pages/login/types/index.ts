@@ -1,4 +1,4 @@
-import { Role } from "@/constants";
+import { ROLE_TYPE } from "@/constants";
 
 export interface FormData {
   email: string;
@@ -13,7 +13,7 @@ export interface FormErrors {
 export interface LoginResponse {
   userId: number;
   galleryId: number;
-  role: Role;
+  role: ROLE_TYPE;
   userName: string;
   imgUrl: string;
 }
