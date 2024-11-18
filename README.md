@@ -2,7 +2,7 @@
 
 ## **1. Talking about Art 소개**
 
-![스크린샷 2024-11-18 오후 3 31 35](https://github.com/user-attachments/assets/e1974d2a-9e16-476b-95b7-c11b03df2fad)\
+![스크린샷 2024-11-18 오후 3 31 35](https://github.com/user-attachments/assets/e1974d2a-9e16-476b-95b7-c11b03df2fad)
 
 > Talking about Art는 전시회 상세 정보, 큐레이터의 전시 소개, 일반 게시글을 올릴 수 있는 커뮤니티입니다.<br/>
 > Frontend by 조진호<br/>
