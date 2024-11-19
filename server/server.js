@@ -1430,10 +1430,6 @@ app.post("/api/likes/toggle", async (req, res) => {
 });
 
 
-
-
-
-
 // Express에 정적 파일 제공 추가
 app.use(
   "/profileImg",
