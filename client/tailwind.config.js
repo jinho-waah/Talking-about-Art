@@ -1,12 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
-  content: [
-    "./index.html", // 루트에 있는 HTML 파일
-    "./src/**/*.{js,ts,jsx,tsx}", // src 폴더 내 모든 JS/TS/React 파일
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["Happiness-Sans-Regular", "ui-sans-serif", "system-ui"],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
