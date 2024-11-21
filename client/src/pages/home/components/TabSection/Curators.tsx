@@ -13,7 +13,7 @@ import { BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CuratorPost } from "../../types";
 import { useLatestCuratorPosts } from "../../hooks/useLatestCuratorPosts";
-import { TabSectionSkeleton } from "../skeletons/TabsectionSkeleton";
+import { TabSectionSkeleton } from "../skeletons/TabSectionSkeleton"; 
 
 const Curators = () => {
   const navigate = useNavigate();

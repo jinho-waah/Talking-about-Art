@@ -93,7 +93,7 @@ export default function PostsList({ title }: PostsListProps) {
         {canAddPost() && <Button onClick={handleAddPost}>글 추가</Button>}
       </div>
       <Input placeholder="검색..." className="mb-6" />
-      {!isLoading && (
+      {!isLoading && title && (
         <Suspense fallback={<ListSkeleton title={title} />}>
           {title === TAB_TITLES.CURATOR &&
             curatorPosts.map((post, index) => (

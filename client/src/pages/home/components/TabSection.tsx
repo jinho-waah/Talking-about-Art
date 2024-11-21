@@ -1,6 +1,6 @@
 import { useEffect, useState, Suspense, lazy } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TabSectionSkeleton } from "./skeletons/TabsectionSkeleton";
+import { TabSectionSkeleton } from "./skeletons/TabSectionSkeleton";
 
 const UpCommingExhibition = lazy(
   () => import("./TabSection/UpCommingExhibition")

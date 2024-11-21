@@ -1,10 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { postOrdinaryPostImage } from "../api";
-import { PostOrdinaryPostImageProps } from "../../types";
 
 export const useImageUpload = () => {
   return useMutation({
-    mutationFn: async (formData: PostOrdinaryPostImageProps) => {
+    mutationFn: async (formData: FormData) => {
       const { data } = await postOrdinaryPostImage(formData);
       return data.imageUrl;
     },

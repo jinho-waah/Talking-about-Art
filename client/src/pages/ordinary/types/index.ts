@@ -53,10 +53,6 @@ export interface PostOrdinaryPostProps {
   newPost: NewPost;
 }
 
-export interface PostOrdinaryPostImageProps {
-  formData: FormData;
-}
-
 export interface CommentsListProps {
   comments: Comment[];
   userId: number | null;

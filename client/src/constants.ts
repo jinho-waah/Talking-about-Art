@@ -1,14 +1,12 @@
-import { TabTitle } from "./types";
-
 export const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 export type ROLE_TYPE = (typeof ROLE)[keyof typeof ROLE] | null;
 
-export type TITLE = "전시 소개" | "전시 예정" | "큐레이터" | "게시물" | null;
+export type TITLE = "전시 소개" | "전시 예정" | "큐레이터" | "게시글" | null;
 
 export const TAB_TITLES: Record<
   "UPCOMING_EXHIBITION" | "INTRODUCTION" | "CURATOR" | "POSTS",
-  TabTitle
+  TITLE
 > = {
   UPCOMING_EXHIBITION: "전시 예정",
   INTRODUCTION: "전시 소개",
@@ -50,8 +48,9 @@ export const QUERY_KEY = {
   MYPAGE: "myPage",
   COMMENTS: "comments",
   EMAIL_CHECK: "emailCheck",
-} as const; 
+} as const;
 
 export const HOST_DOMAIN = "http://localhost:5173";
+// export const HOST_DOMAIN = "https://art-lover.co.kr";
 export const SERVER_DOMAIN = "http://localhost:5100/";
-// export const DOMAIN = "http://localhost:5100/";
+// export const SERVER_DOMAIN = "https://art-lover.co.kr/";

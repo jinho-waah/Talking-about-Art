@@ -1,6 +1,6 @@
 import { SERVER_DOMAIN } from "@/constants";
 import axios from "axios";
-import { NewPost, PostOrdinaryPostImageProps } from "../../types";
+import { NewPost } from "../../types";
 
 export const postOrdinaryPost = async (newPost: NewPost) => {
   await axios.post(`${SERVER_DOMAIN}api/ordinaryPosts`, newPost, {
@@ -10,9 +10,7 @@ export const postOrdinaryPost = async (newPost: NewPost) => {
   });
 };
 
-export const postOrdinaryPostImage = async ({
-  formData,
-}: PostOrdinaryPostImageProps) => {
+export const postOrdinaryPostImage = async (formData: FormData) => {
   const { data } = await axios.post(
     `${SERVER_DOMAIN}api/upload/image`,
     formData,

@@ -13,7 +13,7 @@ import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ExhibitionPost } from "../../types";
 import { useLatestExhibitionPosts } from "../../hooks/useLatestExhibitionPosts";
-import { TabSectionSkeleton } from "../skeletons/TabsectionSkeleton";
+import { TabSectionSkeleton } from "../skeletons/TabSectionSkeleton";
 
 const CurrentExhibition = () => {
   const navigate = useNavigate();

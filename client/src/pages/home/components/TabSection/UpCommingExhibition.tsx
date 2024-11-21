@@ -1,5 +1,3 @@
-// /home/components/tabsection/upcommingExhibition.tsx
-
 import { Button } from "@/components/ui/button";
 import {
   Card,

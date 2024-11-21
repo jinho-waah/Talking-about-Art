@@ -1,7 +1,7 @@
-import { TabTitle } from "@/types";
+import { TITLE } from "@/constants";
 
 export interface PostsListProps {
-  title: TabTitle;
+  title: TITLE;
 }
 
 export interface CuratorPosts {
