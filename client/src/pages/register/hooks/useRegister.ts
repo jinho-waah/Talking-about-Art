@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { registerUser } from "../api/api";
 import { pageRoutes } from "@/apiRoutes";
 import { RegisterFormData, RegisterResponse } from "../types";
+import { QUERY_KEY } from "@/constants";
 
 export const useRegister = () => {
   const queryClient = useQueryClient();
@@ -11,7 +12,7 @@ export const useRegister = () => {
   const mutation = useMutation<RegisterResponse, Error, RegisterFormData>({
     mutationFn: registerUser,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["emailCheck"] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.EMAIL_CHECK] });
       navigate(pageRoutes.login);
     },
     onError: () => {

@@ -1,3 +1,4 @@
+import { QUERY_KEY } from "@/constants";
 import { Like } from "@/pages/common/components/Like";
 
 export const useToggleLikeComment = (
@@ -5,7 +6,7 @@ export const useToggleLikeComment = (
   userId?: number | null
 ) => {
   const { isLiked, setIsLiked, likeCount, setLikeCount, toggleLike } = Like({
-    queryKey: ["comments", commentId, userId],
+    queryKey: [QUERY_KEY.COMMENTS, commentId, userId],
   });
   const handleLikeToggle = async () => {
     if (!commentId || !userId) return;

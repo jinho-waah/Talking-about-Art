@@ -4,13 +4,14 @@ import { FormData } from "../types";
 import { useNavigate } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
 import authStore from "@/store/authStore";
+import { QUERY_KEY } from "@/constants";
 
 export const useLogin = () => {
   const navigate = useNavigate();
   const { setLogin } = authStore().actions;
 
   return useMutation({
-    mutationKey: ["login"],
+    mutationKey: [QUERY_KEY.LOGIN],
     mutationFn: (formData: FormData) => loginRequest(formData),
     onSuccess: (data) => {
       const { userId, galleryId, role, userName, imgUrl } = data;

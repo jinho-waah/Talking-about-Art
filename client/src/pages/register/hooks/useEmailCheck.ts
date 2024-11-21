@@ -2,13 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { emailCheck } from "../api/api";
 import { EmailCheckResponse } from "../types";
+import { QUERY_KEY } from "@/constants";
 
 export const useEmailCheck = (email: string) => {
   const [errors, setErrors] = useState<string | undefined>(undefined);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
 
   const { refetch: checkEmail } = useQuery<EmailCheckResponse, Error>({
-    queryKey: ["emailCheck", email],
+    queryKey: [QUERY_KEY.EMAIL_CHECK, email],
     queryFn: () => emailCheck({ email }),
     enabled: false,
   });

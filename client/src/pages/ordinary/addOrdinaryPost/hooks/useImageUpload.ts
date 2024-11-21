@@ -1,20 +1,11 @@
-// hooks/useImageUpload.ts
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-import { SERVER_DOMAIN } from "@/constants";
+import { postOrdinaryPostImage } from "../api";
+import { PostOrdinaryPostImageProps } from "../../types";
 
 export const useImageUpload = () => {
   return useMutation({
-    mutationFn: async (formData: FormData) => {
-      const { data } = await axios.post(
-        `${SERVER_DOMAIN}api/upload/image`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+    mutationFn: async (formData: PostOrdinaryPostImageProps) => {
+      const { data } = await postOrdinaryPostImage(formData);
       return data.imageUrl;
     },
     onError: (error) => {

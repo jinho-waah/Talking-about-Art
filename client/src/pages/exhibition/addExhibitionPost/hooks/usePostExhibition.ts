@@ -8,8 +8,7 @@ export function usePostExhibition() {
   const mutation = useMutation({
     mutationKey: ["postExhibitionInformation"],
     mutationFn: (formData: FormData) => postExhibitionInformation(formData),
-    onSuccess: (data) => {
-      console.log("전시 정보가 성공적으로 등록되었습니다:", data);
+    onSuccess: () => {
       [
         "title",
         "description",

@@ -2,6 +2,7 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import authStore from "@/store/authStore";
 import { getAuthStatus } from "../api";
 import { useEffect } from "react";
+import { QUERY_KEY } from "@/constants";
 
 export const useCheckLoginStatus = () => {
   const { isToken } = authStore();
@@ -34,6 +35,6 @@ export const useCheckLoginStatus = () => {
 
   return {
     refetchLoginStatus: () =>
-      queryClient.invalidateQueries({ queryKey: ["authStatus"] }),
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.AUTHSTATUS] }),
   };
 };

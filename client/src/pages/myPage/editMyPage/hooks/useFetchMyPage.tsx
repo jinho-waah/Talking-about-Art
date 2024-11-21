@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMyPageByUserId } from "../../api";
 import { ProfileData } from "../../types";
+import { QUERY_KEY } from "@/constants";
 
 export const useFetchMyPage = (userId: number | null) => {
   return useQuery<ProfileData, Error>({
-    queryKey: ["myPage", userId],
+    queryKey: [QUERY_KEY.MYPAGE, userId],
     queryFn: async () => {
       const response = await getMyPageByUserId(userId);
       return {

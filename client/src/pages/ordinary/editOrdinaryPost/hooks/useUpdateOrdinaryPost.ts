@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { updateOrdinaryPost } from "../api";
 import { UpdateOrdinaryPostProps } from "../../types";
+import { QUERY_KEY } from "@/constants";
 
 export const useUpdateOrdinaryPost = () => {
   const queryClient = useQueryClient();
@@ -11,9 +12,9 @@ export const useUpdateOrdinaryPost = () => {
   return useMutation({
     mutationFn: async ({ id, updatedPost }: UpdateOrdinaryPostProps) =>
       updateOrdinaryPost({ id, updatedPost }),
-    onSuccess: (data, variables) => {
+    onSuccess: (_, variables) => {
       const { id } = variables;
-      queryClient.invalidateQueries({ queryKey: ["ordinaryPost", id] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.ORDINARYPOST, id] });
       alert("글이 성공적으로 수정되었습니다!");
       navigate(pageRoutes.ordinaryPost.replace(":id", id));
     },

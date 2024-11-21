@@ -1,6 +1,6 @@
 // hooks/useFetchPosts.ts
 import { useState } from "react";
-import { TAB_TITLES, TabTitle } from "@/constants";
+import { TAB_TITLES, TITLE } from "@/constants";
 import {
   fetchCuratorPosts,
   fetchExhibitionPosts,
@@ -13,7 +13,7 @@ export default function useFetchPosts() {
   const [ordinaryPosts, setOrdinaryPosts] = useState<OrdinaryPosts[]>([]);
   const [exhibitionPosts, setExhibitionPosts] = useState<ExhibitionPosts[]>([]);
 
-  const fetchPosts = async (title: TabTitle) => {
+  const fetchPosts = async (title: TITLE) => {
     try {
       switch (title) {
         case TAB_TITLES.CURATOR:

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { pageRoutes } from "@/apiRoutes";
 import { postOrdinaryPost } from "../api";
+import { QUERY_KEY } from "@/constants";
 
 export const usePostOrdinaryPost = () => {
   const queryClient = useQueryClient();
@@ -11,7 +12,7 @@ export const usePostOrdinaryPost = () => {
     mutationFn: postOrdinaryPost,
     onSuccess: () => {
       alert("게시물이 성공적으로 생성되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["ordinaryPosts"] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.ORDINARYPOSTS] });
       navigate(pageRoutes.ordinaryList);
     },
     onError: (error) => {

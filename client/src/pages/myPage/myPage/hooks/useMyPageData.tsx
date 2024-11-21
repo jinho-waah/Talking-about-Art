@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMyPageByUserId } from "../../api";
 import { ProfileData } from "../../types";
+import { QUERY_KEY } from "@/constants";
 
 export const useMyPageData = (pageId: number | null) => {
   return useQuery<ProfileData, Error>({
-    queryKey: ["myPage", pageId],
+    queryKey: [QUERY_KEY.MYPAGE, pageId],
     queryFn: async () => {
       if (!pageId) {
         throw new Error("유효한 페이지 ID가 필요합니다.");
