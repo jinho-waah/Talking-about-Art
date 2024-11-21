@@ -33,6 +33,8 @@ export const EVENT_TAB_TITLES = {
   MY_EVENT: "내 이벤트",
 } as const;
 
+export const QUERY_KEY = {} as const; 
+
 export const HOST_DOMAIN = "http://localhost:5173";
 export const SERVER_DOMAIN = "http://localhost:5100/";
 // export const DOMAIN = "http://localhost:5100/";

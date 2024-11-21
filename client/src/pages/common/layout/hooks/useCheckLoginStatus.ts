@@ -1,39 +1,39 @@
-import { useEffect } from "react";
-import axios from "axios";
-import { SERVER_DOMAIN } from "@/constants";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import authStore from "@/store/authStore";
+import { getAuthStatus } from "../api";
+import { useEffect } from "react";
 
 export const useCheckLoginStatus = () => {
   const { isToken } = authStore();
   const { setLogin, setLogout } = authStore().actions;
 
-  const checkLoginStatus = async () => {
-    try {
-      const response = await axios.get(`${SERVER_DOMAIN}api/auth/status`, {
-        withCredentials: true,
-      });
+  const queryClient = useQueryClient();
 
-      if (response.status === 200) {
-        const data = response.data;
-        setLogin(
-          data.id,
-          data.galleryId,
-          data.role,
-          data.userName,
-          data.imgUrl
-        );
-      }
-      if (response && (response.status === 401 || response.status === 403)) {
-        setLogout();
-      }
-    } catch (error) {
+  const { mutate: checkLoginStatus } = useMutation({
+    mutationFn: getAuthStatus,
+    onSuccess: (data) => {
+      setLogin(
+        data.data.id,
+        data.data.galleryId,
+        data.data.role,
+        data.data.userName,
+        data.data.imgUrl
+      );
+    },
+    onError: (error) => {
       console.error("로그인 상태 확인 중 오류 발생:", error);
-    }
-  };
+      setLogout();
+    },
+  });
 
   useEffect(() => {
-    if (isToken === true) {
+    if (isToken) {
       checkLoginStatus();
     }
-  }, [isToken]);
+  }, [isToken, checkLoginStatus]);
+
+  return {
+    refetchLoginStatus: () =>
+      queryClient.invalidateQueries({ queryKey: ["authStatus"] }),
+  };
 };
