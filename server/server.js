@@ -11,10 +11,12 @@ const cookieParser = require("cookie-parser");
 const mysql = require("mysql");
 const multer = require("multer");
 const fs = require("fs");
+
 const sharp = require("sharp");
 
 const corsOptions = {
   origin: "http://localhost:5173",
+  // origin: "https://art-lover.co.kr",
   credentials: true,
 };
 
@@ -237,8 +239,6 @@ app.get("/api/auth/status", verifyAuthToken, (req, res) => {
     imgUrl: req.user.imgUrl,
   });
 });
-
-
 
 app.get("/api/galleryname/:galleryId", (req, res) => {
   const { galleryId } = req.params;
@@ -1429,7 +1429,6 @@ app.post("/api/likes/toggle", async (req, res) => {
   }
 });
 
-
 // Express에 정적 파일 제공 추가
 app.use(
   "/profileImg",
@@ -1444,11 +1443,18 @@ app.get("/*", function (req, res) {
   res.sendFile(path.join(__dirname, "../client", "index.html"));
 });
 
+// app.use(
+//   "/profileImg",
+//   express.static(path.join(__dirname, "../public_html/img/profileImg"))
+// );
+// app.use(
+//   "/postImg",
+//   express.static(path.join(__dirname, "../public_html/img/postImg"))
+// );
 // app.use(express.static(path.join(__dirname, "../public_html")));
-
-// // 모든 요청을 public_html 폴더의 index.html로 리다이렉트
 // app.get("/*", function (req, res) {
 //   res.sendFile(path.join(__dirname, "../public_html", "index.html"));
 // });
+
 
 app.listen(port, () => console.log(`listening ${port}`));
