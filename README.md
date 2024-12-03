@@ -176,7 +176,7 @@
 
 </details>
 
-## **5. 트러블 슈팅**
+## **4. 트러블 슈팅**
 
 <b style="font-size:18px">좋아요 기능의 debounce 문제</b><br/>
 
@@ -185,7 +185,7 @@
 - 해결방법: debounce와 useCallback을 사용하여 서버에 "좋아요" 상태를 업데이트하는 debouncedToggleLikeServer 함수를 생성하고, 클라이언트 쪽에서는 isLiked와 likeCount 상태를 즉시 업데이트하도록 구성.
 - 결과: 로컬 상태와 서버 상태가 일치하면서도, debounce로 인해 발생하는 의도치 않은 상태 변화 문제를 해결하여, 사용자 경험을 개선함.
 
-## **6. 기술 의사 결정**
+## **5. 기술 의사 결정**
 
 <b style="font-size:18px">Zustand</b><br/>
 
